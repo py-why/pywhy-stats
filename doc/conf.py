@@ -29,8 +29,8 @@ sys.path.append(os.path.abspath(os.path.join(curdir, "..", "pywhy_stats")))
 # -- Project information -----------------------------------------------------
 
 project = "pywhy_stats"
-copyright = f"{datetime.today().year}, Adam Li"
-author = "Adam Li"
+copyright = f"{datetime.today().year}, PyWhy"
+author = "PyWhy"
 version = pywhy_stats.__version__
 
 # -- General configuration ---------------------------------------------------
