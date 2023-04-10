@@ -6,7 +6,7 @@ name = "pywhy-stats"
 #
 version = "0.0.0"
 description = "(Conditional) Independence Testing for Python"
-authors = ["PyWhy Community"]
+authors = ["PyWhy Community <adam.li@columbia.edu>"]
 license = "MIT"
 documentation = "https://py-why.github.io/pywhy-stats"
 repository = "https://github.com/pywhy/pywhy-stats"
