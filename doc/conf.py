@@ -109,16 +109,6 @@ numpydoc_xref_ignore = {
     "dictionary",
     "no",
     "attributes",
-    "DAG",
-    "causal",
-    "CPDAG",
-    "PAG",
-    "ADMG",
-    "PsiFCI",
-    # networkx
-    "node",
-    "nodes",
-    "graph",
     # numpy
     "ScalarType",
     "ArrayLike",
@@ -148,20 +138,12 @@ numpydoc_xref_ignore = {
     "model",
 }
 numpydoc_xref_aliases = {
-    # Networkx
-    "nx.Graph": "networkx.Graph",
-    "nx.DiGraph": "networkx.DiGraph",
-    "nx.MultiDiGraph": "networkx.MultiDiGraph",
-    "nx": "networkx",
     "pgmpy.models.BayesianNetwork": "pgmpy.models.BayesianNetwork",
     # joblib
     "joblib.Parallel": "joblib.Parallel",
     # numpy
     "NDArray": "numpy.ndarray",
     "ArrayLike": ":term:`array_like`",
-    # pandas
-    "pd.DataFrame": "pandas.DataFrame",
-    "column": "pandas.DataFrame.columns",
 }
 
 default_role = "literal"
@@ -191,14 +173,10 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "scipy": ("https://scipy.github.io/devdocs", None),
-    "pandas": ("https://pandas.pydata.org/pandas-docs/dev", None),
-    "networkx": ("https://networkx.org/documentation/latest/", None),
     "pgmpy": ("https://pgmpy.org", None),
     "sklearn": ("https://scikit-learn.org/stable", None),
     "joblib": ("https://joblib.readthedocs.io/en/latest", None),
     "matplotlib": ("https://matplotlib.org/stable", None),
-    "torch": ("https://pytorch.org/docs/master/", None),
-    "pywhy_graphs": ("https://www.pywhy.org/pywhy-graphs/dev/", None),
 }
 intersphinx_timeout = 5
 
