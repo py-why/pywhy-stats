@@ -6,6 +6,8 @@ __pycache__/
 # C extensions
 *.so
 
+.vscode
+
 # Distribution / packaging
 .Python
 build/
@@ -116,9 +118,6 @@ venv.bak/
 
 # Rope project settings
 .ropeproject
-
-# mkdocs documentation
-/site
 
 # mypy
 .mypy_cache/
