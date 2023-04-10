@@ -10,18 +10,16 @@ There are a series of top-level tasks available through Poetry. These can each b
  `poetry run poe <taskname>`
 
 ### Basic Verification
-* **apply_format** - runs the suite of formatting tools applying tools to make code compliant
-* **check_format** - runs the suite of formatting tools checking for compliance
+* **format** - runs the suite of formatting tools applying tools to make code compliant
+* **format_check** - runs the suite of formatting tools checking for compliance
 * **lint** - runs the suite of linting tools
-* **typecheck** - performs static typechecking of the codebase using mypy
+* **type_check** - performs static typechecking of the codebase using mypy
 * **unit_test** - executes fast unit tests
 * **verify** - executes the basic PR verification suite, which includes all the tasks listed above
 
-### Longer Verification
-* **integration_test** - runs slower tests and end-to-end tests are run through this task
-
 ### Docsite
 * **build_docs** - build the API documentation site
+* **build_docs_noplot** - build the API documentation site without running explicitly any of the examples, for faster local checks of any documentation updates.
 
 ## Details
 
@@ -31,7 +29,7 @@ Here we provide some details to understand the development process.
 
 For convenience ``poetry`` provides a command line interface for running all the necessary development commands:
 
-    poetry run poe apply_format
+    poetry run poe format
 
 This will run isort and black on the entire repository. This will auto-format the code to comply with our coding style.
 

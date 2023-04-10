@@ -4,7 +4,7 @@
 Independence
 ============
 
-.. currentmodule:: dodiscover.ci
+.. currentmodule:: pywhy_stats.ci
 
 Probabilistic independence among two random variables is when the realization of one
 variable does not affect the distribution of the other variable. It is a fundamental notion
@@ -151,7 +151,7 @@ conditionally independent dataset.
 Conditional Discrepancy
 =======================
 
-.. currentmodule:: dodiscover.cd
+.. currentmodule:: pywhy_stats.cd
 
 Conditional discrepancy (CD) is another form of conditional invariances that may be exhibited by data. The
 general question is whether or not the following two distributions are equal:

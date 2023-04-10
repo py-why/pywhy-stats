@@ -18,7 +18,7 @@ stage.
 ********************
 Independence Testing
 ********************
-Dodiscover experimentally provides an interface for conditional independence
+Pyhy-Stats experimentally provides an interface for conditional independence
 testing and conditional discrepancy testing (also known as k-sample conditional
 independence testing).
 
@@ -28,16 +28,4 @@ Conditional Independence Testing
 Testing for conditional independence among variables is a core part
 of many data analysis procedures.
 
-Conditional k-sample testing
-============================
-
-Testing for conditional discrepancy among variables is a core part
-of many causal inference procedures, such as constraint-based structure
-learning.
-
-Utilities
-=========
-
-Testing for conditional discrepancy among variables is a core part
-of many causal inference procedures, such as constraint-based structure
-learning.
+TBD...

@@ -6,7 +6,7 @@
 
 # PyWhy-Stats
 
-Pywhy-stats serves as Python library for implementations of (un)conditional independence tests and related statistical functions, which can be utilized in various tasks, such as causal discovery.
+Pywhy-stats serves as Python library for implementations of various statistical methods, such as (un)conditional independence tests, which can be utilized in tasks like causal discovery.
 
 # Documentation
 

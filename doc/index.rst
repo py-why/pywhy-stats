@@ -1,10 +1,8 @@
 **pywhy-stats**
 ===================
 
-pywhy-stats is a Python package for representing causal graphs. For example, Acyclic
-Directed Mixed Graphs (ADMG), also known as causal DAGs and Partial Ancestral Graphs (PAGs).
-We build on top of ``networkx's`` ``MixedEdgeGraph`` such that we maintain all the well-tested and efficient
-algorithms and data structures of ``networkx``.
+Pywhy-stats serves as Python library for implementations of various statistical methods, such
+as (un)conditional independence tests, which can be utilized in tasks like causal discovery.
 
 We encourage you to use the package for your causal inference research and also build on top
 with relevant Pull Requests.
@@ -25,7 +23,7 @@ Contents
 
    installation
    Reference API<api>
-   Usage<use>
+   Simple Examples<use>
    User Guide<user_guide>
    tutorials/index
    whats_new
