@@ -3,8 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+.DS_Store
+.vscode
+
 # C extensions
 *.so
+
+junit-results.xml
 
 # Distribution / packaging
 .Python
