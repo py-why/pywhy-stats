@@ -17,16 +17,13 @@ def test_fisher_z():
     Y = X + X1 + 0.5 * rng.standard_normal((300, 1))
     Z = Y + 0.1 * rng.standard_normal((300, 1))
 
-    # create input for the CI test
-    data = np.hstack((X, X1, Y, Z))
-
-    _, pvalue = fisherz(data, 0, 1)
+    _, pvalue = fisherz(X, X1)
     assert pvalue > 0.05
-    _, pvalue = fisherz(data, 0, 1, {3})
+    _, pvalue = fisherz(X, X1, Z)
     assert pvalue < 0.05
-    _, pvalue = fisherz(data, 0, 1, {2})
+    _, pvalue = fisherz(X, X1, Y)
     assert pvalue < 0.05
-    _, pvalue = fisherz(data, 0, 3)
+    _, pvalue = fisherz(X, Z)
     assert pvalue < 0.05
-    _, pvalue = fisherz(data, 0, 3, {2})
+    _, pvalue = fisherz(X, Z, Y)
     assert pvalue > 0.05

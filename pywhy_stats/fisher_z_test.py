@@ -9,10 +9,9 @@ from .p_value_result import PValueResult
 
 
 def fisherz(
-    data: ArrayLike,
-    x: int,
-    y: int,
-    sep_set: Optional[Set[int]] = None,
+    X: ArrayLike,
+    Y: ArrayLike,
+    condition_on: Optional[ArrayLike] = None,
     correlation_matrix: Optional[ArrayLike] = None,
 ):
     """Perform an independence test using Fisher-Z's test.
@@ -21,15 +20,12 @@ def fisherz(
 
     Parameters
     ----------
-    data : ArrayLike of shape (n_samples, n_variables)
-        The data.
-    x : int
-        The column index of the first node variable.
-    y : int
-        The column index the second node variable.
-    sep_set : set of int
-        The set of column nodes of x and y (as a set()). If `None` (default),
-        will run a marginal independence test.
+    X : ArrayLike of shape (n_samples,)
+        The first node variable.
+    Y : ArrayLike of shape (n_samples,)
+        The second node variable.
+    condition_on : ArrayLike of shape (n_samples, n_variables)
+        If `None` (default), will run a marginal independence test.
     correlation_matrix : np.ndarray of shape (n_variables, n_variables), optional
         ``None`` means without the parameter of correlation matrix and
         the correlation will be computed from the data., by default None
@@ -41,22 +37,22 @@ def fisherz(
     p : float
         The p-value of the test.
     """
-    if correlation_matrix is None:
-        correlation_matrix = np.corrcoef(data.T)
-    if sep_set is None:
-        sep_set = set()
-    sample_size = data.shape[0]
-    var_idx = list({x, y}.union(sep_set))  # type: ignore
+    if condition_on is None:
+        condition_on = np.empty((X.shape[0], 0))
 
     # compute the correlation matrix within the specified data
-    sub_corr_matrix = correlation_matrix[np.ix_(var_idx, var_idx)]
-    inv = np.linalg.inv(sub_corr_matrix)
+    data = np.hstack((X, Y, condition_on))
+    sample_size = data.shape[0]
+    if correlation_matrix is None:
+        correlation_matrix = np.corrcoef(data.T)
+
+    inv = np.linalg.inv(correlation_matrix)
     r = -inv[0, 1] / sqrt(inv[0, 0] * inv[1, 1])
 
     # apply the Fisher Z-transformation
     Z = 0.5 * log((1 + r) / (1 - r))
 
     # compute the test statistic
-    X = sqrt(sample_size - len(sep_set) - 3) * abs(Z)
+    X = sqrt(sample_size - condition_on.shape[1] - 3) * abs(Z)
     p = 2 * (1 - norm.cdf(abs(X)))
     return PValueResult(X, p)
