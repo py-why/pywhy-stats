@@ -1,7 +1,10 @@
 from enum import Enum
-from typing import Optional
+from types import ModuleType
+from typing import Callable, Optional
 
 from numpy.testing import ArrayLike
+
+from pywhy_stats import fisherz
 
 from .p_value_result import PValueResult
 
@@ -10,6 +13,7 @@ class Methods(Enum):
     """Methods for independence testing."""
 
     AUTO = 0
+    FISHERZ = fisherz
 
 
 def independence_test(
@@ -26,11 +30,11 @@ def independence_test(
 
     Parameters
     ----------
-    X : numpy.ndarray, shape (n, d)
+    X : ArrayLike, shape (n_samples, n_features_x)
         Data matrix for X.
-    Y : numpy.ndarray, shape (n, m)
+    Y : ArrayLike, shape (n_samples, n_features_y)
         Data matrix for Y.
-    condition_on : numpy.ndarray or None, shape (n, k), optional
+    condition_on : ArrayLike or None, shape (n_samples, n_features_z), optional
         Data matrix for the conditioning variables. If None is given, an unconditional test
         is performed.
     method : Methods, optional
@@ -44,5 +48,18 @@ def independence_test(
     result : PValueResult
         An instance of the PValueResult data class, containing the p-value, test statistic,
         and any additional information related to the independence test.
+
+    See Also
+    --------
+    fisherz : Fisher's Z test for independence
     """
-    pass
+    method_func: ModuleType
+    if method == Methods.AUTO:
+        method_func = Methods.FISHERZ
+    else:
+        method_func = method
+
+    if condition_on is None:
+        return method_func.ind(X, Y, method, **kwargs)
+    else:
+        return method_func.condind(X, Y, condition_on, method, **kwargs)
