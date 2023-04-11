@@ -28,7 +28,7 @@ Conditional Independence Testing
 Testing for conditional independence among variables is a core part
 of many data analysis procedures.
 
-.. currentmodule:: dodiscover.ci
+.. currentmodule:: pywhy_stats
 .. autosummary::
    :toctree: generated/
 
