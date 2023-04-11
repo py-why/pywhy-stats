@@ -28,4 +28,8 @@ Conditional Independence Testing
 Testing for conditional independence among variables is a core part
 of many data analysis procedures.
 
-TBD...
+.. currentmodule:: dodiscover.ci
+.. autosummary::
+   :toctree: generated/
+
+   fisherz
