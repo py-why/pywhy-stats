@@ -8,7 +8,7 @@ from scipy.stats import norm
 from .p_value_result import PValueResult
 
 
-def ind(X: ArrayLike, Y: ArrayLike, correlation_matrix: Optional[ArrayLike] = None):
+def ind(X: ArrayLike, Y: ArrayLike, correlation_matrix: Optional[ArrayLike] = None) -> PValueResult:
     """Perform an independence test using Fisher-Z's test.
 
     Works on Gaussian random variables. This test is also known as the
@@ -38,7 +38,7 @@ def condind(
     Y: ArrayLike,
     condition_on: ArrayLike,
     correlation_matrix: Optional[ArrayLike] = None,
-):
+) -> PValueResult:
     """Perform an independence test using Fisher-Z's test.
 
     Works on Gaussian random variables. This test is also known as the
@@ -70,7 +70,7 @@ def _fisherz(
     Y: ArrayLike,
     condition_on: Optional[ArrayLike] = None,
     correlation_matrix: Optional[ArrayLike] = None,
-):
+) -> PValueResult:
     """Perform an independence test using Fisher-Z's test.
 
     Works on Gaussian random variables. This test is also known as the
@@ -111,6 +111,6 @@ def _fisherz(
     Z = 0.5 * log((1 + r) / (1 - r))
 
     # compute the test statistic
-    X = sqrt(sample_size - condition_on.shape[1] - 3) * abs(Z)
-    p = 2 * (1 - norm.cdf(abs(X)))
-    return PValueResult(X, p)
+    statistic = sqrt(sample_size - condition_on.shape[1] - 3) * abs(Z)
+    p = 2 * (1 - norm.cdf(abs(statistic)))
+    return PValueResult(statistic, p)

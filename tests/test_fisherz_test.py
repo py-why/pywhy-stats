@@ -17,10 +17,10 @@ def test_fisherz_marg_ind():
     Y = X + X1 + 0.5 * rng.standard_normal((300, 1))
     Z = Y + 0.1 * rng.standard_normal((300, 1))
 
-    _, pvalue = fisherz.ind(X, X1)
-    assert pvalue > 0.05
-    _, pvalue = fisherz.ind(X, Z)
-    assert pvalue < 0.05
+    res = fisherz.ind(X, X1)
+    assert res.pvalue > 0.05
+    res = fisherz.ind(X, Z)
+    assert res.pvalue < 0.05
 
 
 @flaky.flaky(max_runs=3, min_passes=1)
@@ -36,9 +36,9 @@ def test_fisherz_cond_ind():
     Y = X + X1 + 0.5 * rng.standard_normal((300, 1))
     Z = Y + 0.1 * rng.standard_normal((300, 1))
 
-    _, pvalue = fisherz.condind(X, X1, Z)
-    assert pvalue < 0.05
-    _, pvalue = fisherz.condind(X, X1, Y)
-    assert pvalue < 0.05
-    _, pvalue = fisherz.condind(X, Z, Y)
-    assert pvalue > 0.05
+    res = fisherz.condind(X, X1, Z)
+    assert res.pvalue < 0.05
+    res = fisherz.condind(X, X1, Y)
+    assert res.pvalue < 0.05
+    res = fisherz.condind(X, Z, Y)
+    assert res.pvalue > 0.05
