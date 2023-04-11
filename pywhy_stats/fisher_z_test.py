@@ -1,5 +1,5 @@
 from math import log, sqrt
-from typing import Optional, Set, Tuple
+from typing import Optional
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -16,7 +16,8 @@ def fisherz(
 ):
     """Perform an independence test using Fisher-Z's test.
 
-    Works on Gaussian random variables.
+    Works on Gaussian random variables. This test is also known as the
+    partial correlation test.
 
     Parameters
     ----------
@@ -28,7 +29,7 @@ def fisherz(
         If `None` (default), will run a marginal independence test.
     correlation_matrix : np.ndarray of shape (n_variables, n_variables), optional
         ``None`` means without the parameter of correlation matrix and
-        the correlation will be computed from the data., by default None
+        the correlation will be computed from the data., by default None.
 
     Returns
     -------
