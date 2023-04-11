@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, Union
 
-from numpy.testing import ArrayLike
+from numpy.typing import ArrayLike
 
 
 @dataclass

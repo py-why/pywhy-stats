@@ -1,8 +1,8 @@
 from enum import Enum
 from types import ModuleType
-from typing import Callable, Optional
+from typing import Optional
 
-from numpy.testing import ArrayLike
+from numpy.typing import ArrayLike
 
 from pywhy_stats import fisherz
 
