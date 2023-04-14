@@ -1,6 +1,6 @@
 """Independence test using Fisher-Z's test.
 
-This test is also known as the partial correlation independence test. 
+This test is also known as the partial correlation independence test.
 It works on Gaussian random variables.
 
 Parameters
