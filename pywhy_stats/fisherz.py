@@ -136,4 +136,4 @@ def _fisherz(
     # compute the test statistic
     statistic = sqrt(sample_size - condition_on.shape[1] - 3) * abs(Z)
     p = 2 * (1 - norm.cdf(abs(statistic)))
-    return PValueResult(statistic, p)
+    return PValueResult(statistic=statistic, pvalue=p)
