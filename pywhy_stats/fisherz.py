@@ -1,3 +1,26 @@
+"""Independence test using Fisher-Z's test.
+
+This test is also known as the partial correlation independence test. 
+It works on Gaussian random variables.
+
+Parameters
+----------
+X : ArrayLike of shape (n_samples,)
+    The first node variable.
+Y : ArrayLike of shape (n_samples,)
+    The second node variable.
+condition_on : ArrayLike of shape (n_samples, n_variables)
+    If `None` (default), will run a marginal independence test.
+correlation_matrix : np.ndarray of shape (n_variables, n_variables), optional
+    ``None`` means without the parameter of correlation matrix and
+    the correlation will be computed from the data., by default None.
+
+Notes
+-----
+When the data is not Gaussian, this test is not valid. In this case, we recommend
+using the Kernel independence test at <insert link>.
+"""
+
 from math import log, sqrt
 from typing import Optional
 

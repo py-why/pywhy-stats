@@ -1,7 +1,9 @@
 from enum import Enum
 from types import ModuleType
 from typing import Optional
+from warnings import warn
 
+import scipy.stats
 from numpy.typing import ArrayLike
 
 from pywhy_stats import fisherz
@@ -58,6 +60,18 @@ def independence_test(
         method_func = Methods.FISHERZ
     else:
         method_func = method
+
+    if method_func == Methods.FISHERZ:
+        if condition_on is None:
+            data = [X, Y]
+        else:
+            data = [X, Y, condition_on]
+        for _data in data:
+            _, pval = scipy.stats.normaltest(_data)
+
+            # XXX: we should add pinguoin as an optional dependency for doing multi-comp stuff
+            if pval < 0.05:
+                warn("Your data is not all normal but you're trying to use partial correlation")
 
     if condition_on is None:
         return method_func.ind(X, Y, method, **kwargs)
