@@ -8,7 +8,7 @@ from numpy.typing import ArrayLike
 
 from pywhy_stats import fisherz
 
-from .p_value_result import PValueResult
+from .pvalue_result import PValueResult
 
 
 class Methods(Enum):

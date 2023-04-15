@@ -3,11 +3,13 @@
 # This file only contains a selection of the most common options. For a full
 # list see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
+from __future__ import annotations
 
 import os
 import sys
 from datetime import datetime
 
+import numpy.typing
 import sphinx_gallery  # noqa: F401
 from sphinx_gallery.sorting import ExampleTitleSortKey
 
@@ -70,7 +72,7 @@ copybutton_prompt_is_regexp = True
 autosummary_generate = True
 
 autodoc_default_options = {"inherited-members": None}
-autodoc_typehints = "signature"
+autodoc_typehints = "none"
 
 # -- numpydoc
 # Below is needed to prevent errors
@@ -109,9 +111,6 @@ numpydoc_xref_ignore = {
     "dictionary",
     "no",
     "attributes",
-    # numpy
-    "ScalarType",
-    "ArrayLike",
     # shapes
     "n_times",
     "obj",
@@ -123,7 +122,6 @@ numpydoc_xref_ignore = {
     "n_samples",
     "n_variables",
     "n_classes",
-    "NDArray",
     "n_samples_X",
     "n_samples_Y",
     "n_features_x",
@@ -141,11 +139,19 @@ numpydoc_xref_aliases = {
     "pgmpy.models.BayesianNetwork": "pgmpy.models.BayesianNetwork",
     # joblib
     "joblib.Parallel": "joblib.Parallel",
+    "PValueResult": "pywhy_stats.pvalue_result.PValueResult",
     # numpy
     "NDArray": "numpy.ndarray",
+    # "ArrayLike": "numpy.typing.ArrayLike",
     "ArrayLike": ":term:`array_like`",
 }
 
+autodoc_typehints_format = "short"
+# from __future__ import annotations
+# autodoc_type_aliases = {
+#     'Iterable': 'Iterable',
+#     'ArrayLike': 'ArrayLike'
+# }
 default_role = "literal"
 
 # Tell myst-parser to assign header anchors for h1-h3.

@@ -3,22 +3,15 @@
 This test is also known as the partial correlation independence test.
 It works on Gaussian random variables.
 
-Parameters
-----------
-X : ArrayLike of shape (n_samples,)
-    The first node variable.
-Y : ArrayLike of shape (n_samples,)
-    The second node variable.
-condition_on : ArrayLike of shape (n_samples, n_variables)
-    If `None` (default), will run a marginal independence test.
-correlation_matrix : np.ndarray of shape (n_variables, n_variables), optional
-    ``None`` means without the parameter of correlation matrix and
-    the correlation will be computed from the data., by default None.
-
-Notes
------
 When the data is not Gaussian, this test is not valid. In this case, we recommend
 using the Kernel independence test at <insert link>.
+
+Examples
+--------
+>>> import pywhy_stats as ps
+>>> res = ps.fisherz.ind([1, 2, 3], [4, 5, 6])
+>>> print(res.pvalue)
+>>> 1.0
 """
 
 from math import log, sqrt
@@ -28,7 +21,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 from scipy.stats import norm
 
-from .p_value_result import PValueResult
+from .pvalue_result import PValueResult
 
 
 def ind(X: ArrayLike, Y: ArrayLike, correlation_matrix: Optional[ArrayLike] = None) -> PValueResult:
@@ -95,9 +88,6 @@ def _fisherz(
     correlation_matrix: Optional[ArrayLike] = None,
 ) -> PValueResult:
     """Perform an independence test using Fisher-Z's test.
-
-    Works on Gaussian random variables. This test is also known as the
-    partial correlation test.
 
     Parameters
     ----------
