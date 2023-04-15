@@ -15,7 +15,10 @@ class Methods(Enum):
     """Methods for independence testing."""
 
     AUTO = 0
+    """Choose an automatic method based on the data."""
+
     FISHERZ = fisherz
+    """:py:mod:`~pywhy_stats.fisherz`: Fisher's Z test for independence"""
 
 
 def independence_test(

@@ -41,6 +41,7 @@ then typically you will get less statistical power.
    independence_test
    Methods
 
+
 All independence tests return a ``PValueResult`` object, which
 contains the p-value and the test statistic and optionally additional information.
 

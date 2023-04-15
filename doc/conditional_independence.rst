@@ -42,10 +42,10 @@ with certain assumptions on the underlying data distribution.
 
 Conditional Mutual Information
 ------------------------------
-Conditional mutual information (CMI) is a general formulation of CI, where CMI is defined as
-:math::
+Conditional mutual information (CMI) is a general formulation of CI, where CMI is defined as:
     
-    \\int log \frac{p(x, y | z)}{p(x | z) p(y | z)}
+  .. math::
+    \int log \frac{p(x, y | z)}{p(x | z) p(y | z)}
 
 As we can see, CMI is equal to 0, if and only if :math:`p(x, y | z) = p(x | z) p(y | z)`, which
 is exactly the definition of CI. CMI is completely non-parametric and thus requires no assumptions
@@ -80,8 +80,8 @@ various proposals in the literature for estimating CMI, which we summarize here:
   estimating :math:`P(y|x)` and :math:`P(y|x,z)`, which can be used as plug-in estimates
   to the equation for CMI.
 
-`pywhy_stats.fisherz` Partial (Pearson) Correlation
----------------------------------------------------
+:mod:`pywhy_stats.fisherz` Partial (Pearson) Correlation
+--------------------------------------------------------
 Partial correlation based on the Pearson correlation is equivalent to CMI in the setting
 of normally distributed data. Computing partial correlation is fast and efficient and
 thus attractive to use. However, this **relies on the assumption that the variables are Gaussiany**,
@@ -170,3 +170,7 @@ that computes a test statistic from estimated Von-Neumann divergences of the dat
 weighted permutation testing based on the estimated propensity scores to generate samples from the null distribution
 :footcite:`Yu2020Bregman`, which are then used to estimate a pvalue.
 
+==========
+References
+==========
+.. footbibliography::

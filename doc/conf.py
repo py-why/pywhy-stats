@@ -72,7 +72,11 @@ copybutton_prompt_is_regexp = True
 autosummary_generate = True
 
 autodoc_default_options = {"inherited-members": None}
+
+# whether to expand type hints in function/class signatures
 autodoc_typehints = "none"
+
+add_module_names = False
 
 # -- numpydoc
 # Below is needed to prevent errors
@@ -144,6 +148,7 @@ numpydoc_xref_aliases = {
     "NDArray": "numpy.ndarray",
     # "ArrayLike": "numpy.typing.ArrayLike",
     "ArrayLike": ":term:`array_like`",
+    "fisherz": "pywhy_stats.fisherz",
 }
 
 autodoc_typehints_format = "short"
