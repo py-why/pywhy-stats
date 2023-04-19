@@ -87,7 +87,7 @@ sphinx-copybutton = { version = "^0.5.0" }
 sphinx-gallery = { version = "^0.11.0" }
 sphinx_rtd_theme = { version = "^1.0.0" }
 graphviz = { version = "^0.20.1" }
-ipython = { version = "^7.4.0" }
+ipython = { version = "^8.10.0" }
 nbsphinx = { version = "^0.8" }
 bnlearn = { version = "^0.7.12" }
 dowhy = { version = "^0.8" }
