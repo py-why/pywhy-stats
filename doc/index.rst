@@ -25,7 +25,6 @@ Contents
    Reference API<api>
    Simple Examples<use>
    User Guide<user_guide>
-   tutorials/index
    whats_new
 
 .. toctree::
@@ -33,7 +32,7 @@ Contents
    :caption: Development
 
    License <https://raw.githubusercontent.com/py-why/pywhy-stats/main/LICENSE>
-   Contributing <https://github.com/py-why/pywhy-stats/main/CONTRIBUTING.md>
+   Contributing <https://github.com/py-why/pywhy-stats/blob/main/CONTRIBUTING.md>
 
 Team
 ----

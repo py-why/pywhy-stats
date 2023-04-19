@@ -26,6 +26,7 @@ Version 0.1
 Changelog
 ---------
 
+- |Feature| Implement partial correlation test :func:`pywhy_stats.fisherz`, by `Adam Li`_ (:pr:`7`)
 
 
 Code and Documentation Contributors

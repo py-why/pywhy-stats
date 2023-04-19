@@ -4,7 +4,7 @@
 Independence
 ============
 
-.. currentmodule:: pywhy_stats.ci
+.. currentmodule:: pywhy_stats
 
 Probabilistic independence among two random variables is when the realization of one
 variable does not affect the distribution of the other variable. It is a fundamental notion
@@ -42,10 +42,10 @@ with certain assumptions on the underlying data distribution.
 
 Conditional Mutual Information
 ------------------------------
-Conditional mutual information (CMI) is a general formulation of CI, where CMI is defined as
-:math::
+Conditional mutual information (CMI) is a general formulation of CI, where CMI is defined as:
     
-    \\int log \frac{p(x, y | z)}{p(x | z) p(y | z)}
+  .. math::
+    \int log \frac{p(x, y | z)}{p(x | z) p(y | z)}
 
 As we can see, CMI is equal to 0, if and only if :math:`p(x, y | z) = p(x | z) p(y | z)`, which
 is exactly the definition of CI. CMI is completely non-parametric and thus requires no assumptions
@@ -70,24 +70,18 @@ various proposals in the literature for estimating CMI, which we summarize here:
   one can use variants of Random Forests to generate adaptive nearest-neighbor estimates in high-dimensions
   or on manifolds, such that the KSG estimator is still powerful.
 
-.. autosummary::
-   :toctree: generated/
-
-    CMITest
+<TBD>
 
 - The Classifier Divergence approach estimates CMI using a classification model.
 
-.. autosummary::
-   :toctree: generated/
-
-    ClassifierCMITest
+<TBD>
 
 - Direct posterior estimates can be implemented with a classification model by directly
   estimating :math:`P(y|x)` and :math:`P(y|x,z)`, which can be used as plug-in estimates
   to the equation for CMI.
 
-Partial (Pearson) Correlation
------------------------------
+:mod:`pywhy_stats.fisherz` Partial (Pearson) Correlation
+--------------------------------------------------------
 Partial correlation based on the Pearson correlation is equivalent to CMI in the setting
 of normally distributed data. Computing partial correlation is fast and efficient and
 thus attractive to use. However, this **relies on the assumption that the variables are Gaussiany**,
@@ -96,7 +90,7 @@ which may be unrealistic in certain datasets.
 .. autosummary::
    :toctree: generated/
 
-    FisherZCITest
+    fisherz
 
 Discrete, Categorical and Binary Data
 -------------------------------------
@@ -105,10 +99,6 @@ class of tests will construct a contingency table based on the number of levels 
 each discrete variable. An exponential amount of data is needed for increasing levels
 for a discrete variable.
 
-.. autosummary::
-   :toctree: generated/
-
-    GSquareCITest
 
 Kernel-Approaches
 -----------------
@@ -118,10 +108,6 @@ that computes a test statistic from kernels of the data and uses permutation tes
 generate samples from the null distribution :footcite:`Zhang2011`, which are then used to
 estimate a pvalue.
 
-.. autosummary::
-   :toctree: generated/
-
-    KernelCITest
 
 Classifier-based Approaches
 ---------------------------
@@ -142,16 +128,11 @@ helps maintain dependence between (X, Z) and (Y, Z) (if it exists), but generate
 conditionally independent dataset.
 
 
-.. autosummary::
-   :toctree: generated/
-
-    ClassifierCITest
-
 =======================
 Conditional Discrepancy
 =======================
 
-.. currentmodule:: pywhy_stats.cd
+.. currentmodule:: pywhy_stats
 
 Conditional discrepancy (CD) is another form of conditional invariances that may be exhibited by data. The
 general question is whether or not the following two distributions are equal:
@@ -181,10 +162,6 @@ that computes a test statistic from kernels of the data and uses a weighted perm
 based on the estimated propensity scores to generate samples from the null distribution
 :footcite:`Park2021conditional`, which are then used to estimate a pvalue.
 
-.. autosummary::
-   :toctree: generated/
-
-    KernelCDTest
 
 Bregman-Divergences
 -------------------
@@ -193,7 +170,7 @@ that computes a test statistic from estimated Von-Neumann divergences of the dat
 weighted permutation testing based on the estimated propensity scores to generate samples from the null distribution
 :footcite:`Yu2020Bregman`, which are then used to estimate a pvalue.
 
-.. autosummary::
-   :toctree: generated/
-
-    BregmanCDTest
+==========
+References
+==========
+.. footbibliography::

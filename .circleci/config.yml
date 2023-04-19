@@ -63,7 +63,7 @@ jobs:
             sudo apt install libspatialindex-dev xdg-utils
       - python/install-packages:
           pkg-manager: poetry
-          args: "-E graph_func -E viz --with docs"
+          args: "--with docs"
           cache-version: "v1" # change to clear cache
       - run:
           name: Check poetry package versions
@@ -145,12 +145,12 @@ jobs:
       - run:
           name: make linkcheck
           command: |
-            make -C doc linkcheck
+            poetry run make -C doc linkcheck
       - run:
           name: make linkcheck-grep
           when: always
           command: |
-            make -C doc linkcheck-grep
+            poetry run make -C doc linkcheck-grep
       - store_artifacts:
           path: doc/_build/linkcheck
           destination: linkcheck
