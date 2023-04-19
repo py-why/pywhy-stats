@@ -41,9 +41,9 @@ def ind(X: ArrayLike, Y: ArrayLike, correlation_matrix: Optional[ArrayLike] = No
 
     Returns
     -------
-    X : float
+    statistic : float
         The test statistic.
-    p : float
+    pvalue : float
         The p-value of the test.
     """
     return _fisherz(X, Y, condition_on=None, correlation_matrix=correlation_matrix)
@@ -55,10 +55,7 @@ def condind(
     condition_on: ArrayLike,
     correlation_matrix: Optional[ArrayLike] = None,
 ) -> PValueResult:
-    """Perform an independence test using Fisher-Z's test.
-
-    Works on Gaussian random variables. This test is also known as the
-    correlation test.
+    """Perform a conditional independence test using Fisher-Z's test.
 
     Parameters
     ----------
@@ -73,9 +70,9 @@ def condind(
 
     Returns
     -------
-    X : float
+    statistic : float
         The test statistic.
-    p : float
+    pvalue : float
         The p-value of the test.
     """
     return _fisherz(X, Y, condition_on=condition_on, correlation_matrix=correlation_matrix)
@@ -103,9 +100,9 @@ def _fisherz(
 
     Returns
     -------
-    X : float
+    statistic : float
         The test statistic.
-    p : float
+    pvalue : float
         The p-value of the test.
     """
     if condition_on is None:

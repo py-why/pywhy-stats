@@ -43,8 +43,8 @@ def independence_test(
         Data matrix for the conditioning variables. If None is given, an unconditional test
         is performed.
     method : Methods, optional
-        Independence test method from the Methods enum. Default is Methods.AUTO, which will
-        automatically select an appropriate method.
+        Independence test method from the :class:`pywhy_stats.Methods` enum. Default is
+        `Methods.AUTO`, which will automatically select an appropriate method.
     **kwargs : dict or None, optional
         Additional keyword arguments to be passed to the specific test method
 
@@ -58,13 +58,13 @@ def independence_test(
     --------
     fisherz : Fisher's Z test for independence
     """
-    method_func: ModuleType
+    method_module: ModuleType
     if method == Methods.AUTO:
-        method_func = Methods.FISHERZ
+        method_module = Methods.FISHERZ
     else:
-        method_func = method
+        method_module = method
 
-    if method_func == Methods.FISHERZ:
+    if method_module == Methods.FISHERZ:
         if condition_on is None:
             data = [X, Y]
         else:
@@ -74,9 +74,13 @@ def independence_test(
 
             # XXX: we should add pinguoin as an optional dependency for doing multi-comp stuff
             if pval < 0.05:
-                warn("Your data is not all normal but you're trying to use partial correlation")
+                warn(
+                    "The provided data does not seem to be Gaussian, but the Fisher-Z test "
+                    "assumes that the data follows a Gaussian distribution. The result should "
+                    "be interpreted carefully or consider a different independence test method."
+                )
 
     if condition_on is None:
-        return method_func.ind(X, Y, method, **kwargs)
+        return method_module.ind(X, Y, method, **kwargs)
     else:
-        return method_func.condind(X, Y, condition_on, method, **kwargs)
+        return method_module.condind(X, Y, condition_on, method, **kwargs)
