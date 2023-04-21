@@ -63,3 +63,12 @@ of many data analysis procedures.
 
    fisherz
 
+Monte Carlo Methods For Independence Testing
+============================================
+
+.. currentmodule:: pywhy_stats.monte_carlo
+.. autosummary::
+    :toctree: generated/
+
+    generate_knn_in_subspace
+    restricted_nbr_permutation
