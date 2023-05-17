@@ -6,8 +6,7 @@ from warnings import warn
 import scipy.stats
 from numpy.typing import ArrayLike
 
-from pywhy_stats import fisherz
-
+from pywhy_stats import fisherz, kci
 from .pvalue_result import PValueResult
 
 
@@ -20,13 +19,16 @@ class Methods(Enum):
     FISHERZ = fisherz
     """:py:mod:`~pywhy_stats.fisherz`: Fisher's Z test for independence"""
 
+    KCI = kci
+    """:py:mod:`~pywhy_stats.kci`: Conditional kernel independence test"""
+
 
 def independence_test(
-    X: ArrayLike,
-    Y: ArrayLike,
-    condition_on: Optional[ArrayLike] = None,
-    method=Methods.AUTO,
-    **kwargs,
+        X: ArrayLike,
+        Y: ArrayLike,
+        condition_on: Optional[ArrayLike] = None,
+        method=Methods.AUTO,
+        **kwargs,
 ) -> PValueResult:
     """Perform a (conditional) independence test to determine whether X and Y are independent.
 
@@ -60,7 +62,7 @@ def independence_test(
     """
     method_module: ModuleType
     if method == Methods.AUTO:
-        method_module = Methods.FISHERZ
+        method_module = Methods.KCI
     else:
         method_module = method
 
