@@ -5,7 +5,7 @@ name = "pywhy-stats"
 # any changes to this should not be checked in
 #
 version = "0.0.0"
-description = "(Conditional) Independence Testing for Python"
+description = "Statistical methods for Python"
 authors = ["PyWhy Community <adam.li@columbia.edu>, <bloebp@amazon.com>"]
 license = "MIT"
 documentation = "https://py-why.github.io/pywhy-stats"
@@ -42,6 +42,7 @@ exclude = ['*tests', '*testdata']
 python = ">=3.8,<3.11"
 numpy = "^1.23.0"
 scipy = "^1.9.0"
+scikit-learn = ">= 1.0"
 
 [tool.poetry.group.style]
 optional = true

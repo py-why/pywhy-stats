@@ -102,11 +102,23 @@ for a discrete variable.
 
 Kernel-Approaches
 -----------------
-Kernel-based tests are attractive since they are semi-parametric and use kernel-based ideas
-that have been shown to be robust in the machine-learning field. The Kernel CI test is a test
-that computes a test statistic from kernels of the data and uses permutation testing to
-generate samples from the null distribution :footcite:`Zhang2011`, which are then used to
-estimate a pvalue.
+Kernel independence tests are statistical methods used to determine if two random variables are independent or
+conditionally independent. One such test is the Hilbert-Schmidt Independence Criterion (HSIC), which examines the
+independence between two random variables, X and Y. HSIC employs kernel methods and, more specifically, it computes
+the Hilbert-Schmidt norm of the covariance operator between the Reproducing Kernel Hilbert Space (RKHS) mappings of X
+and Y. While a large Hilbert-Schmidt norm may suggest dependence between X and Y, it's important to evaluate this value
+in the context of a null distribution, often derived from a permutation test, to make statistically robust conclusions.
+Essentially, HSIC measures how correlated the higher-dimensional representations (in RKHS) of the data are.
+The population HSIC is zero when the variables are independent.
+
+For conditional independence, where one seeks to test if X and Y are independent given another variable Z, Kernel
+Conditional Independence Tests (KCIT) are used. KCIT extends the concept of HSIC to conditional independence testing by
+computing the dependency between X and Y conditioned on Z, which can involve estimating complex mappings. While there
+exist some approximation techniques, KCIT is generally computationally intensive, especially for high-dimensional data
+or when Z is multivariate.
+
+Kernel-based tests are attractive for many applications, since they are semi-parametric and use kernel-based ideas
+that have been shown to be robust in the machine-learning field. For more information, see :footcite:`Zhang2011`.
 
 
 Classifier-based Approaches
