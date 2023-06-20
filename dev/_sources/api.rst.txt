@@ -62,4 +62,5 @@ of many data analysis procedures.
    :toctree: generated/
 
    fisherz
+   kci
 
