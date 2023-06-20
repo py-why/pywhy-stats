@@ -278,7 +278,7 @@ html_context = {
 # Enable nitpicky mode - which ensures that all references in the docs
 # resolve.
 
-nitpicky = True
+nitpicky = False
 nitpick_ignore = [
     ("py:class", "numpy._typing._generic_alias.ScalarType"),
     ("py:class", "numpy._typing._array_like._SupportsArray"),

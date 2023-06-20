@@ -5,17 +5,19 @@ from sklearn.metrics import pairwise_distances
 
 
 def delta_kernel(X: np.ndarray) -> np.ndarray:
-    """
-    Delta kernel for categorical values. This is, the similarity is 1 if the values are equal and 0 otherwise.
+    """Delta kernel for categorical values.
+
+    This is, the similarity is 1 if the values are equal and 0 otherwise.
 
     Parameters
     ----------
-    X: numpy array of shape (n_samples, n_columns)
+    X : ArrayLike of shape (n_samples, n_columns)
+        Input data.
 
     Returns
     -------
-    result: numpy array of shape (n_samples, n_samples)
-            The resulting kernel matrix after applying the delta kernel.
+    result : ArrayLike of shape (n_samples, n_samples)
+        The resulting kernel matrix after applying the delta kernel.
     """
     if X.ndim == 1:
         X = X.reshape(-1, 1)
@@ -42,8 +44,8 @@ def estimate_squared_sigma_rbf(
     method : str, optional, {"median", "silverman"}
         Method to use, by default "median".
     distance_metric : str
-        Only relevant for the "median" method. The distance metric to compute distances among samples within
-        each data matrix, by default 'euclidean'. Can be any valid string
+        Only relevant for the "median" method. The distance metric to compute distances
+        among samples within each data matrix, by default 'euclidean'. Can be any valid string
         as defined in :func:`sklearn.metrics.pairwise_distances`.
 
     Returns
@@ -55,8 +57,8 @@ def estimate_squared_sigma_rbf(
         if X.ndim > 1:
             if X.shape[1] > 1:
                 raise ValueError(
-                    "The Silverman method to estimate the kernel bandwidth is currently only supported for "
-                    "one dimensional data!"
+                    "The Silverman method to estimate the kernel bandwidth is currently only "
+                    "supported for one dimensional data!"
                 )
             else:
                 X = X.reshape(-1)

@@ -3,8 +3,6 @@ from typing import Callable, Optional, Tuple
 
 import numpy as np
 from numpy._typing import ArrayLike
-from numpy.linalg import eigh
-from numpy.random import permutation
 from scipy import stats
 from sklearn.metrics.pairwise import rbf_kernel
 
@@ -25,33 +23,37 @@ def ind(
     """
     Test whether X and Y are unconditionally independent using the Kernel Independence Tests.
 
-    For testing independence on continuous data, we leverage kernels :footcite:`Zhang2011` that are computationally
-    efficient.
+    For testing independence on continuous data, we leverage kernels :footcite:`Zhang2011` that
+    are computationally efficient.
 
     Parameters
     ----------
-    X : ArrayLike of shape (n_samples, n_dimensions1)
+    X : ArrayLike of shape (n_samples, n_features_x)
         Data for variable X, which can be multidimensional.
-    Y : ArrayLike of shape (n_samples, n_dimensions2)
+    Y : ArrayLike of shape (n_samples, n_features_y)
         Data for variable Y, which can be multidimensional.
-    kernel_X : Callable expecting a numpy array as input and returns another numpy array
-        The kernel function for X. By default, the RBF kernel is used for continuous and the delta kernel for
-        categorical data.
-    kernel_Y : Callable expecting a numpy array as input and returns another numpy array
-        The kernel function for Y. By default, the RBF kernel is used for continuous and the delta kernel for
-        categorical data.
+    kernel_X : Callable[[ArrayLike], ArrayLike]
+        The kernel function for X. By default, the RBF kernel is used for continuous and the delta
+        kernel for categorical data.
+    kernel_Y : Callable[[ArrayLike], ArrayLike]
+        The kernel function for Y. By default, the RBF kernel is used for continuous and the delta
+        kernel for categorical data.
     approx : bool
         Whether to use the Gamma distribution approximation for the pvalue, by default True.
     null_sample_size : int
-        The number of samples to generate for the bootstrap distribution to approximate the pvalue, by default 1000.
+        The number of samples to generate for the bootstrap distribution to approximate the pvalue,
+        by default 1000.
     threshold : float
-        The threshold set on the value of eigenvalues, by default 1e-5. Used to regularize the method.
+        The threshold set on the value of eigenvalues, by default 1e-5. Used to regularize the
+        method.
     normalize_data : bool
         Whether the data should be standardized to unit variance, by default True.
 
     Notes
     -----
-    Any callable can be given to create the kernel matrix. For instance, to use a particular kernel from sklearn:
+    Any callable can be given to create the kernel matrix. For instance, to use a particular kernel
+    from sklearn::
+
         kernel_X = func:`sklearn.metrics.pairwise.pairwise_kernels.polynomial`
 
     References
@@ -77,43 +79,48 @@ def condind(
     normalize_data: bool = True,
 ) -> PValueResult:
     """
-    Test whether X and Y given Z are conditionally independent using the Kernel Independence Tests.
+    Test whether X and Y given Z are conditionally independent using Kernel Independence Tests.
 
-    For testing conditional independence on continuous data, we leverage kernels :footcite:`Zhang2011` that are
-    computationally efficient.
+    For testing conditional independence on continuous data, we leverage kernels
+    :footcite:`Zhang2011` that are computationally efficient.
 
-    Note that the conditional kernel test is significantly slower than the unconditional kernel test due to additional
-    computational complexity by incorporating the conditioning variables.
+    Note that the conditional kernel test is significantly slower than the unconditional
+    kernel test due to additional computational complexity by incorporating the
+    conditioning variables.
 
     Parameters
     ----------
-    X : ArrayLike of shape (n_samples, n_dimensions1)
+    X : ArrayLike of shape (n_samples, n_features_x)
         Data for variable X, which can be multidimensional.
-    Y : ArrayLike of shape (n_samples, n_dimensions2)
+    Y : ArrayLike of shape (n_samples, n_features_y)
         Data for variable Y, which can be multidimensional.
-    Z : ArrayLike of shape (n_samples, n_dimensions3)
+    Z : ArrayLike of shape (n_samples, n_features_z)
         Data for variable Z, which can be multidimensional.
-    kernel_X : Callable expecting a numpy array as input and returns another numpy array
-        The kernel function for X. By default, the RBF kernel is used for continuous and the delta kernel for
-        categorical data.
-    kernel_Y : Callable expecting a numpy array as input and returns another numpy array
-        The kernel function for Y. By default, the RBF kernel is used for continuous and the delta kernel for
-        categorical data.
-    kernel_Z : Callable expecting a numpy array as input and returns another numpy array
-        The kernel function for Z. By default, the RBF kernel is used for continuous and the delta kernel for
-        categorical data.
+    kernel_X : Callable[[ArrayLike], ArrayLike]
+        The kernel function for X. By default, the RBF kernel is used for continuous and the delta
+        kernel for categorical data.
+    kernel_Y : Callable[[ArrayLike], ArrayLike]
+        The kernel function for Y. By default, the RBF kernel is used for continuous and the delta
+        kernel for categorical data.
+    kernel_Z : Callable[[ArrayLike], ArrayLike]
+        The kernel function for Z. By default, the RBF kernel is used for continuous and the delta
+        kernel for categorical data.
     approx : bool
         Whether to use the Gamma distribution approximation for the pvalue, by default True.
     null_sample_size : int
-        The number of samples to generate for the bootstrap distribution to approximate the pvalue, by default 1000.
+        The number of samples to generate for the bootstrap distribution to approximate the pvalue,
+        by default 1000.
     threshold : float
-        The threshold set on the value of eigenvalues, by default 1e-5. Used to regularize the method.
+        The threshold set on the value of eigenvalues, by default 1e-5. Used to regularize the
+        method.
     normalize_data : bool
         Whether the data should be standardized to unit variance, by default True.
 
     Notes
     -----
-    Any callable can be given to create the kernel matrix. For instance, to use a particular kernel from sklearn:
+    Any callable can be given to create the kernel matrix. For instance, to use a particular kernel
+    from sklearn::
+
         kernel_X = func:`sklearn.metrics.pairwise.pairwise_kernels.polynomial`
 
     References
@@ -164,9 +171,9 @@ def _kernel_test(
     Ky = kernel_Y(Y)
     if Z is not None:
         Kz = kernel_Z(Z)
-        Kx = (
-            Kx * Kz
-        )  # Equivalent to concatenating them beforehand. However, here we can then have individual kernels.
+        # Equivalent to concatenating them beforehand.
+        # However, here we can then have individual kernels.
+        Kx = Kx * Kz
         Kz = _fast_centering(Kz)
 
     Kx = _fast_centering(Kx)
@@ -356,8 +363,8 @@ def _fast_centering(k: np.ndarray) -> np.ndarray:
     Compute centered kernel matrix in time O(n^2).
 
     The centered kernel matrix is defined as K_c = H @ K @ H, with
-    H = identity - 1/ n * ones(n,n). Computing H @ K @ H via matrix multiplication scales with n^3. The
-    implementation circumvents this and runs in time n^2.
+    H = identity - 1/ n * ones(n,n). Computing H @ K @ H via matrix multiplication scales with n^3.
+    The implementation circumvents this and runs in time n^2.
 
     Originally authored by Jonas Kuebler
     """
