@@ -8,8 +8,10 @@ from sklearn.metrics.pairwise import rbf_kernel
 
 from pywhy_stats.kernels import delta_kernel, estimate_squared_sigma_rbf
 from pywhy_stats.pvalue_result import PValueResult
+from pywhy_stats.utils import preserve_random_state
 
 
+@preserve_random_state
 def ind(
     X: np.ndarray,
     Y: np.ndarray,
@@ -19,6 +21,7 @@ def ind(
     null_sample_size: int = 1000,
     threshold: float = 1e-5,
     normalize_data: bool = True,
+    random_seed: Optional[int] = None,
 ) -> PValueResult:
     """
     Test whether X and Y are unconditionally independent using the Kernel Independence Tests.
@@ -33,11 +36,11 @@ def ind(
     Y : ArrayLike of shape (n_samples, n_features_y)
         Data for variable Y, which can be multidimensional.
     kernel_X : Callable[[ArrayLike], ArrayLike]
-        The kernel function for X. By default, the RBF kernel is used for continuous and the delta
-        kernel for categorical data.
+        The kernel function for X. By default, the RBF kernel is used for numeric and the delta
+        kernel for categorical data. Note that we currently only consider string values as categorical data.
     kernel_Y : Callable[[ArrayLike], ArrayLike]
         The kernel function for Y. By default, the RBF kernel is used for continuous and the delta
-        kernel for categorical data.
+        kernel for categorical data. Note that we currently only consider string values as categorical data.
     approx : bool
         Whether to use the Gamma distribution approximation for the pvalue, by default True.
     null_sample_size : int
@@ -48,6 +51,8 @@ def ind(
         method.
     normalize_data : bool
         Whether the data should be standardized to unit variance, by default True.
+    random_seed : Optional[int], optional
+        Random seed, by default None.
 
     Notes
     -----
@@ -66,6 +71,7 @@ def ind(
     return PValueResult(pvalue=pvalue, statistic=test_statistic)
 
 
+@preserve_random_state
 def condind(
     X: np.ndarray,
     Y: np.ndarray,
@@ -77,6 +83,7 @@ def condind(
     null_sample_size: int = 1000,
     threshold: float = 1e-5,
     normalize_data: bool = True,
+    random_seed: Optional[int] = None,
 ) -> PValueResult:
     """
     Test whether X and Y given Z are conditionally independent using Kernel Independence Tests.
@@ -98,13 +105,13 @@ def condind(
         Data for variable Z, which can be multidimensional.
     kernel_X : Callable[[ArrayLike], ArrayLike]
         The kernel function for X. By default, the RBF kernel is used for continuous and the delta
-        kernel for categorical data.
+        kernel for categorical data. Note that we currently only consider string values as categorical data.
     kernel_Y : Callable[[ArrayLike], ArrayLike]
         The kernel function for Y. By default, the RBF kernel is used for continuous and the delta
-        kernel for categorical data.
+        kernel for categorical data. Note that we currently only consider string values as categorical data.
     kernel_Z : Callable[[ArrayLike], ArrayLike]
         The kernel function for Z. By default, the RBF kernel is used for continuous and the delta
-        kernel for categorical data.
+        kernel for categorical data. Note that we currently only consider string values as categorical data.
     approx : bool
         Whether to use the Gamma distribution approximation for the pvalue, by default True.
     null_sample_size : int
@@ -115,6 +122,8 @@ def condind(
         method.
     normalize_data : bool
         Whether the data should be standardized to unit variance, by default True.
+    random_seed : Optional[int], optional
+        Random seed, by default None.
 
     Notes
     -----
@@ -164,12 +173,12 @@ def _kernel_test(
         kernel_X = _get_default_kernel(X)
     if kernel_Y is None:
         kernel_Y = _get_default_kernel(Y)
-    if Z is not None and kernel_Z is None:
-        kernel_Z = _get_default_kernel(Z)
 
     Kx = kernel_X(X)
     Ky = kernel_Y(Y)
     if Z is not None:
+        if kernel_Z is None:
+            kernel_Z = _get_default_kernel(Z)
         Kz = kernel_Z(Z)
         # Equivalent to concatenating them beforehand.
         # However, here we can then have individual kernels.

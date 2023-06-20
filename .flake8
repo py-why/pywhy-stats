@@ -1,5 +1,5 @@
 [flake8]
-max-line-length = 100
+max-line-length = 120
 
 ignore =
     # these rules don't play well with black
@@ -19,6 +19,7 @@ exclude =
     paper
     setup.py
     doc
+    tests
 
 per-file-ignores =
     # __init__.py files are allowed to have unused imports
