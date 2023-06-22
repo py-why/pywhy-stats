@@ -1,12 +1,10 @@
-from functools import partial
 from typing import Callable, Optional, Tuple
 
 import numpy as np
-from numpy._typing import ArrayLike
+from numpy.typing import ArrayLike
 from scipy import stats
-from sklearn.metrics.pairwise import rbf_kernel
 
-from pywhy_stats.kernels import delta_kernel, estimate_squared_sigma_rbf
+from pywhy_stats.kernel_utils import _get_default_kernel, _preprocess_kernel_data, compute_kernel
 from pywhy_stats.pvalue_result import PValueResult
 from pywhy_stats.utils import preserve_random_state
 
@@ -20,7 +18,9 @@ def ind(
     approx: bool = True,
     null_sample_size: int = 1000,
     threshold: float = 1e-5,
+    centered: bool = True,
     normalize_data: bool = True,
+    n_jobs: Optional[int] = None,
     random_seed: Optional[int] = None,
 ) -> PValueResult:
     """
@@ -49,8 +49,12 @@ def ind(
     threshold : float
         The threshold set on the value of eigenvalues, by default 1e-5. Used to regularize the
         method.
+    centered : bool
+        Whether to center the kernel matrix or not, by default True.
     normalize_data : bool
         Whether the data should be standardized to unit variance, by default True.
+    n_jobs : Optional[int], optional
+        The number of jobs to run computations in parallel, by default None.
     random_seed : Optional[int], optional
         Random seed, by default None.
 
@@ -66,7 +70,18 @@ def ind(
     .. footbibliography::
     """
     test_statistic, pvalue = _kernel_test(
-        X, Y, None, kernel_X, kernel_Y, None, approx, null_sample_size, threshold, normalize_data
+        X,
+        Y,
+        None,
+        kernel_X,
+        kernel_Y,
+        None,
+        approx,
+        null_sample_size,
+        threshold,
+        centered=centered,
+        normalize_data=normalize_data,
+        n_jobs=n_jobs,
     )
     return PValueResult(pvalue=pvalue, statistic=test_statistic)
 
@@ -82,7 +97,9 @@ def condind(
     approx: bool = True,
     null_sample_size: int = 1000,
     threshold: float = 1e-5,
+    centered: bool = True,
     normalize_data: bool = True,
+    n_jobs: Optional[int] = None,
     random_seed: Optional[int] = None,
 ) -> PValueResult:
     """
@@ -120,8 +137,12 @@ def condind(
     threshold : float
         The threshold set on the value of eigenvalues, by default 1e-5. Used to regularize the
         method.
+    centered : bool
+        Whether to center the kernel matrices, by default True.
     normalize_data : bool
         Whether the data should be standardized to unit variance, by default True.
+    n_jobs : Optional[int], optional
+        The number of jobs to run computations in parallel, by default None.
     random_seed : Optional[int], optional
         Random seed, by default None.
 
@@ -137,7 +158,18 @@ def condind(
     .. footbibliography::
     """
     test_statistic, pvalue = _kernel_test(
-        X, Y, Z, kernel_X, kernel_Y, kernel_Z, approx, null_sample_size, threshold, normalize_data
+        X,
+        Y,
+        Z,
+        kernel_X,
+        kernel_Y,
+        kernel_Z,
+        approx,
+        null_sample_size,
+        threshold,
+        centered=centered,
+        normalize_data=normalize_data,
+        n_jobs=n_jobs,
     )
     return PValueResult(pvalue=pvalue, statistic=test_statistic)
 
@@ -153,40 +185,25 @@ def _kernel_test(
     null_sample_size: int,
     threshold: float,
     normalize_data: bool,
+    centered: bool,
+    n_jobs: Optional[int],
 ) -> Tuple[float, float]:
-    if X.ndim == 1:
-        X = X.reshape(-1, 1)
-    if Y.ndim == 1:
-        Y = Y.reshape(-1, 1)
-    if Z is not None and Z.ndim == 1:
-        Z = Z.reshape(-1, 1)
+    X, Y, Z = _preprocess_kernel_data(X, Y, Z, normalize_data)
 
-    if normalize_data:
-        # first normalize the data to have zero mean and unit variance
-        # along the columns of the data
-        X = _normalize_data(X)
-        Y = _normalize_data(Y)
-        if Z is not None:
-            Z = _normalize_data(Z)
-
+    # compute kernels in each data space
     if kernel_X is None:
         kernel_X = _get_default_kernel(X)
     if kernel_Y is None:
         kernel_Y = _get_default_kernel(Y)
-
-    Kx = kernel_X(X)
-    Ky = kernel_Y(Y)
     if Z is not None:
         if kernel_Z is None:
             kernel_Z = _get_default_kernel(Z)
-        Kz = kernel_Z(Z)
-        # Equivalent to concatenating them beforehand.
-        # However, here we can then have individual kernels.
-        Kx = Kx * Kz
-        Kz = _fast_centering(Kz)
+        Kz = compute_kernel(Z, kernel_Z, centered=centered, n_jobs=n_jobs)
 
-    Kx = _fast_centering(Kx)
-    Ky = _fast_centering(Ky)
+        # concatenate the (X, Z) data to compute the K_xz kernel
+        X = np.concatenate((X, Z), axis=1)
+    Kx = compute_kernel(X, kernel_X, centered=centered, n_jobs=n_jobs)
+    Ky = compute_kernel(Y, kernel_Y, centered=centered, n_jobs=n_jobs)
 
     if Z is None:
         return _ind(Kx, Ky, approx, null_sample_size, threshold)
@@ -365,38 +382,3 @@ def _compute_null_ci(uu_prod, n_samples, threshold):
     # of chi-squared random variables weighted by the eigenvalue products
     null_dist = eig_uu.T.dot(f_rand)
     return null_dist
-
-
-def _fast_centering(k: np.ndarray) -> np.ndarray:
-    """
-    Compute centered kernel matrix in time O(n^2).
-
-    The centered kernel matrix is defined as K_c = H @ K @ H, with
-    H = identity - 1/ n * ones(n,n). Computing H @ K @ H via matrix multiplication scales with n^3.
-    The implementation circumvents this and runs in time n^2.
-
-    Originally authored by Jonas Kuebler
-    """
-    n = len(k)
-    return (
-        k
-        - 1 / n * np.outer(np.ones(n), np.sum(k, axis=0))
-        - 1 / n * np.outer(np.sum(k, axis=1), np.ones(n))
-        + 1 / n**2 * np.sum(k) * np.ones((n, n))
-    )
-
-
-def _get_default_kernel(X: np.ndarray) -> Callable[[np.ndarray], np.ndarray]:
-    if X.dtype.type != np.str_:
-        return partial(rbf_kernel, gamma=0.5 * estimate_squared_sigma_rbf(X))
-    else:
-        return delta_kernel
-
-
-def _normalize_data(X: np.ndarray) -> np.ndarray:
-    for column in range(X.shape[1]):
-        if isinstance(X[0, column], int) or isinstance(X[0, column], float):
-            X[:, column] = stats.zscore(X[:, column])
-            X[:, column] = np.nan_to_num(X[:, column])  # in case some dim of X is constant
-
-    return X

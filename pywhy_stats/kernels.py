@@ -4,15 +4,17 @@ from scipy.stats import iqr
 from sklearn.metrics import pairwise_distances
 
 
-def delta_kernel(X: np.ndarray) -> np.ndarray:
+def delta_kernel(X: np.ndarray, Y=None) -> np.ndarray:
     """Delta kernel for categorical values.
 
     This is, the similarity is 1 if the values are equal and 0 otherwise.
 
     Parameters
     ----------
-    X : ArrayLike of shape (n_samples, n_columns)
+    X : ArrayLike of shape (n_samples, n_dimensions_x)
         Input data.
+    Y : ArrayLike of shape (n_samples, n_dimensions_y), optional
+        Not used and here for compatibility reasons, by default None.
 
     Returns
     -------
@@ -21,6 +23,8 @@ def delta_kernel(X: np.ndarray) -> np.ndarray:
     """
     if X.ndim == 1:
         X = X.reshape(-1, 1)
+    if Y is not None:
+        raise RuntimeError("The delta kernel is only defined for one data matrix!")
 
     return (
         np.array(list(map(lambda value: value == X, X)))

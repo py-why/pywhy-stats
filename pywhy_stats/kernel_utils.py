@@ -1,0 +1,162 @@
+from functools import partial
+from typing import Callable, Optional, Tuple, Union
+
+import numpy as np
+from numpy.typing import ArrayLike
+from scipy.optimize import minimize_scalar
+from sklearn.metrics import pairwise_kernels
+from sklearn.metrics.pairwise import rbf_kernel
+from sklearn.preprocessing import StandardScaler
+
+from pywhy_stats.kernels import delta_kernel, estimate_squared_sigma_rbf
+
+
+def _default_regularization(K: ArrayLike) -> float:
+    """Compute a default regularization for Kernel Logistic Regression.
+
+    Parameters
+    ----------
+    K : ArrayLike of shape (n_samples, n_samples)
+        The kernel matrix.
+
+    Returns
+    -------
+    x : float
+        The default l2 regularization term.
+    """
+    n_samples = K.shape[0]
+    svals = np.linalg.svd(K, compute_uv=False, hermitian=True)
+    res = minimize_scalar(
+        lambda reg: np.sum(svals**2 / (svals + reg) ** 2) / n_samples + reg,
+        bounds=(0.0001, 1000),
+        method="bounded",
+    )
+    return res.x
+
+
+def _fast_centering(k: ArrayLike) -> ArrayLike:
+    """
+    Compute centered kernel matrix in time O(n^2).
+
+    The centered kernel matrix is defined as K_c = H @ K @ H, with
+    H = identity - 1/ n * ones(n,n). Computing H @ K @ H via matrix multiplication scales with n^3.
+    The implementation circumvents this and runs in time n^2.
+
+    Originally authored by Jonas Kuebler
+    """
+    n = len(k)
+    return (
+        k
+        - 1 / n * np.outer(np.ones(n), np.sum(k, axis=0))
+        - 1 / n * np.outer(np.sum(k, axis=1), np.ones(n))
+        + 1 / n**2 * np.sum(k) * np.ones((n, n))
+    )
+
+
+def _get_default_kernel(X: ArrayLike) -> Callable[[ArrayLike], ArrayLike]:
+    """Attempt to infer the kernel function from the data type of X.
+
+    Parameters
+    ----------
+    X : ArrayLike
+        Data array. If the data type is not string, the RBF kernel is used.
+        If data type is string, the delta kernel is used.
+
+    Returns
+    -------
+    Callable[[ArrayLike], ArrayLike]
+        The kernel function.
+    """
+    if X.dtype.type != np.str_:
+        return partial(rbf_kernel, gamma=0.5 * estimate_squared_sigma_rbf(X))
+    else:
+        return delta_kernel
+
+
+def _normalize_data(X: ArrayLike) -> ArrayLike:
+    """Normalize data to zero mean and unit variance."""
+    return StandardScaler().fit_transform(X)
+
+
+def compute_kernel(
+    X: ArrayLike,
+    Y: Optional[ArrayLike] = None,
+    metric: Optional[Union[Callable, str]] = None,
+    centered: bool = True,
+    n_jobs: Optional[int] = None,
+) -> Tuple[ArrayLike, float]:
+    """Compute a kernel matrix and corresponding width.
+
+    Also optionally estimates the kernel width parameter.
+
+    Parameters
+    ----------
+    X : ArrayLike of shape (n_samples_X, n_features_X)
+        The X array.
+    Y : ArrayLike of shape (n_samples_Y, n_features_Y), optional
+        The Y array, by default None.
+    metric : str, optional
+        The metric to compute the kernel function, by default 'rbf'.
+        Can be any string as defined in
+        :func:`sklearn.metrics.pairwise.pairwise_kernels`. Note 'rbf'
+        and 'gaussian' are the same metric.
+    centered : bool, optional
+        Whether to center the kernel matrix or not, by default True.
+        When centered, the kernel matrix induces a zero mean. The main purpose of
+        centering is to remove the bias or mean shift from the data represented
+        by the kernel matrix.
+    n_jobs : int, optional
+        The number of jobs to run computations in parallel, by default None.
+
+    Returns
+    -------
+    kernel : ArrayLike of shape (n_samples_X, n_samples_X) or (n_samples_X, n_samples_Y)
+        The kernel matrix.
+    """
+    # if the width of the kernel is not set, then use the median trick to set the
+    # kernel width based on the data X
+    if metric is None:
+        metric = _get_default_kernel(X)
+
+    # compute the potentially pairwise kernel
+    kernel = pairwise_kernels(X, Y=Y, metric=metric, n_jobs=n_jobs, filter_params=False)
+
+    if centered:
+        kernel = _fast_centering(kernel)
+    return kernel
+
+
+def _preprocess_kernel_data(
+    X: ArrayLike,
+    Y: ArrayLike,
+    Z: Optional[ArrayLike] = None,
+    normalize_data: bool = True,
+):
+    """Preprocess the data for kernel methods.
+
+    Parameters
+    ----------
+    X : ArrayLike of shape (n_samples_X, n_features_X)
+        The X array.
+    Y : ArrayLike of shape (n_samples_Y, n_features_Y)
+        The Y array.
+    Z : ArrayLike of shape (n_samples_Z, n_features_Z), optional
+        The Z array, by default None.
+    normalize_data : bool
+        Whether to standard-normalize the data or not.
+    """
+    if X.ndim == 1:
+        X = X.reshape(-1, 1)
+    if Y.ndim == 1:
+        Y = Y.reshape(-1, 1)
+    if Z is not None and Z.ndim == 1:
+        Z = Z.reshape(-1, 1)
+
+    if normalize_data:
+        # first normalize the data to have zero mean and unit variance
+        # along the columns of the data
+        X = _normalize_data(X)
+        Y = _normalize_data(Y)
+        if Z is not None:
+            Z = _normalize_data(Z)
+    return X, Y, Z
