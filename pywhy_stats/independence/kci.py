@@ -1,3 +1,12 @@
+"""Independence test using Kernel test.
+
+Examples
+--------
+>>> import pywhy_stats as ps
+>>> res = ps.kci.ind([1, 2, 3], [4, 5, 6])
+>>> print(res.pvalue)
+>>> 1.0
+"""
 from typing import Callable, Optional, Tuple
 
 import numpy as np

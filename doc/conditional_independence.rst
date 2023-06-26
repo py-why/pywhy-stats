@@ -80,13 +80,14 @@ various proposals in the literature for estimating CMI, which we summarize here:
   estimating :math:`P(y|x)` and :math:`P(y|x,z)`, which can be used as plug-in estimates
   to the equation for CMI.
 
-:mod:`pywhy_stats.fisherz` Partial (Pearson) Correlation
---------------------------------------------------------
+:mod:`pywhy_stats.independence.fisherz` Partial (Pearson) Correlation
+---------------------------------------------------------------------
 Partial correlation based on the Pearson correlation is equivalent to CMI in the setting
 of normally distributed data. Computing partial correlation is fast and efficient and
 thus attractive to use. However, this **relies on the assumption that the variables are Gaussiany**,
 which may be unrealistic in certain datasets.
 
+.. currentmodule:: pywhy_stats.independence
 .. autosummary::
    :toctree: generated/
 
@@ -100,8 +101,8 @@ each discrete variable. An exponential amount of data is needed for increasing l
 for a discrete variable.
 
 
-:mod:`pywhy_stats.kci` Kernel-Approaches
-----------------------------------------
+:mod:`pywhy_stats.independence.kci` Kernel-Approaches
+-----------------------------------------------------
 Kernel independence tests are statistical methods used to determine if two random variables are independent or
 conditionally independent. One such test is the Hilbert-Schmidt Independence Criterion (HSIC), which examines the
 independence between two random variables, X and Y. HSIC employs kernel methods and, more specifically, it computes
@@ -120,6 +121,8 @@ or when Z is multivariate.
 Kernel-based tests are attractive for many applications, since they are semi-parametric and use kernel-based ideas
 that have been shown to be robust in the machine-learning field. For more information, see :footcite:`Zhang2011`.
 
+
+.. currentmodule:: pywhy_stats.independence
 .. autosummary::
    :toctree: generated/
 
@@ -170,27 +173,30 @@ indices of the distribution, one can convert the CD test:
 :math:`P_{i=j}(y|x) =? P_{i=k}(y|x)` into the CI test :math:`P(y|x,i) = P(y|x)`, which can
 be tested with the Chi-square CI tests.
 
-:mod:`pywhy_stats.kcd` Kernel-Approaches
-----------------------------------------
+:mod:`pywhy_stats.discrepancy.kcd` Kernel-Approaches
+-----------------------------------------------------
 Kernel-based tests are attractive since they are semi-parametric and use kernel-based ideas
 that have been shown to be robust in the machine-learning field. The Kernel CD test is a test
 that computes a test statistic from kernels of the data and uses a weighted permutation testing
 based on the estimated propensity scores to generate samples from the null distribution
 :footcite:`Park2021conditional`, which are then used to estimate a pvalue.
 
+.. currentmodule:: pywhy_stats.discrepancy
 .. autosummary::
    :toctree: generated/
 
     kcd
 
 
-:mod:`pywhy_stats.bregman` Bregman-Divergences
-----------------------------------------------
+:mod:`pywhy_stats.discrepancy.bregman` Bregman-Divergences
+----------------------------------------------------------
 The Bregman CD test is a divergence-based test
 that computes a test statistic from estimated Von-Neumann divergences of the data and uses a
 weighted permutation testing based on the estimated propensity scores to generate samples from the null distribution
 :footcite:`Yu2020Bregman`, which are then used to estimate a pvalue.
 
+
+.. currentmodule:: pywhy_stats.discrepancy
 .. autosummary::
    :toctree: generated/
 

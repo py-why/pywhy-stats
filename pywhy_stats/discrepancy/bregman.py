@@ -68,7 +68,7 @@ def condind(
         by default 1000.
     normalize_data : bool
         Whether the data should be standardized to unit variance, by default True.
-    propensity_model : Optional[BaseEstimator], optional
+    propensity_model : Optional[sklearn.base.BaseEstimator], optional
         The propensity model to use to estimate the propensity score, by default None.
     propensity_weights : Optional[ArrayLike], optional
         The propensity weights to use, by default None, which means that the propensity scores
