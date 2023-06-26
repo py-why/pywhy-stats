@@ -6,7 +6,7 @@ from warnings import warn
 import scipy.stats
 from numpy.typing import ArrayLike
 
-from pywhy_stats import fisherz, kci
+from pywhy_stats.independence import fisherz, kci
 
 from .pvalue_result import PValueResult
 

@@ -21,7 +21,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 from scipy.stats import norm
 
-from .pvalue_result import PValueResult
+from ..pvalue_result import PValueResult
 
 
 def ind(X: ArrayLike, Y: ArrayLike, correlation_matrix: Optional[ArrayLike] = None) -> PValueResult:

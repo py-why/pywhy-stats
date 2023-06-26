@@ -5,8 +5,9 @@ from numpy.typing import ArrayLike
 from scipy import stats
 
 from pywhy_stats.kernel_utils import _get_default_kernel, _preprocess_kernel_data, compute_kernel
-from pywhy_stats.pvalue_result import PValueResult
 from pywhy_stats.utils import preserve_random_state
+
+from ..pvalue_result import PValueResult
 
 
 @preserve_random_state

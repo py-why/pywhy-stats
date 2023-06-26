@@ -1,17 +1,29 @@
+"""Kernel (conditional) discrepancy test.
+
+Also known as a conditional k-sample test, where the null hypothesis is that the
+conditional distributions are equal across different population groups.
+
+Returns
+-------
+PValueResult
+    The result of the test, which includes the test statistic and pvalue.
+"""
+
 from typing import Callable, Optional, Tuple
 
 import numpy as np
 from numpy.typing import ArrayLike
 from sklearn.base import BaseEstimator
 
-from pywhy_stats.discrepancy.base import _compute_propensity_scores, compute_null
 from pywhy_stats.kernel_utils import (
     _default_regularization,
     _get_default_kernel,
     _preprocess_kernel_data,
     compute_kernel,
 )
-from pywhy_stats.pvalue_result import PValueResult
+
+from ..pvalue_result import PValueResult
+from .base import _compute_propensity_scores, compute_null
 
 
 # XXX: determine if we can do this with Y being optional.
