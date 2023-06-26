@@ -6,21 +6,19 @@ from sklearn.base import BaseEstimator
 
 from pywhy_stats.discrepancy.base import _compute_propensity_scores, compute_null
 from pywhy_stats.kernel_utils import (
-    _default_regularization,
     _get_default_kernel,
     _preprocess_kernel_data,
-    compute_kernel,
+    corrent_matrix,
+    von_neumann_divergence,
 )
 from pywhy_stats.pvalue_result import PValueResult
 
 
-# XXX: determine if we can do this with Y being optional.
 def condind(
     X: ArrayLike,
     Y: ArrayLike,
     group_ind: ArrayLike,
-    kernel_X: Optional[Callable[[ArrayLike], ArrayLike]] = None,
-    kernel_Y: Optional[Callable[[ArrayLike], ArrayLike]] = None,
+    kernel: Optional[Callable[[ArrayLike], ArrayLike]] = None,
     null_sample_size: int = 1000,
     normalize_data: bool = True,
     propensity_model=None,
@@ -32,8 +30,8 @@ def condind(
     """
     Test whether Y conditioned on X is invariant across the groups.
 
-    For testing conditional independence on continuous data, we leverage kernels
-    :footcite:`Zhang2011` that are computationally efficient. This specifically
+    For testing conditional independence on continuous data, we compute Bregman divergences
+    :footcite:`Yu2020Bregman`. This specifically
     tests the (conditional) invariance null hypothesis :math::
 
         P_{Z=1}(Y|X) = P_{Z=0}(Y|X)
@@ -80,12 +78,11 @@ def condind(
     ----------
     .. footbibliography::
     """
-    test_statistic, pvalue = _kernel_test(
-        X,
-        Y,
+    test_statistic, pvalue = _bregman_test(
+        X=X,
         group_ind=group_ind,
-        kernel_X=kernel_X,
-        kernel_Y=kernel_Y,
+        Y=Y,
+        kernel=kernel,
         propensity_weights=propensity_weights,
         propensity_model=propensity_model,
         null_sample_size=null_sample_size,
@@ -94,15 +91,14 @@ def condind(
         n_jobs=n_jobs,
         random_seed=random_seed,
     )
-    return PValueResult(pvalue=pvalue, statistic=test_statistic)
+    return PValueResult(pvalue=pvalue, test_statistic=test_statistic)
 
 
-def _kernel_test(
+def _bregman_test(
     X: ArrayLike,
     group_ind: ArrayLike,
     Y: ArrayLike,
-    kernel_X: Optional[Callable[[np.ndarray], np.ndarray]],
-    kernel_Y: Optional[Callable[[np.ndarray], np.ndarray]],
+    kernel: Optional[Callable[[np.ndarray], np.ndarray]],
     propensity_weights: Optional[ArrayLike],
     propensity_model: Optional[BaseEstimator],
     null_sample_size: int,
@@ -114,26 +110,15 @@ def _kernel_test(
     X, Y, _ = _preprocess_kernel_data(X, Y, normalize_data=normalize_data)
 
     # compute kernels in each data space
-    if kernel_X is None:
-        kernel_X = _get_default_kernel(X)
-    if kernel_Y is None:
-        kernel_Y = _get_default_kernel(Y)
+    if kernel is None:
+        kernel = _get_default_kernel(X)
 
-    L = compute_kernel(
-        Y,
-        metric=kernel_Y,
-        centered=centered,
-        n_jobs=n_jobs,
+    # We are interested in testing: P_1(y|x) = P_2(y|x)
+    # compute the conditional divergence, which is symmetric by construction
+    # 1/2 * (D(p_1(y|x) || p_2(y|x)) + D(p_2(y|x) || p_1(y|x)))
+    conditional_div = _compute_test_statistic(
+        X, Y, group_ind, metric=kernel, centered=centered, n_jobs=n_jobs
     )
-    K = compute_kernel(
-        X,
-        metric=kernel_X,
-        centered=centered,
-        n_jobs=n_jobs,
-    )
-
-    # compute the test statistic
-    stat = _compute_test_statistic(K, L, group_ind)
 
     # compute propensity scores
     e_hat = _compute_propensity_scores(
@@ -142,96 +127,69 @@ def _kernel_test(
         propensity_weights=propensity_weights,
         n_jobs=n_jobs,
         random_state=random_seed,
-        K=K,
+        K=X,
     )
 
+    # now compute null distribution
     # now compute null distribution
     null_dist = compute_null(
         _compute_test_statistic,
         e_hat,
-        X=K,
-        Y=L,
+        X=X,
+        Y=Y,
         null_reps=null_sample_size,
         seed=random_seed,
         n_jobs=n_jobs,
+        metric=kernel,
+        centered=centered,
     )
 
-    # compute the pvalue
-    pvalue = (1 + np.sum(null_dist >= stat)) / (1 + null_sample_size)
-    return stat, pvalue
+    # compute pvalue
+    pvalue = (1.0 + np.sum(null_dist >= conditional_div)) / (1 + null_sample_size)
+    return conditional_div, pvalue
 
 
-def _compute_test_statistic(K: ArrayLike, L: ArrayLike, group_ind: ArrayLike):
-    n_samples = len(K)
+def _compute_test_statistic(
+    X: ArrayLike,
+    Y: ArrayLike,
+    group_ind: ArrayLike,
+    metric: str = "rbf",
+    centered: bool = True,
+    n_jobs: Optional[int] = None,
+) -> float:
+    first_group = group_ind == 0
+    second_group = group_ind == 1
+    X1 = X[first_group, :]
+    X2 = X[second_group, :]
+    Y1 = Y[first_group, :]
+    Y2 = Y[second_group, :]
 
-    # compute W matrices from K and z
-    W0, W1 = _compute_inverse_kernel(K, group_ind)
+    # first compute the centered correntropy matrices, C_xy^1
+    Cx1y1 = corrent_matrix(np.hstack((X1, Y1)), metric=metric, centered=centered, n_jobs=n_jobs)
+    Cx2y2 = corrent_matrix(np.hstack((X2, Y2)), metric=metric, centered=centered, n_jobs=n_jobs)
 
-    # compute L kernels
-    first_mask = np.array(1 - group_ind, dtype=bool)
-    second_mask = np.array(group_ind, dtype=bool)
-    L0 = L[np.ix_(first_mask, first_mask)]
-    L1 = L[np.ix_(second_mask, second_mask)]
-    L01 = L[np.ix_(first_mask, second_mask)]
+    # compute the centered correntropy matrices for just C_x^1 and C_x^2
+    Cx1 = corrent_matrix(
+        X1,
+        metric=metric,
+        centered=centered,
+        n_jobs=n_jobs,
+    )
+    Cx2 = corrent_matrix(
+        X2,
+        metric=metric,
+        centered=centered,
+        n_jobs=n_jobs,
+    )
 
-    # compute the final test statistic
-    K0 = K[:, first_mask]
-    K1 = K[:, second_mask]
-    KW0 = K0 @ W0
-    KW1 = K1 @ W1
+    # compute the conditional divergence with the Von Neumann div
+    # D(p_1(y|x) || p_2(y|x))
+    joint_div1 = von_neumann_divergence(Cx1y1, Cx2y2)
+    joint_div2 = von_neumann_divergence(Cx2y2, Cx1y1)
+    x_div1 = von_neumann_divergence(Cx1, Cx2)
+    x_div2 = von_neumann_divergence(Cx2, Cx1)
 
-    # compute the three terms in Lemma 4.4
-    first_term = np.trace(KW0.T @ KW0 @ L0)
-    second_term = np.trace(KW1.T @ KW0 @ L01)
-    third_term = np.trace(KW1.T @ KW1 @ L1)
-
-    # compute final statistic
-    stat = (first_term - 2 * second_term + third_term) / n_samples
-    return stat
-
-
-def _compute_inverse_kernel(K, z) -> Tuple[ArrayLike, ArrayLike]:
-    """Compute W matrices as done in KCD test.
-
-    Parameters
-    ----------
-    K : ArrayLike of shape (n_samples, n_samples)
-        The kernel matrix.
-    z : ArrayLike of shape (n_samples)
-        The indicator variable of 1's and 0's for which samples belong
-        to which group.
-
-    Returns
-    -------
-    W0 : ArrayLike of shape (n_samples_i, n_samples_i)
-        The inverse of the kernel matrix from the first group.
-    W1 : NDArraArrayLike of shape (n_samples_j, n_samples_j)
-        The inverse of the kernel matrix from the second group.
-
-    Notes
-    -----
-    Compute the W matrix for the estimated conditional average in
-    the KCD test :footcite:`Park2021conditional`.
-
-    References
-    ----------
-    .. footbibliography::
-    """
-    # compute kernel matrices
-    first_mask = np.array(1 - z, dtype=bool)
-    second_mask = np.array(z, dtype=bool)
-
-    K0 = K[np.ix_(first_mask, first_mask)]
-    K1 = K[np.ix_(second_mask, second_mask)]
-
-    # compute regularization factors
-    regs_0 = _default_regularization(K0)
-    regs_1 = _default_regularization(K1)
-
-    # compute the number of samples in each
-    n0 = int(np.sum(1 - z))
-    n1 = int(np.sum(z))
-
-    W0 = np.linalg.inv(K0 + regs_0 * np.identity(n0))
-    W1 = np.linalg.inv(K1 + regs_1 * np.identity(n1))
-    return W0, W1
+    # compute the conditional divergence, which is symmetric by construction
+    # 1/2 * (D(p_1(y|x) || p_2(y|x)) + D(p_2(y|x) || p_1(y|x)))
+    conditional_div = 1.0 / 2 * (joint_div1 - x_div1 + joint_div2 - x_div2)
+    return conditional_div

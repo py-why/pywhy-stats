@@ -1,1 +1,1 @@
-from . import kcd
+from . import bregman, kcd

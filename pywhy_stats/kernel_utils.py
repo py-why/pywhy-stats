@@ -3,6 +3,7 @@ from typing import Callable, Optional, Tuple, Union
 
 import numpy as np
 from numpy.typing import ArrayLike
+from scipy.linalg import logm
 from scipy.optimize import minimize_scalar
 from sklearn.metrics import pairwise_kernels
 from sklearn.metrics.pairwise import rbf_kernel
@@ -124,6 +125,86 @@ def compute_kernel(
     if centered:
         kernel = _fast_centering(kernel)
     return kernel
+
+
+def corrent_matrix(
+    data: ArrayLike,
+    metric: str = "rbf",
+    centered: bool = True,
+    n_jobs: Optional[int] = None,
+) -> ArrayLike:
+    r"""Compute the centered correntropy of a matrix.
+
+    Parameters
+    ----------
+    data : ArrayLike of shape (n_samples, n_features)
+        The data.
+    metric : str
+        The kernel metric.
+    centered : bool, optional
+        Whether to center the kernel matrix or not, by default True.
+    n_jobs : int, optional
+        The number of jobs to run computations in parallel, by default None.
+
+    Returns
+    -------
+    data : ArrayLike of shape (n_features, n_features)
+        A symmetric centered correntropy matrix of the data.
+
+    Notes
+    -----
+    The estimator for the correntropy array is given by the formula
+    :math:`1 / N \\sum_{i=1}^N k(x_i, y_i) - 1 / N**2 \\sum_{i=1}^N \\sum_{j=1}^N k(x_i, y_j)`.
+    The first term is the estimate, and the second term is the bias, and together they form
+    an unbiased estimate.
+    """
+    n_samples, n_features = data.shape
+    corren_arr = np.zeros(shape=(n_features, n_features))
+
+    # compute kernel between each feature, which is now (n_features, n_features) array
+    for idx in range(n_features):
+        for jdx in range(idx + 1):
+            K = compute_kernel(
+                data[:, idx][:, np.newaxis],
+                data[:, jdx][:, np.newaxis],
+                metric=metric,
+                centered=centered,
+                n_jobs=n_jobs,
+            )
+
+            # compute the bias due to finite-samples
+            bias = np.sum(K) / n_samples**2
+
+            # compute the sample centered correntropy
+            corren = (1.0 / n_samples) * np.trace(K) - bias
+
+            corren_arr[idx, jdx] = corren_arr[jdx, idx] = corren
+    return corren_arr
+
+
+def von_neumann_divergence(A: ArrayLike, B: ArrayLike) -> float:
+    """Compute Von Neumann divergence between two PSD matrices.
+
+    Parameters
+    ----------
+    A : ArrayLike of shape (n_features, n_features)
+        The first PSD matrix.
+    B : ArrayLike of shape (n_features, n_features)
+        The second PSD matrix.
+
+    Returns
+    -------
+    div : float
+        The divergence value.
+
+    Notes
+    -----
+    The Von Neumann divergence, or what is known as the Bregman divergence in
+    :footcite:`Yu2020Bregman` is computed as follows with
+    :math:`D(A || B) = Tr(A (log(A) - log(B)) - A + B)`.
+    """
+    div = np.trace(A.dot(logm(A) - logm(B)) - A + B)
+    return div
 
 
 def _preprocess_kernel_data(
