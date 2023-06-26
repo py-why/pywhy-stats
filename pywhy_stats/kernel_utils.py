@@ -129,7 +129,7 @@ def compute_kernel(
 
 def corrent_matrix(
     data: ArrayLike,
-    metric: str = "rbf",
+    metric: Union[str, Callable[[ArrayLike], ArrayLike]] = "rbf",
     centered: bool = True,
     n_jobs: Optional[int] = None,
 ) -> ArrayLike:

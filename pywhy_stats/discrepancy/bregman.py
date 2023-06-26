@@ -91,7 +91,7 @@ def condind(
         n_jobs=n_jobs,
         random_seed=random_seed,
     )
-    return PValueResult(pvalue=pvalue, test_statistic=test_statistic)
+    return PValueResult(pvalue=pvalue, statistic=test_statistic)
 
 
 def _bregman_test(
@@ -153,7 +153,7 @@ def _compute_test_statistic(
     X: ArrayLike,
     Y: ArrayLike,
     group_ind: ArrayLike,
-    metric: str = "rbf",
+    metric: Callable[[ArrayLike], ArrayLike],
     centered: bool = True,
     n_jobs: Optional[int] = None,
 ) -> float:

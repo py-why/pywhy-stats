@@ -81,8 +81,8 @@ def condind(
     .. footbibliography::
     """
     test_statistic, pvalue = _kernel_test(
-        X,
-        Y,
+        X=X,
+        Y=Y,
         group_ind=group_ind,
         kernel_X=kernel_X,
         kernel_Y=kernel_Y,
