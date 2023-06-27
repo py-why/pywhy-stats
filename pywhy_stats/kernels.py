@@ -15,7 +15,7 @@ def delta_kernel(X: ArrayLike, Y=None) -> ArrayLike:
     X : ArrayLike of shape (n_samples, n_dimensions_x)
         Input data.
     Y : ArrayLike of shape (n_samples, n_dimensions_y), optional
-        Not used and here for compatibility reasons, by default None.
+       By default None.
 
     Returns
     -------

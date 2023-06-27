@@ -12,6 +12,9 @@ from sklearn.preprocessing import LabelEncoder
 
 from pywhy_stats.kernels import delta_kernel, estimate_squared_sigma_rbf
 
+# Note that this is added to the list of possible kernels for :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
+# because it is more efficient to compute the kernel over the entire matrices at once
+# since numpy has vectorized operations.
 PAIRWISE_KERNEL_FUNCTIONS["delta"] = delta_kernel
 
 
