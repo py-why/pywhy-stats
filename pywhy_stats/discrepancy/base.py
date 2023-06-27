@@ -73,7 +73,7 @@ def _compute_propensity_scores(
         K = kwargs.get("K")
         # fit and then obtain the probabilities of treatment
         # for each sample (i.e. the propensity scores)
-        propensity_weights = propensity_model_.fit(K, group_ind).predict_proba(K)[:, 1]
+        propensity_weights = propensity_model_.fit(K, group_ind.ravel()).predict_proba(K)[:, 1]
     else:
         propensity_weights = propensity_weights[:, 1]
     return propensity_weights
