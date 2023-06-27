@@ -25,6 +25,7 @@ Minimally, pywhy-stats requires:
     * Python (>=3.8)
     * numpy
     * scipy
+    * scikit-learn
 
 ## User Installation
 
