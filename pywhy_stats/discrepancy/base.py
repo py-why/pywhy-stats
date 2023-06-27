@@ -9,6 +9,34 @@ from sklearn.linear_model import LogisticRegression
 from pywhy_stats.kernel_utils import _default_regularization
 
 
+def _preprocess_propensity_data(
+    group_ind: ArrayLike,
+    propensity_model: Optional[BaseEstimator],
+    propensity_weights: Optional[ArrayLike],
+):
+    if group_ind.ndim != 1:
+        raise RuntimeError("group_ind must be a 1d array.")
+    if len(np.unique(group_ind)) != 2:
+        raise RuntimeError(
+            f"There should only be two groups. Found {len(np.unique(group_ind))} groups."
+        )
+    if propensity_model is not None and propensity_weights is not None:
+        raise ValueError(
+            "Both propensity model and propensity estimates are specified. Only one is allowed."
+        )
+    if propensity_weights is not None:
+        if propensity_weights.shape[0] != len(group_ind):
+            raise ValueError(
+                f"There are {propensity_weights.shape[0]} pre-defined estimates, while "
+                f"there are {len(group_ind)} samples."
+            )
+        if propensity_weights.shape[1] != len(np.unique(group_ind.squeeze())):
+            raise ValueError(
+                f"There are {propensity_weights.shape[1]} group pre-defined estimates, while "
+                f"there are {len(np.unique(group_ind))} unique groups."
+            )
+
+
 def _compute_propensity_scores(
     group_ind: ArrayLike,
     propensity_model: Optional[BaseEstimator] = None,
@@ -92,7 +120,7 @@ def compute_null(
     # according to its propensity score
     null_dist = Parallel(n_jobs=n_jobs)(
         [
-            delayed(func)(X, Y, rng.binomial(1, e_hat, size=n_samps), **kwargs)
+            delayed(func)(X, Y, group_ind=rng.binomial(1, e_hat, size=n_samps), **kwargs)
             for _ in range(null_reps)
         ]
     )

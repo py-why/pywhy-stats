@@ -13,7 +13,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 from scipy import stats
 
-from pywhy_stats.kernel_utils import _get_default_kernel, _preprocess_kernel_data, compute_kernel
+from pywhy_stats.kernel_utils import _preprocess_kernel_data, compute_kernel
 from pywhy_stats.utils import preserve_random_state
 
 from ..pvalue_result import PValueResult
@@ -133,12 +133,18 @@ def condind(
     kernel_X : Callable[[ArrayLike], ArrayLike]
         The kernel function for X. By default, the RBF kernel is used for continuous and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.
+        Kernels can be specified in the same way as for :func:`~sklearn.metrics.pairwise.pairwise_kernels`
+        with the addition that 'delta' kernel is supported for categorical data.
     kernel_Y : Callable[[ArrayLike], ArrayLike]
         The kernel function for Y. By default, the RBF kernel is used for continuous and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.
+        Kernels can be specified in the same way as for :func:`~sklearn.metrics.pairwise.pairwise_kernels`
+        with the addition that 'delta' kernel is supported for categorical data.
     kernel_Z : Callable[[ArrayLike], ArrayLike]
         The kernel function for Z. By default, the RBF kernel is used for continuous and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.
+        Kernels can be specified in the same way as for :func:`~sklearn.metrics.pairwise.pairwise_kernels`
+        with the addition that 'delta' kernel is supported for categorical data.
     approx : bool
         Whether to use the Gamma distribution approximation for the pvalue, by default True.
     null_sample_size : int
@@ -162,6 +168,9 @@ def condind(
     from sklearn::
 
         kernel_X = func:`sklearn.metrics.pairwise.pairwise_kernels.polynomial`
+
+    In addition, we implement an efficient delta kernel. The delta kernel can be specified using the
+    'kernel' string argument.
 
     References
     ----------
@@ -201,19 +210,13 @@ def _kernel_test(
     X, Y, Z = _preprocess_kernel_data(X, Y, Z, normalize_data)
 
     # compute kernels in each data space
-    if kernel_X is None:
-        kernel_X = _get_default_kernel(X)
-    if kernel_Y is None:
-        kernel_Y = _get_default_kernel(Y)
     if Z is not None:
-        if kernel_Z is None:
-            kernel_Z = _get_default_kernel(Z)
-        Kz = compute_kernel(Z, kernel_Z, centered=centered, n_jobs=n_jobs)
+        Kz = compute_kernel(Z, metric=kernel_Z, centered=centered, n_jobs=n_jobs)
 
         # concatenate the (X, Z) data to compute the K_xz kernel
         X = np.concatenate((X, Z), axis=1)
-    Kx = compute_kernel(X, kernel_X, centered=centered, n_jobs=n_jobs)
-    Ky = compute_kernel(Y, kernel_Y, centered=centered, n_jobs=n_jobs)
+    Kx = compute_kernel(X, metric=kernel_X, centered=centered, n_jobs=n_jobs)
+    Ky = compute_kernel(Y, metric=kernel_Y, centered=centered, n_jobs=n_jobs)
 
     if Z is None:
         return _ind(Kx, Ky, approx, null_sample_size, threshold)

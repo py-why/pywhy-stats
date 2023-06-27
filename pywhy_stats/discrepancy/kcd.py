@@ -14,16 +14,16 @@ from typing import Callable, Optional, Tuple
 import numpy as np
 from numpy.typing import ArrayLike
 from sklearn.base import BaseEstimator
+from sklearn.preprocessing import LabelBinarizer
 
 from pywhy_stats.kernel_utils import (
     _default_regularization,
-    _get_default_kernel,
     _preprocess_kernel_data,
     compute_kernel,
 )
 
 from ..pvalue_result import PValueResult
-from .base import _compute_propensity_scores, compute_null
+from .base import _compute_propensity_scores, _preprocess_propensity_data, compute_null
 
 
 # XXX: determine if we can do this with Y being optional.
@@ -61,9 +61,13 @@ def condind(
     kernel_X : Callable[[ArrayLike], ArrayLike]
         The kernel function for X. By default, the RBF kernel is used for continuous and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.
+        Kernels can be specified in the same way as for :func:`~sklearn.metrics.pairwise.pairwise_kernels`
+        with the addition that 'delta' kernel is supported for categorical data.
     kernel_Y : Callable[[ArrayLike], ArrayLike]
         The kernel function for Y. By default, the RBF kernel is used for continuous and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.
+        Kernels can be specified in the same way as for :func:`~sklearn.metrics.pairwise.pairwise_kernels`
+        with the addition that 'delta' kernel is supported for categorical data.
     null_sample_size : int
         The number of samples to generate for the bootstrap distribution to approximate the pvalue,
         by default 1000.
@@ -87,6 +91,9 @@ def condind(
     from sklearn::
 
         kernel_X = func:`sklearn.metrics.pairwise.pairwise_kernels.polynomial`
+
+    In addition, we implement an efficient delta kernel. The delta kernel can be specified using the
+    'kernel' string argument.
 
     References
     ----------
@@ -124,13 +131,16 @@ def _kernel_test(
     random_seed: Optional[int],
 ) -> Tuple[float, float]:
     X, Y, _ = _preprocess_kernel_data(X, Y, normalize_data=normalize_data)
+    _preprocess_propensity_data(
+        group_ind=group_ind,
+        propensity_weights=propensity_weights,
+        propensity_model=propensity_model,
+    )
+
+    enc = LabelBinarizer(neg_label=0, pos_label=1)
+    group_ind = enc.fit_transform(group_ind)
 
     # compute kernels in each data space
-    if kernel_X is None:
-        kernel_X = _get_default_kernel(X)
-    if kernel_Y is None:
-        kernel_Y = _get_default_kernel(Y)
-
     L = compute_kernel(
         Y,
         metric=kernel_Y,
@@ -180,6 +190,7 @@ def _compute_test_statistic(K: ArrayLike, L: ArrayLike, group_ind: ArrayLike):
     W0, W1 = _compute_inverse_kernel(K, group_ind)
 
     # compute L kernels
+    group_ind = np.squeeze(group_ind)
     first_mask = np.array(1 - group_ind, dtype=bool)
     second_mask = np.array(group_ind, dtype=bool)
     L0 = L[np.ix_(first_mask, first_mask)]
@@ -230,6 +241,7 @@ def _compute_inverse_kernel(K, z) -> Tuple[ArrayLike, ArrayLike]:
     .. footbibliography::
     """
     # compute kernel matrices
+    z = np.squeeze(z)
     first_mask = np.array(1 - z, dtype=bool)
     second_mask = np.array(z, dtype=bool)
 

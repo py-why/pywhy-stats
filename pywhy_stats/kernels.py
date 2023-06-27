@@ -2,9 +2,10 @@ import numpy as np
 from numpy._typing import ArrayLike
 from scipy.stats import iqr
 from sklearn.metrics import pairwise_distances
+from sklearn.metrics.pairwise import check_pairwise_arrays
 
 
-def delta_kernel(X: np.ndarray, Y=None) -> np.ndarray:
+def delta_kernel(X: ArrayLike, Y=None) -> ArrayLike:
     """Delta kernel for categorical values.
 
     This is, the similarity is 1 if the values are equal and 0 otherwise.
@@ -21,16 +22,16 @@ def delta_kernel(X: np.ndarray, Y=None) -> np.ndarray:
     result : ArrayLike of shape (n_samples, n_samples)
         The resulting kernel matrix after applying the delta kernel.
     """
-    if X.ndim == 1:
-        X = X.reshape(-1, 1)
-    if Y is not None:
-        raise RuntimeError("The delta kernel is only defined for one data matrix!")
+    X, Y = check_pairwise_arrays(X, Y)
 
-    return (
-        np.array(list(map(lambda value: value == X, X)))
-        .reshape(X.shape[0], X.shape[0])
-        .astype(np.float32)
-    )
+    if Y is None:
+        return _delta_kernel(X, X)
+    else:
+        return _delta_kernel(X, Y)
+
+
+def _delta_kernel(X, Y):
+    return np.equal(X[:, np.newaxis], Y).all(axis=-1).astype(int)
 
 
 def estimate_squared_sigma_rbf(

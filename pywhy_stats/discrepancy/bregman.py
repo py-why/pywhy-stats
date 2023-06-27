@@ -15,16 +15,12 @@ from typing import Callable, Optional, Tuple
 import numpy as np
 from numpy.typing import ArrayLike
 from sklearn.base import BaseEstimator
+from sklearn.preprocessing import LabelBinarizer
 
-from pywhy_stats.kernel_utils import (
-    _get_default_kernel,
-    _preprocess_kernel_data,
-    corrent_matrix,
-    von_neumann_divergence,
-)
+from pywhy_stats.kernel_utils import _preprocess_kernel_data, corrent_matrix, von_neumann_divergence
 
 from ..pvalue_result import PValueResult
-from .base import _compute_propensity_scores, compute_null
+from .base import _compute_propensity_scores, _preprocess_propensity_data, compute_null
 
 
 def condind(
@@ -33,10 +29,10 @@ def condind(
     group_ind: ArrayLike,
     kernel: Optional[Callable[[ArrayLike], ArrayLike]] = None,
     null_sample_size: int = 1000,
-    normalize_data: bool = True,
+    normalize_data: bool = False,
     propensity_model=None,
     propensity_weights=None,
-    centered: bool = True,
+    centered: bool = False,
     n_jobs: Optional[int] = None,
     random_seed: Optional[int] = None,
 ) -> PValueResult:
@@ -66,8 +62,6 @@ def condind(
     null_sample_size : int
         The number of samples to generate for the bootstrap distribution to approximate the pvalue,
         by default 1000.
-    normalize_data : bool
-        Whether the data should be standardized to unit variance, by default True.
     propensity_model : Optional[sklearn.base.BaseEstimator], optional
         The propensity model to use to estimate the propensity score, by default None.
     propensity_weights : Optional[ArrayLike], optional
@@ -99,7 +93,6 @@ def condind(
         propensity_weights=propensity_weights,
         propensity_model=propensity_model,
         null_sample_size=null_sample_size,
-        normalize_data=normalize_data,
         centered=centered,
         n_jobs=n_jobs,
         random_seed=random_seed,
@@ -115,22 +108,24 @@ def _bregman_test(
     propensity_weights: Optional[ArrayLike],
     propensity_model: Optional[BaseEstimator],
     null_sample_size: int,
-    normalize_data: bool,
     centered: bool,
     n_jobs: Optional[int],
     random_seed: Optional[int],
 ) -> Tuple[float, float]:
-    X, Y, _ = _preprocess_kernel_data(X, Y, normalize_data=normalize_data)
+    X, Y, _ = _preprocess_kernel_data(X, Y, normalize_data=False)
+    _preprocess_propensity_data(
+        group_ind=group_ind,
+        propensity_weights=propensity_weights,
+        propensity_model=propensity_model,
+    )
 
-    # compute kernels in each data space
-    if kernel is None:
-        kernel = _get_default_kernel(X)
-
+    enc = LabelBinarizer(neg_label=0, pos_label=1)
+    group_ind = enc.fit_transform(group_ind).squeeze()
     # We are interested in testing: P_1(y|x) = P_2(y|x)
     # compute the conditional divergence, which is symmetric by construction
     # 1/2 * (D(p_1(y|x) || p_2(y|x)) + D(p_2(y|x) || p_1(y|x)))
     conditional_div = _compute_test_statistic(
-        X, Y, group_ind, metric=kernel, centered=centered, n_jobs=n_jobs
+        X=X, Y=Y, group_ind=group_ind, metric=kernel, centered=centered, n_jobs=n_jobs
     )
 
     # compute propensity scores
@@ -143,7 +138,6 @@ def _bregman_test(
         K=X,
     )
 
-    # now compute null distribution
     # now compute null distribution
     null_dist = compute_null(
         _compute_test_statistic,
@@ -166,12 +160,15 @@ def _compute_test_statistic(
     X: ArrayLike,
     Y: ArrayLike,
     group_ind: ArrayLike,
-    metric: Callable[[ArrayLike], ArrayLike],
+    metric: Optional[Callable[[ArrayLike], ArrayLike]],
     centered: bool = True,
     n_jobs: Optional[int] = None,
 ) -> float:
+    if set(np.unique(group_ind)) != {0, 1}:
+        raise ValueError("group_ind must be binary")
     first_group = group_ind == 0
     second_group = group_ind == 1
+
     X1 = X[first_group, :]
     X2 = X[second_group, :]
     Y1 = Y[first_group, :]

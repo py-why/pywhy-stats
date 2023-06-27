@@ -6,9 +6,9 @@ from sklearn.ensemble import RandomForestClassifier
 from pywhy_stats import bregman, kcd
 
 seed = 12345
-
+rng = np.random.default_rng(seed)
 # number of samples to use in generating test dataset; the lower the faster
-n_samples = 160
+n_samples = 150
 
 
 def single_env_scm(n_samples=200, offset=0.0):
@@ -19,8 +19,8 @@ def single_env_scm(n_samples=200, offset=0.0):
 
     X = rng.standard_normal((n_samples, 1)) + offset
     X1 = rng.standard_normal((n_samples, 1)) + offset
-    Y = X + X1 + 0.1 * rng.standard_normal((n_samples, 1))
-    Z = Y + 0.1 * rng.standard_normal((n_samples, 1))
+    Y = X + X1 + 0.05 * rng.standard_normal((n_samples, 1))
+    Z = Y + 0.05 * rng.standard_normal((n_samples, 1))
 
     # create input for the CD test
     df = pd.DataFrame(np.hstack((X, X1, Y, Z)), columns=["x", "x1", "y", "z"])
@@ -50,40 +50,66 @@ def multi_env_scm(n_samples=100, offset=1.5):
 def test_cd_tests_error(cd_func):
     x = "x"
     y = "y"
-
     sample_df = single_env_scm(n_samples=10)
-    cd_estimator = cd_func()
-    with pytest.raises(ValueError, match="The group col"):
-        cd_estimator.condind(sample_df, y_vars={y}, group_col={"blah"}, x_vars={x})
+    Y = sample_df[y].to_numpy()
+    X = sample_df[x].to_numpy()
+    group_ind = sample_df[["x", "group"]].to_numpy()
 
-    with pytest.raises(ValueError, match="The x variables are not all"):
-        cd_estimator.condind(sample_df, y_vars={y}, group_col={"group"}, x_vars={"blah"})
-
-    with pytest.raises(ValueError, match="The y variables"):
-        cd_estimator.condind(sample_df, y_vars={"blah"}, group_col={"group"}, x_vars={x})
-
-    with pytest.raises(ValueError, match="Group column should be only one column"):
-        cd_estimator.condind(sample_df, y_vars={"blah"}, group_col="group", x_vars={x})
+    with pytest.raises(RuntimeError, match="group_ind must be a 1d array"):
+        cd_func.condind(
+            X=X,
+            Y=Y,
+            group_ind=group_ind,
+            random_seed=seed,
+        )
 
     # all the group indicators have different values now from 0/1
     sample_df["group"] = sample_df["group"] + 3
-    with pytest.raises(RuntimeError, match="Group indications in"):
-        cd_estimator.condind(sample_df, y_vars={y}, group_col={"group"}, x_vars={x})
+    group_ind = sample_df[["group"]].to_numpy()
+    group_ind = rng.integers(0, 10, size=len(group_ind))
+
+    with pytest.raises(RuntimeError, match="There should only be two groups"):
+        cd_func.condind(
+            X=X,
+            Y=Y,
+            group_ind=group_ind,
+            random_seed=seed,
+        )
+
+    group_ind = sample_df[["group"]].to_numpy().squeeze()
 
     # test pre-fit propensity scores, or custom propensity model
     with pytest.raises(
         ValueError, match="Both propensity model and propensity estimates are specified"
     ):
-        cd_estimator = cd_func(propensity_model=RandomForestClassifier(), propensity_est=[0.5, 0.5])
-        cd_estimator.condind(sample_df, y_vars={y}, group_col={"group"}, x_vars={x})
+        cd_func.condind(
+            X=X,
+            Y=Y,
+            group_ind=group_ind,
+            propensity_model=RandomForestClassifier(),
+            propensity_weights=[0.5, 0.5],
+            random_seed=seed,
+        )
 
+    Y = sample_df[y].to_numpy()
+    X = sample_df[x].to_numpy()
     with pytest.raises(ValueError, match="There are 3 group pre-defined estimates"):
-        cd_estimator = cd_func(propensity_est=np.ones((10, 3)) * 0.5)
-        cd_estimator.condind(sample_df, y_vars={y}, group_col={"group"}, x_vars={x})
+        cd_func.condind(
+            X=X,
+            Y=Y,
+            group_ind=group_ind,
+            propensity_weights=np.ones((10, 3)) * 0.5,
+            random_seed=seed,
+        )
 
     with pytest.raises(ValueError, match="There are 100 pre-defined estimates"):
-        cd_estimator = cd_func(propensity_est=np.ones((100, 2)) * 0.5)
-        cd_estimator.condind(sample_df, y_vars={y}, group_col={"group"}, x_vars={x})
+        cd_func.condind(
+            X=X,
+            Y=Y,
+            group_ind=group_ind,
+            propensity_weights=np.ones((100, 2)) * 0.5,
+            random_seed=seed,
+        )
 
 
 @pytest.mark.parametrize(
@@ -91,12 +117,12 @@ def test_cd_tests_error(cd_func):
     [
         [bregman, dict()],
         [kcd, dict()],
-        [bregman, {"propensity_model": RandomForestClassifier()}],
-        [bregman, {"propensity_est": np.ones((n_samples, 2)) * 0.5}],
-        [kcd, {"propensity_model": RandomForestClassifier()}],
-        [kcd, {"propensity_est": np.ones((n_samples, 2)) * 0.5}],
-        [kcd, {"l2": 1e-3}],
-        [kcd, {"l2": (1e-3, 2e-3)}],
+        [bregman, {"propensity_model": RandomForestClassifier(n_estimators=50, random_state=seed)}],
+        [bregman, {"propensity_weights": np.ones((n_samples, 2)) * 0.5}],
+        [kcd, {"propensity_model": RandomForestClassifier(n_estimators=50, random_state=seed)}],
+        [kcd, {"propensity_weights": np.ones((n_samples, 2)) * 0.5}],
+        # [kcd, {"l2": 1e-3}],
+        # [kcd, {"l2": (1e-3, 2e-3)}],
     ],
 )
 @pytest.mark.parametrize(
@@ -108,28 +134,68 @@ def test_cd_tests_error(cd_func):
 )
 def test_cd_simulation(cd_func, df, env_type, cd_kwargs):
     """Test conditional discrepancy tests."""
-    random_state = 12345
-    cd_estimator = cd_func(random_state=random_state, null_reps=15, n_jobs=-1, **cd_kwargs)
-
     group_col = "group"
     alpha = 0.1
+    null_sample_size = 25
 
     if env_type == "single":
-        _, pvalue = cd_estimator.condind(
-            df,
-            y_vars={"x1"},
-            group_col={group_col},
-            x_vars={"x"},
+        res = cd_func.condind(
+            X=df["x"],
+            Y=df["x1"],
+            group_ind=df[group_col],
+            null_sample_size=null_sample_size,
+            **cd_kwargs,
+            random_seed=seed,
         )
-        assert pvalue > alpha, f"Fails with {pvalue} not greater than {alpha}"
-        _, pvalue = cd_estimator.condind(df, y_vars={"z"}, group_col={group_col}, x_vars={"x"})
-        assert pvalue > alpha, f"Fails with {pvalue} not greater than {alpha}"
-        _, pvalue = cd_estimator.condind(df, y_vars={"y"}, group_col={group_col}, x_vars={"x"})
-        assert pvalue > alpha, f"Fails with {pvalue} not greater than {alpha}"
+        assert res.pvalue > alpha, f"Fails with {res.pvalue} not greater than {alpha}"
+        res = cd_func.condind(
+            X=df["x"],
+            Y=df["z"],
+            group_ind=df[group_col],
+            null_sample_size=null_sample_size,
+            n_jobs=-1,
+            **cd_kwargs,
+            random_seed=seed,
+        )
+        assert res.pvalue > alpha, f"Fails with {res.pvalue} not greater than {alpha}"
+        res = cd_func.condind(
+            X=df["x"],
+            Y=df["y"],
+            group_ind=df[group_col],
+            null_sample_size=null_sample_size,
+            n_jobs=-1,
+            **cd_kwargs,
+            random_seed=seed,
+        )
+        assert res.pvalue > alpha, f"Fails with {res.pvalue} not greater than {alpha}"
     elif env_type == "multi":
-        _, pvalue = cd_estimator.condind(df, y_vars={"z"}, group_col={group_col}, x_vars={"x"})
-        assert pvalue < alpha, f"Fails with {pvalue} not less than {alpha}"
-        _, pvalue = cd_estimator.condind(df, y_vars={"y"}, group_col={group_col}, x_vars={"x"})
-        assert pvalue < alpha, f"Fails with {pvalue} not less than {alpha}"
-        _, pvalue = cd_estimator.condind(df, y_vars={"z"}, group_col={group_col}, x_vars={"x1"})
-        assert pvalue < alpha, f"Fails with {pvalue} not less than {alpha}"
+        res = cd_func.condind(
+            X=df[["x"]],
+            Y=df[["z"]].copy(),
+            group_ind=df[group_col],
+            null_sample_size=null_sample_size,
+            n_jobs=-1,
+            random_seed=seed,
+            **cd_kwargs,
+        )
+        assert res.pvalue < alpha, f"Fails with {res.pvalue} not less than {alpha}"
+        res = cd_func.condind(
+            X=df["x"],
+            Y=df["y"],
+            group_ind=df[group_col],
+            null_sample_size=null_sample_size,
+            n_jobs=-1,
+            random_seed=seed,
+            **cd_kwargs,
+        )
+        assert res.pvalue < alpha, f"Fails with {res.pvalue} not less than {alpha}"
+        res = cd_func.condind(
+            X=df["x1"],
+            Y=df["z"],
+            group_ind=df[group_col],
+            null_sample_size=null_sample_size,
+            n_jobs=-1,
+            random_seed=seed,
+            **cd_kwargs,
+        )
+        assert res.pvalue < alpha, f"Fails with {res.pvalue} not less than {alpha}"

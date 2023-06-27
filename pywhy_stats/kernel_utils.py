@@ -1,15 +1,18 @@
-from functools import partial
-from typing import Callable, Optional, Tuple, Union
+import inspect
+from typing import Callable, Dict, Optional, Tuple, Union
 
 import numpy as np
 from numpy.typing import ArrayLike
+from scipy import stats
 from scipy.linalg import logm
 from scipy.optimize import minimize_scalar
 from sklearn.metrics import pairwise_kernels
-from sklearn.metrics.pairwise import rbf_kernel
-from sklearn.preprocessing import StandardScaler
+from sklearn.metrics.pairwise import PAIRWISE_KERNEL_FUNCTIONS
+from sklearn.preprocessing import LabelEncoder
 
 from pywhy_stats.kernels import delta_kernel, estimate_squared_sigma_rbf
+
+PAIRWISE_KERNEL_FUNCTIONS["delta"] = delta_kernel
 
 
 def _default_regularization(K: ArrayLike) -> float:
@@ -54,7 +57,7 @@ def _fast_centering(k: ArrayLike) -> ArrayLike:
     )
 
 
-def _get_default_kernel(X: ArrayLike) -> Callable[[ArrayLike], ArrayLike]:
+def _get_default_kernel(X: ArrayLike) -> Tuple[str, Dict]:
     """Attempt to infer the kernel function from the data type of X.
 
     Parameters
@@ -68,15 +71,19 @@ def _get_default_kernel(X: ArrayLike) -> Callable[[ArrayLike], ArrayLike]:
     Callable[[ArrayLike], ArrayLike]
         The kernel function.
     """
-    if X.dtype.type != np.str_:
-        return partial(rbf_kernel, gamma=0.5 * estimate_squared_sigma_rbf(X))
+    if X.dtype.type not in (np.str_, np.object_):
+        return "rbf", {"gamma": 0.5 * estimate_squared_sigma_rbf(X)}
     else:
-        return delta_kernel
+        return "delta", dict()
 
 
 def _normalize_data(X: ArrayLike) -> ArrayLike:
     """Normalize data to zero mean and unit variance."""
-    return StandardScaler().fit_transform(X)
+    for column in range(X.shape[1]):
+        if isinstance(X[0, column], int) or isinstance(X[0, column], float):
+            X[:, column] = stats.zscore(X[:, column])
+            X[:, column] = np.nan_to_num(X[:, column])  # in case some dim of X is constant
+    return X
 
 
 def compute_kernel(
@@ -117,10 +124,19 @@ def compute_kernel(
     # if the width of the kernel is not set, then use the median trick to set the
     # kernel width based on the data X
     if metric is None:
-        metric = _get_default_kernel(X)
+        metric, kernel_params = _get_default_kernel(X)
+    else:
+        kernel_params = dict()
 
-    # compute the potentially pairwise kernel
-    kernel = pairwise_kernels(X, Y=Y, metric=metric, n_jobs=n_jobs, filter_params=False)
+    # compute the potentially pairwise kernel matrix
+    # If the number of arguments is just one, then we bypass the pairwise kernel
+    # optimized computation via sklearn and opt to use the metric function directly
+    if callable(metric) and len(inspect.getfullargspec(metric).args) == 1:
+        kernel = metric(X)
+    else:
+        kernel = pairwise_kernels(
+            X, Y=Y, metric=metric, n_jobs=n_jobs, filter_params=False, **kernel_params
+        )
 
     if centered:
         kernel = _fast_centering(kernel)
@@ -129,7 +145,7 @@ def compute_kernel(
 
 def corrent_matrix(
     data: ArrayLike,
-    metric: Union[str, Callable[[ArrayLike], ArrayLike]] = "rbf",
+    metric: Optional[Union[str, Callable[[ArrayLike], ArrayLike]]] = None,
     centered: bool = True,
     n_jobs: Optional[int] = None,
 ) -> ArrayLike:
@@ -165,8 +181,8 @@ def corrent_matrix(
     for idx in range(n_features):
         for jdx in range(idx + 1):
             K = compute_kernel(
-                data[:, idx][:, np.newaxis],
-                data[:, jdx][:, np.newaxis],
+                X=data[:, [idx]],
+                Y=data[:, [jdx]],
                 metric=metric,
                 centered=centered,
                 n_jobs=n_jobs,
@@ -226,12 +242,31 @@ def _preprocess_kernel_data(
     normalize_data : bool
         Whether to standard-normalize the data or not.
     """
+    X = np.array(X)
+    Y = np.array(Y)
+    if Z is not None:
+        Z = np.array(Z)
+
     if X.ndim == 1:
         X = X.reshape(-1, 1)
     if Y.ndim == 1:
         Y = Y.reshape(-1, 1)
     if Z is not None and Z.ndim == 1:
         Z = Z.reshape(-1, 1)
+
+    # handle strings as categorical data automatically
+    if X.dtype.type in (np.str_, np.object_, np.unicode_):
+        enc = LabelEncoder()
+        for idx in range(X.shape[1]):
+            X[:, idx] = enc.fit_transform(X[:, idx])
+    if Y.dtype.type in (np.str_, np.object_, np.unicode_):
+        enc = LabelEncoder()
+        for idx in range(Y.shape[1]):
+            Y[:, idx] = enc.fit_transform(Y[:, idx])
+    if Z is not None and Z.dtype.type in (np.str_, np.object_, np.unicode_):
+        enc = LabelEncoder()
+        for idx in range(Z.shape[1]):
+            Z[:, idx] = enc.fit_transform(Z[:, idx])
 
     if normalize_data:
         # first normalize the data to have zero mean and unit variance
