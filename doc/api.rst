@@ -57,10 +57,25 @@ contains the p-value and the test statistic and optionally additional informatio
 Testing for conditional independence among variables is a core part
 of many data analysis procedures.
 
-.. currentmodule:: pywhy_stats
+.. currentmodule:: pywhy_stats.independence
 .. autosummary::
    :toctree: generated/
-
+   
    fisherz
    kci
+
+
+(Conditional) K-Sample Testing
+==============================
+
+Testing for invariances among conditional distributions is a core part
+of many data analysis procedures. Currently, we only support conditional
+2-sample testing among two distributions.
+
+.. currentmodule:: pywhy_stats.discrepancy
+.. autosummary::
+   :toctree: generated/
+   
+   bregman
+   kcd
 

@@ -39,7 +39,7 @@ version = pywhy_stats.__version__
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
-needs_sphinx = "4.0"
+needs_sphinx = "5.0"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -146,9 +146,7 @@ numpydoc_xref_aliases = {
     "PValueResult": "pywhy_stats.pvalue_result.PValueResult",
     # numpy
     "NDArray": "numpy.ndarray",
-    # "ArrayLike": "numpy.typing.ArrayLike",
     "ArrayLike": ":term:`array_like`",
-    "fisherz": "pywhy_stats.fisherz",
 }
 
 autodoc_typehints_format = "short"
