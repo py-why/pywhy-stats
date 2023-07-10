@@ -59,8 +59,8 @@ def test_given_continuous_conditionally_dependent_data_when_perform_kernel_based
     n_samples = 200
     z = rng.standard_normal((n_samples, 1))
     w = rng.standard_normal((n_samples, 1))
-    x = np.exp(z + rng.uniform(size=(n_samples, 1)))
-    y = np.exp(z + rng.uniform(size=(n_samples, 1)))
+    x = np.exp(z + rng.standard_normal(size=(n_samples, 1)))
+    y = np.exp(z + rng.standard_normal(size=(n_samples, 1)))
 
     assert kci.condind(x, y, w, approx=True).pvalue < 0.05
     assert kci.condind(x, y, w, approx=False).pvalue < 0.05

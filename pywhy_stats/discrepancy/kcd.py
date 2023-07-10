@@ -57,7 +57,8 @@ def condind(
     Y : ArrayLike of shape (n_samples, n_features_y)
         Data for variable Y, which can be multidimensional.
     group_ind : ArrayLike of shape (n_samples,)
-        Data for group indicator Z, which can be multidimensional.
+        Data for group indicator Z, which can be multidimensional. This assigns each sample
+        to a group indicated by 0 or 1.
     kernel_X : Callable[[ArrayLike], ArrayLike]
         The kernel function for X. By default, the RBF kernel is used for continuous and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.

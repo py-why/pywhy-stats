@@ -65,11 +65,12 @@ of many data analysis procedures.
    kci
 
 
-(Conditional) Discrepancy Testing
-=================================
+(Conditional) K-Sample Testing
+==============================
 
 Testing for invariances among conditional distributions is a core part
-of many data analysis procedures.
+of many data analysis procedures. Currently, we only support conditional
+2-sample testing among two distributions.
 
 .. currentmodule:: pywhy_stats.discrepancy
 .. autosummary::

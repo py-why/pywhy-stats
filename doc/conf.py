@@ -147,7 +147,6 @@ numpydoc_xref_aliases = {
     # numpy
     "NDArray": "numpy.ndarray",
     "ArrayLike": ":term:`array_like`",
-    # "fisherz": "pywhy_stats.independence.fisherz",
 }
 
 autodoc_typehints_format = "short"

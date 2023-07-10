@@ -147,9 +147,9 @@ helps maintain dependence between (X, Z) and (Y, Z) (if it exists), but generate
 conditionally independent dataset.
 
 
-=======================
-Conditional Discrepancy
-=======================
+=========================================
+Conditional Distribution 2-Sample Testing
+=========================================
 
 .. currentmodule:: pywhy_stats
 

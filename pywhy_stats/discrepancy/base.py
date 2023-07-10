@@ -49,10 +49,13 @@ def _compute_propensity_scores(
         K: ArrayLike = kwargs.get("K")
 
         # compute a default penalty term if using a kernel matrix
+        # C is the inverse of the regularization parameter
         if K.shape[0] == K.shape[1]:
+            # default regularization is 1 / (2 * K)
             propensity_penalty_ = _default_regularization(K)
             C = 1 / (2 * propensity_penalty_)
         else:
+            # defaults to no regularization
             propensity_penalty_ = 0.0
             C = 1.0
 
@@ -93,6 +96,8 @@ def compute_null(
 
     Parameters
     ----------
+    func : Callable
+        The function to compute the test statistic.
     e_hat : Array-like of shape (n_samples,)
         The predicted propensity score for ``group_ind == 1``.
     X : Array-Like of shape (n_samples, n_features_x)
@@ -112,7 +117,6 @@ def compute_null(
         The null distribution of test statistics.
     """
     rng = np.random.default_rng(seed)
-
     n_samps = X.shape[0]
 
     # compute the test statistic on the conditionally permuted
@@ -124,4 +128,4 @@ def compute_null(
             for _ in range(null_reps)
         ]
     )
-    return null_dist
+    return np.asarray(null_dist)
