@@ -28,6 +28,7 @@ Changelog
 
 - |Feature| Implement partial correlation test :func:`pywhy_stats.fisherz`, by `Adam Li`_ (:pr:`7`)
 - |Feature| Add (un)conditional kernel independence test by `Patrick Blöbaum`_, co-authored by `Adam Li`_ (:pr:`14`)
+- |Feature| Add categorical independence tests by `Adam Li`_, (:pr:`18`)
 
 
 Code and Documentation Contributors

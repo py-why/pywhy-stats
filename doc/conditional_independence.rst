@@ -92,13 +92,17 @@ which may be unrealistic in certain datasets.
 
     fisherz
 
-Discrete, Categorical and Binary Data
--------------------------------------
+:mod:`pywhy_stats.categorical` Discrete, Categorical and Binary Data
+--------------------------------------------------------------------
 If one has discrete data, then the test to use is based on Chi-square tests. The :math:`G^2`
 class of tests will construct a contingency table based on the number of levels across
 each discrete variable. An exponential amount of data is needed for increasing levels
 for a discrete variable.
 
+.. autosummary::
+   :toctree: generated/
+
+    categorical
 
 Kernel-Approaches
 -----------------
