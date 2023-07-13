@@ -1,17 +1,11 @@
-import numpy as np
-import pandas as pd
-import pytest
-from numpy.testing import assert_almost_equal
-
-from dodiscover.ci import CategoricalCITest
 from math import frexp
 
 import numpy as np
 import pandas as pd
 import pytest
-
-from dodiscover.ci import GSquareCITest
+from dodiscover.ci import CategoricalCITest, GSquareCITest
 from dodiscover.testdata import testdata
+from numpy.testing import assert_almost_equal
 
 seed = 12345
 
@@ -184,7 +178,6 @@ def test_chisquare_when_exactly_dependent(ci_test):
     stat, p_value = ci_test.test(x_vars={"x"}, y_vars={"y"}, z_covariates=[], df=df)
     assert ci_test.dof_ == 1
     assert_almost_equal(p_value, 0, decimal=5)
-
 
 
 def test_g_discrete():

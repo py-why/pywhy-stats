@@ -21,7 +21,7 @@ from scipy import stats
 from .pvalue_result import PValueResult
 
 
-def ind(X: ArrayLike, Y: ArrayLike, lambda_: str='cressie-read') -> PValueResult:
+def ind(X: ArrayLike, Y: ArrayLike, lambda_: str = "cressie-read") -> PValueResult:
     """Perform an independence test using power divergence test.
 
     Parameters
@@ -55,7 +55,9 @@ def ind(X: ArrayLike, Y: ArrayLike, lambda_: str='cressie-read') -> PValueResult
     return _power_divergence(X=X, Y=Y, Z=None, lambda_=lambda_)
 
 
-def condind(X: ArrayLike, Y: ArrayLike, condition_on: ArrayLike, lambda_: str='cressie-read') -> PValueResult:
+def condind(
+    X: ArrayLike, Y: ArrayLike, condition_on: ArrayLike, lambda_: str = "cressie-read"
+) -> PValueResult:
     """Perform an independence test using power divergence test.
 
     Parameters
@@ -86,6 +88,7 @@ def condind(X: ArrayLike, Y: ArrayLike, condition_on: ArrayLike, lambda_: str='c
     """
     return _power_divergence(X=X, Y=Y, Z=condition_on, lambda_=lambda_)
 
+
 #    # Step 1: Check if the arguments are valid and type conversions.
 #     if isinstance(Z, str):
 #         Z = [Z]
@@ -98,7 +101,7 @@ def _power_divergence(
     X: ArrayLike, Y: ArrayLike, Z: Optional[ArrayLike], lambda_: str = "cressie-read"
 ) -> PValueResult:
     """Computes the Cressie-Read power divergence statistic [1].
-    
+
     The null hypothesis for the test is X is independent of Y given Z. A lot of the
     frequency comparison based statistics (eg. chi-square, G-test etc) belong to
     power divergence family, and are special cases of this test.

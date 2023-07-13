@@ -171,6 +171,7 @@ extend-exclude = '''
     | \.github
     | setup.py
     | docs/
+    | tests/testdata/
 )
 '''
 
