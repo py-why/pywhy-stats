@@ -235,8 +235,15 @@ def _power_divergence(
         # assuming no zeros
         s_size = Z.shape[1]
         n_samples = Z.shape[0]
-        n_samples_req = 10 * dof
-        dof = int(pow(2, s_size))
+
+        levels_x = len(np.unique(X))
+        levels_y = len(np.unique(Y))
+        dof_check = (
+            (levels_x - 1)
+            * (levels_y - 1)
+            * np.prod([len(np.unique(Z[:, i])) for i in range(s_size)])
+        )
+        n_samples_req = 10 * dof_check
         if n_samples < n_samples_req:
             raise RuntimeError(
                 f"Not enough samples. {n_samples} is too small. Need {n_samples_req}."
