@@ -89,11 +89,43 @@ def condind(
     return _power_divergence(X=X, Y=Y, Z=condition_on, lambda_=lambda_)
 
 
-#    # Step 1: Check if the arguments are valid and type conversions.
-#     if isinstance(Z, str):
-#         Z = [Z]
-#     if (X in Z) or (Y in Z):
-#         raise ValueError(f"The variables X or Y can't be in Z. Found {X if X in Z else Y} in Z.")
+def _compute_conditional_contingency_table(X, Y, Z):
+    unique_Z_vals = np.unique(Z)
+
+    chi = 0
+    dof = 0
+
+    for z_state in unique_Z_vals:
+        pass
+
+
+def _compute_conditional_contingency_table(df, X, Y, Z, lambda_=None):
+    X = np.array(X)
+    Y = np.array(Y)
+    Z = np.array(Z)
+
+    unique_Z_vals = np.unique(Z)
+
+    chi = 0
+    dof = 0
+
+    for z_state in unique_Z_vals:
+        z_indices = np.where(Z == z_state)[0]
+        sub_df = df[z_indices]
+
+        x_values = np.unique(sub_df[X])
+        y_values = np.unique(sub_df[Y])
+
+        counts, _, _ = np.histogram2d(sub_df[X], sub_df[Y], bins=(x_values, y_values))
+
+        if lambda_ is not None:
+            counts = lambda_(counts)
+
+        c, _ = stats.chisquare(counts)
+        chi += c
+        dof += (counts.shape[0] - 1) * (counts.shape[1] - 1)
+
+    return chi, dof
 
 
 # This is a modified function taken from pgmpy: License MIT
@@ -142,49 +174,59 @@ def _power_divergence(
     References
     ----------
     .. footbibliography::
-
-    Examples
-    --------
-    >>> import pandas as pd
-    >>> import numpy as np
-    >>> data = pd.DataFrame(np.random.randint(0, 2, size=(50000, 4)), columns=list('ABCD'))
-    >>> data['E'] = data['A'] + data['B'] + data['C']
-    >>> chi_square(X='A', Y='C', Z=[], data=data, boolean=True, significance_level=0.05)
-    True
-    >>> chi_square(X='A', Y='B', Z=['D'], data=data, boolean=True, significance_level=0.05)
-    True
-    >>> chi_square(X='A', Y='B', Z=['D', 'E'], data=data, boolean=True, significance_level=0.05)
-    False
     """
+    for name, arr in zip(["X", "Y"], [X, Y]):
+        # Check if all elements are integers
+        if not np.issubdtype(arr.dtype, np.integer):
+            raise TypeError(f"All arrays should be categorical (i.e.) integers for {name} array.")
+
+        # Check if the number of unique values is reasonably small
+        unique_values = np.unique(arr)
+        num_unique_values = len(unique_values)
+        if num_unique_values > 64:  # Adjust the threshold as needed
+            raise RuntimeError(
+                f"There are {num_unique_values} unique categories for {name}. "
+                f"This is likely an error."
+            )
+
     # Step 1: Do a simple contingency test if there are no conditional variables.
     if Z is None:
-        # XXX: convert this to work with numpy arrays
-        chi, p_value, dof, expected = stats.chi2_contingency(
-            data.groupby([X, Y]).size().unstack(Y, fill_value=0), lambda_=lambda_
-        )
+        # Compute the contingency table
+        observed_xy, _, _ = np.histogram2d(X, Y, bins=(np.unique(X).size, np.unique(Y).size))
+        chi, p_value, dof, expected = stats.chi2_contingency(observed_xy, lambda_=lambda_)
 
     # Step 2: If there are conditionals variables, iterate over unique states and do
     #         the contingency test.
     else:
+        import pandas as pd
+
         chi = 0
         dof = 0
-        for idx, (z_state, df) in enumerate(data.groupby(Z[0] if len(Z) == 1 else Z)):
+
+        # XXX: currently we just leverage pandas to do the grouping. This is not
+        # ideal since we do not want the reliance on pandas package, but we should refactor
+        # this to only use numpy efficiently
+        X_columns = [f"X{i}" for i in range(X.shape[1])]
+        Y_columns = [f"Y{i}" for i in range(Y.shape[1])]
+        Z_columns = [f"Z{i}" for i in range(Z.shape[1])]
+        columns = X_columns + Y_columns + Z_columns
+        data = pd.DataFrame(np.column_stack((X, Y, Z)), columns=columns)
+
+        for z_state, df in data.groupby(Z_columns[0] if len(Z_columns) == 1 else Z_columns):
             try:
                 # Note: The fill value is set to 1e-7 to avoid the following error:
                 # where there are not enough samples in the data, which results in a nan pvalue
-                sub_table_z = df.groupby([X, Y]).size().unstack(Y, fill_value=1e-7)
+                sub_table_z = df.groupby([X_columns, Y_columns]).size().unstack(Y, fill_value=1e-7)
                 c, _, d, _ = stats.chi2_contingency(sub_table_z, lambda_=lambda_)
                 chi += c
                 dof += d
             except ValueError:
                 # If one of the values is 0 in the 2x2 table.
                 if isinstance(z_state, str):
-                    logging.info(
-                        f"Skipping the test {X} \u27C2 {Y} | {Z[idx]}={z_state}. Not enough samples"
-                    )
+                    logging.info(f"Skipping the test X \u27C2 Y | Z={z_state}. Not enough samples")
                 else:
-                    z_str = ", ".join([f"{var}={state}" for var, state in zip(Z, z_state)])
-                    logging.info(f"Skipping the test {X} \u27C2 {Y} | {z_str}. Not enough samples")
+                    z_str = ", ".join([f"{var}={state}" for var, state in zip(Z_columns, z_state)])
+                    logging.info(f"Skipping the test X \u27C2 Y | {z_str}. Not enough samples")
 
             if np.isnan(c):
                 raise RuntimeError(
@@ -196,5 +238,8 @@ def _power_divergence(
         p_value = 1 - stats.chi2.cdf(chi, df=dof)
 
     # Step 4: Return the values
-    result = PValueResult(statistic=chi, pvalue=p_value, dof=dof)
+    additional_information = {"dof": dof}
+    result = PValueResult(
+        statistic=chi, pvalue=p_value, additional_information=additional_information
+    )
     return result
