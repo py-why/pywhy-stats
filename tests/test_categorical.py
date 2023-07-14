@@ -3,13 +3,31 @@ from math import frexp
 import numpy as np
 import pandas as pd
 import pytest
-from dodiscover.ci import CategoricalCITest, GSquareCITest
-from dodiscover.testdata import testdata
 from numpy.testing import assert_almost_equal
+
+from pywhy_stats import categorical
+
+from .testdata import testdata
 
 seed = 12345
 
 df_adult = pd.read_csv("tests/testdata/adult.csv")
+
+
+def _binary_scm(n_samples=200):
+    # We construct a SCM where X1 -> Y <- X and Y -> Z
+    # so X1 is independent from X, but conditionally dependent
+    # given Y or Z
+    rng = np.random.default_rng(seed)
+
+    X = rng.binomial(1, 0.3, (n_samples, 1))
+    X1 = rng.binomial(1, 0.6, (n_samples, 1))
+    Y = X * X1
+    Z = Y + (1 - rng.binomial(1, 0.5, (n_samples, 1)))
+
+    # create input for the CI test
+    df = pd.DataFrame(np.hstack((X, X1, Y, Z)), columns=["x", "x1", "y", "z"])
+    return df
 
 
 def test_chisquare_marginal_independence_adult_dataset():
@@ -18,26 +36,32 @@ def test_chisquare_marginal_independence_adult_dataset():
     Uses the test data from dagitty.
     """
     # Comparision values taken from dagitty (DAGitty)
-    ci_est = CategoricalCITest("pearson")
-    coef, p_value = ci_est.test(x_vars={"Age"}, y_vars={"Immigrant"}, z_covariates=[], df=df_adult)
-    assert_almost_equal(coef, 57.75, decimal=1)
-    assert_almost_equal(np.log(p_value), -25.47, decimal=1)
-    assert ci_est.dof_ == 4
+    lambda_ = "pearson"
+    X = df_adult["Age"]
+    Y = df_adult["Immigrant"]
+    result = categorical.ind(X=X, Y=Y, lambda_=lambda_)
+    assert_almost_equal(result.statistic, 57.75, decimal=1)
+    assert_almost_equal(np.log(result.pvalue), -25.47, decimal=1)
+    assert result.additional_information["dof"] == 4
 
-    coef, p_value = ci_est.test(x_vars={"Age"}, y_vars={"Race"}, z_covariates=[], df=df_adult)
-    assert_almost_equal(coef, 56.25, decimal=1)
-    assert_almost_equal(np.log(p_value), -24.75, decimal=1)
-    assert ci_est.dof_ == 4
+    Y = df_adult["Race"]
+    result = categorical.ind(X=X, Y=Y, lambda_=lambda_)
+    assert_almost_equal(result.statistic, 56.25, decimal=1)
+    assert_almost_equal(np.log(result.pvalue), -24.75, decimal=1)
+    assert result.additional_information["dof"] == 4
 
-    coef, p_value = ci_est.test(x_vars={"Age"}, y_vars={"Sex"}, z_covariates=[], df=df_adult)
-    assert_almost_equal(coef, 289.62, decimal=1)
-    assert_almost_equal(np.log(p_value), -139.82, decimal=1)
-    assert ci_est.dof_ == 4
+    Y = df_adult["Sex"]
+    result = categorical.ind(X=X, Y=Y, lambda_=lambda_)
+    assert_almost_equal(result.statistic, 289.62, decimal=1)
+    assert_almost_equal(np.log(result.pvalue), -139.82, decimal=1)
+    assert result.additional_information["dof"] == 4
 
-    coef, p_value = ci_est.test(x_vars={"Immigrant"}, y_vars={"Sex"}, z_covariates={}, df=df_adult)
-    assert_almost_equal(coef, 0.2724, decimal=1)
-    assert_almost_equal(np.log(p_value), -0.50, decimal=1)
-    assert ci_est.dof_ == 1
+    X = df_adult["Immigrant"]
+    Y = df_adult["Sex"]
+    result = categorical.ind(X=X, Y=Y, lambda_=lambda_)
+    assert_almost_equal(result.statistic, 0.2724, decimal=1)
+    assert_almost_equal(np.log(result.pvalue), -0.50, decimal=1)
+    assert result.additional_information["dof"] == 1
 
 
 def test_chisquare_conditional_independence_adult_dataset():
@@ -45,139 +69,104 @@ def test_chisquare_conditional_independence_adult_dataset():
 
     Uses the test data from dagitty.
     """
-    ci_est = CategoricalCITest("pearson")
+    lambda_ = "pearson"
+    X = df_adult["Education"]
+    Y = df_adult["HoursPerWeek"]
+    condition_on = df_adult[["Age", "Immigrant", "Race", "Sex"]]
+    result = categorical.condind(X=X, Y=Y, Z=condition_on, lambda_=lambda_)
+    assert_almost_equal(result.statistic, 1460.11, decimal=1)
+    assert_almost_equal(result.pvalue, 0, decimal=1)
+    assert result.additional_information["dof"] == 316
 
-    coef, p_value = coef, p_value = ci_est.test(
-        x_vars={"Education"},
-        y_vars={"HoursPerWeek"},
-        z_covariates=["Age", "Immigrant", "Race", "Sex"],
-        df=df_adult,
-    )
-    assert_almost_equal(coef, 1460.11, decimal=1)
-    assert_almost_equal(p_value, 0, decimal=1)
-    assert ci_est.dof_ == 316
-
-    coef, p_value = ci_est.test(
-        x_vars={"Education"}, y_vars={"MaritalStatus"}, z_covariates=["Age", "Sex"], df=df_adult
-    )
-    assert_almost_equal(coef, 481.96, decimal=1)
-    assert_almost_equal(p_value, 0, decimal=1)
-    assert ci_est.dof_ == 58
+    Y = df_adult["MaritalStatus"]
+    condition_on = df_adult[["Age", "Sex"]]
+    result = categorical.condind(X=X, Y=Y, Z=condition_on, lambda_=lambda_)
+    assert_almost_equal(result.statistic, 481.96, decimal=1)
+    assert_almost_equal(result.pvalue, 0, decimal=1)
+    assert result.additional_information["dof"] == 58
 
     # Values differ (for next 2 tests) from dagitty because dagitty ignores grouped
     # dataframes with very few samples. Update: Might be same from scipy_vars=1.7.0
-    coef, p_value = ci_est.test(
-        x_vars={"Income"},
-        y_vars={"Race"},
-        z_covariates=["Age", "Education", "HoursPerWeek", "MaritalStatus"],
-        df=df_adult,
-    )
+    X = df_adult["Income"]
+    Y = df_adult["Race"]
+    condition_on = df_adult[["Age", "Education", "HoursPerWeek", "MaritalStatus"]]
+    result = categorical.condind(X=X, Y=Y, Z=condition_on, lambda_=lambda_)
 
-    assert_almost_equal(coef, 66.39, decimal=1)
-    assert_almost_equal(p_value, 0.99, decimal=1)
-    assert ci_est.dof_ == 136
+    assert_almost_equal(result.statistic, 66.39, decimal=1)
+    assert_almost_equal(result.pvalue, 0.99, decimal=1)
+    assert result.additional_information["dof"] == 136
 
-    coef, p_value = ci_est.test(
-        x_vars={"Immigrant"},
-        y_vars={"Income"},
-        z_covariates=["Age", "Education", "HoursPerWeek", "MaritalStatus"],
-        df=df_adult,
-    )
-    assert_almost_equal(coef, 65.59, decimal=1)
-    assert_almost_equal(p_value, 0.999, decimal=2)
-    assert ci_est.dof_ == 131
+    X = df_adult["Immigrant"]
+    Y = df_adult["Income"]
+    condition_on = df_adult[["Age", "Education", "HoursPerWeek", "MaritalStatus"]]
+    result = categorical.condind(X=X, Y=Y, Z=condition_on, lambda_=lambda_)
+    assert_almost_equal(result.statistic, 65.59, decimal=1)
+    assert_almost_equal(result.pvalue, 0.999, decimal=2)
+    assert result.additional_information["dof"] == 131
 
 
 @pytest.mark.parametrize(
-    "ci_test",
+    "lambda_",
     [
-        CategoricalCITest("pearson"),  # chi-square
-        CategoricalCITest("log-likelihood"),  # G^2
-        CategoricalCITest("freeman-tukey"),  # freeman-tukey
-        CategoricalCITest("mod-log-likelihood"),  # Modified log-likelihood
-        CategoricalCITest("neyman"),  # Neyman
-        CategoricalCITest("cressie-read"),  # Cressie-read
+        "pearson",  # chi-square
+        "log-likelihood",  # G^2
+        "freeman-tukey",  # freeman-tukey
+        "mod-log-likelihood",  # Modified log-likelihood
+        "neyman",  # Neyman
+        "cressie-read",  # Cressie-read
     ],
 )
-def test_chisquare_when_dependent(ci_test):
+def test_chisquare_when_dependent_given_different_lambda_on_testdata(lambda_):
     assert (
-        ci_test.test(
-            x_vars={"Age"},
-            y_vars={"Immigrant"},
-            z_covariates=[],
-            df=df_adult,
-        )[1]
-        < 0.05
+        categorical.ind(X=df_adult["Age"], Y=df_adult["Immigrant"], lambda_=lambda_).pvalue < 0.05
+    )
+
+    assert categorical.ind(X=df_adult["Age"], Y=df_adult["Race"], lambda_=lambda_).pvalue < 0.05
+
+    assert categorical.ind(X=df_adult["Age"], Y=df_adult["Sex"], lambda_=lambda_).pvalue < 0.05
+    assert (
+        categorical.ind(X=df_adult["Immigrant"], Y=df_adult["Sex"], lambda_=lambda_).pvalue >= 0.05
     )
 
     assert (
-        ci_test.test(
-            x_vars={"Age"},
-            y_vars={"Race"},
-            z_covariates=[],
-            df=df_adult,
-        )[1]
-        < 0.05
-    )
-
-    assert (
-        ci_test.test(
-            x_vars={"Age"},
-            y_vars={"Sex"},
-            z_covariates=[],
-            df=df_adult,
-        )[1]
+        categorical.condind(
+            X=df_adult["Education"],
+            Y=df_adult["HoursPerWeek"],
+            condition_on=df_adult[["Age", "Immigrant", "Race", "Sex"]],
+            lambda_=lambda_,
+        ).pvalue
         < 0.05
     )
     assert (
-        ci_test.test(
-            x_vars={"Immigrant"},
-            y_vars={"Sex"},
-            z_covariates=[],
-            df=df_adult,
-        )[1]
-        >= 0.05
-    )
-
-    assert (
-        ci_test.test(
-            x_vars={"Education"},
-            y_vars={"HoursPerWeek"},
-            z_covariates=["Age", "Immigrant", "Race", "Sex"],
-            df=df_adult,
-        )[1]
-        < 0.05
-    )
-    assert (
-        ci_test.test(
-            x_vars={"Education"},
-            y_vars={"MaritalStatus"},
-            z_covariates=["Age", "Sex"],
-            df=df_adult,
-        )[1]
+        categorical.condind(
+            X=df_adult["Education"],
+            Y=df_adult["MaritalStatus"],
+            condition_on=df_adult[["Age", "Sex"]],
+            lambda_=lambda_,
+        ).pvalue
         < 0.05
     )
 
 
 @pytest.mark.parametrize(
-    "ci_test",
+    "lambda_",
     [
-        CategoricalCITest("pearson"),  # chi-square
-        CategoricalCITest("log-likelihood"),  # G^2
-        CategoricalCITest("freeman-tukey"),  # freeman-tukey
-        CategoricalCITest("mod-log-likelihood"),  # Modified log-likelihood
-        CategoricalCITest("neyman"),  # Neyman
-        CategoricalCITest("cressie-read"),  # Cressie-read
+        "pearson",  # chi-square
+        "log-likelihood",  # G^2
+        "freeman-tukey",  # freeman-tukey
+        "mod-log-likelihood",  # Modified log-likelihood
+        "neyman",  # Neyman
+        "cressie-read",  # Cressie-read
     ],
 )
-def test_chisquare_when_exactly_dependent(ci_test):
+def test_chisquare_when_exactly_dependent_given_different_lambda_(lambda_):
     x = np.random.choice([0, 1], size=1000)
     y = x.copy()
     df = pd.DataFrame({"x": x, "y": y})
 
-    stat, p_value = ci_test.test(x_vars={"x"}, y_vars={"y"}, z_covariates=[], df=df)
-    assert ci_test.dof_ == 1
-    assert_almost_equal(p_value, 0, decimal=5)
+    result = categorical.ind(X=df["x"], Y=df["y"], lambda_=lambda_)
+    assert result.additional_information["dof"] == 1
+    assert_almost_equal(result.pvalue, 0, decimal=5)
 
 
 def test_g_discrete():
@@ -235,27 +224,11 @@ def test_g_binary():
         ci_estimator.test(df, {x}, {y}, set(sets[0]))
 
 
-def binary_scm(n_samples=200):
-    # We construct a SCM where X1 -> Y <- X and Y -> Z
-    # so X1 is independent from X, but conditionally dependent
-    # given Y or Z
-    rng = np.random.default_rng(seed)
-
-    X = rng.binomial(1, 0.3, (n_samples, 1))
-    X1 = rng.binomial(1, 0.6, (n_samples, 1))
-    Y = X * X1
-    Z = Y + (1 - rng.binomial(1, 0.5, (n_samples, 1)))
-
-    # create input for the CI test
-    df = pd.DataFrame(np.hstack((X, X1, Y, Z)), columns=["x", "x1", "y", "z"])
-    return df
-
-
 def test_g_binary_simulation():
     """Test G^2 test for binary data."""
     rng = np.random.default_rng(seed)
     n_samples = 500
-    df = binary_scm(n_samples=n_samples)
+    df = _binary_scm(n_samples=n_samples)
     for i in range(10):
         df[i] = rng.binomial(1, p=0.5, size=n_samples)
     ci_estimator = GSquareCITest(data_type="binary")
@@ -277,7 +250,7 @@ def test_g_binary_highdim():
     """Test G^2 test for binary data."""
     rng = np.random.default_rng(seed)
     n_samples = 1000
-    df = binary_scm(n_samples=n_samples)
+    df = _binary_scm(n_samples=n_samples)
     for i in range(10):
         df[i] = rng.binomial(1, p=0.8, size=n_samples)
     ci_estimator = GSquareCITest(data_type="binary")
