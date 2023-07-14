@@ -17,6 +17,7 @@ from typing import Optional
 import numpy as np
 from numpy.typing import ArrayLike
 from scipy import stats
+from sklearn.preprocessing import LabelEncoder
 
 from .pvalue_result import PValueResult
 
@@ -132,7 +133,7 @@ def _compute_conditional_contingency_table(df, X, Y, Z, lambda_=None):
 def _power_divergence(
     X: ArrayLike, Y: ArrayLike, Z: Optional[ArrayLike], lambda_: str = "cressie-read"
 ) -> PValueResult:
-    """Computes the Cressie-Read power divergence statistic [1].
+    """Compute the Cressie-Read power divergence statistic.
 
     The null hypothesis for the test is X is independent of Y given Z. A lot of the
     frequency comparison based statistics (eg. chi-square, G-test etc) belong to
@@ -175,11 +176,26 @@ def _power_divergence(
     ----------
     .. footbibliography::
     """
-    for name, arr in zip(["X", "Y"], [X, Y]):
-        # Check if all elements are integers
-        if not np.issubdtype(arr.dtype, np.integer):
-            raise TypeError(f"All arrays should be categorical (i.e.) integers for {name} array.")
+    if X.ndim != 1 or Y.ndim != 1:
+        raise ValueError("X and Y should be 1-D arrays.")
 
+    # ensure we use numpy arrays
+    X = np.asarray(X)
+    Y = np.asarray(Y)
+
+    # Check if all elements are integers
+    if not np.issubdtype(X.dtype, np.integer):
+        le = LabelEncoder()
+        X = le.fit_transform(X)
+        # warn("Converting X array to categorical array using scikit-learn's LabelEncoder.")
+
+    # Check if all elements are integers
+    if not np.issubdtype(Y.dtype, np.integer):
+        le = LabelEncoder()
+        Y = le.fit_transform(Y)
+        # warn("Converting Y array to categorical array using scikit-learn's LabelEncoder.")
+
+    for name, arr in zip(["X", "Y"], [X, Y]):
         # Check if the number of unique values is reasonably small
         unique_values = np.unique(arr)
         num_unique_values = len(unique_values)
@@ -203,11 +219,34 @@ def _power_divergence(
         chi = 0
         dof = 0
 
+        Z = np.asarray(Z)
+        if Z.ndim == 1:
+            Z = Z.reshape(-1, 1)
+
+        # XXX: needed when converting to only numpy API
+        # Check if all elements are integers
+        if not np.issubdtype(Z.dtype, np.integer):
+            le = LabelEncoder()
+            for idx in range(Z.shape[1]):
+                Z[:, idx] = le.fit_transform(Z[:, idx])
+            # warn("Converting Z array to categorical array using scikit-learn's LabelEncoder.")
+
+        # check number of samples relative to degrees of freedom
+        # assuming no zeros
+        s_size = Z.shape[1]
+        n_samples = Z.shape[0]
+        n_samples_req = 10 * dof
+        dof = int(pow(2, s_size))
+        if n_samples < n_samples_req:
+            raise RuntimeError(
+                f"Not enough samples. {n_samples} is too small. Need {n_samples_req}."
+            )
+
         # XXX: currently we just leverage pandas to do the grouping. This is not
         # ideal since we do not want the reliance on pandas package, but we should refactor
         # this to only use numpy efficiently
-        X_columns = [f"X{i}" for i in range(X.shape[1])]
-        Y_columns = [f"Y{i}" for i in range(Y.shape[1])]
+        X_columns = ["X"]
+        Y_columns = ["Y"]
         Z_columns = [f"Z{i}" for i in range(Z.shape[1])]
         columns = X_columns + Y_columns + Z_columns
         data = pd.DataFrame(np.column_stack((X, Y, Z)), columns=columns)
@@ -216,7 +255,9 @@ def _power_divergence(
             try:
                 # Note: The fill value is set to 1e-7 to avoid the following error:
                 # where there are not enough samples in the data, which results in a nan pvalue
-                sub_table_z = df.groupby([X_columns, Y_columns]).size().unstack(Y, fill_value=1e-7)
+                sub_table_z = (
+                    df.groupby(X_columns + Y_columns).size().unstack(Y_columns, fill_value=1e-7)
+                )
                 c, _, d, _ = stats.chi2_contingency(sub_table_z, lambda_=lambda_)
                 chi += c
                 dof += d
