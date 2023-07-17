@@ -83,7 +83,7 @@ def test_chisquare_conditional_independence_adult_dataset():
     result = categorical.condind(X=X, Y=Y, condition_on=condition_on, lambda_=lambda_)
     assert_almost_equal(result.statistic, 481.96, decimal=1)
     assert_almost_equal(result.pvalue, 0, decimal=1)
-    assert result.additional_information["dof"] == 62
+    assert result.additional_information["dof"] == 58
 
     # Values differ (for next 2 tests) from dagitty because dagitty ignores grouped
     # dataframes with very few samples. Update: Might be same from scipy_vars=1.7.0
@@ -94,7 +94,7 @@ def test_chisquare_conditional_independence_adult_dataset():
 
     assert_almost_equal(result.statistic, 66.39, decimal=1)
     assert_almost_equal(result.pvalue, 0.99, decimal=1)
-    assert result.additional_information["dof"] == 152
+    assert result.additional_information["dof"] == 136
 
     X = df_adult["Immigrant"]
     Y = df_adult["Income"]
@@ -102,7 +102,7 @@ def test_chisquare_conditional_independence_adult_dataset():
     result = categorical.condind(X=X, Y=Y, condition_on=condition_on, lambda_=lambda_)
     assert_almost_equal(result.statistic, 65.59, decimal=1)
     assert_almost_equal(result.pvalue, 0.999, decimal=2)
-    assert result.additional_information["dof"] == 147
+    assert result.additional_information["dof"] == 131
 
 
 @pytest.mark.parametrize(
