@@ -31,9 +31,9 @@ def ind(X: ArrayLike, Y: ArrayLike, lambda_: str = "cressie-read") -> PValueResu
         The first node variable.
     Y : ArrayLike of shape (n_samples,)
         The second node variable.
-    lambda_: float or string
+    lambda_ : float or string
         The lambda parameter for the power_divergence statistic. Some values of
-        lambda_ results in other well known tests:
+        ``lambda_`` results in other well known tests:
             "pearson"             1          "Chi-squared test"
             "log-likelihood"      0          "G-test or log-likelihood"
             "freeman-tukey"     -1/2        "freeman-tukey Statistic"

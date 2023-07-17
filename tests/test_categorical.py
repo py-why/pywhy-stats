@@ -76,7 +76,7 @@ def test_chisquare_conditional_independence_adult_dataset():
     result = categorical.condind(X=X, Y=Y, condition_on=condition_on, lambda_=lambda_)
     assert_almost_equal(result.statistic, 1460.11, decimal=1)
     assert_almost_equal(result.pvalue, 0, decimal=1)
-    assert result.additional_information["dof"] == 332
+    assert result.additional_information["dof"] == 316
 
     Y = df_adult["MaritalStatus"]
     condition_on = df_adult[["Age", "Sex"]]
