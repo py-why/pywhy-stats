@@ -207,6 +207,7 @@ def _power_divergence(
     Z: Optional[ArrayLike],
     method: str = "cressie-read",
     num_categories_allowed: int = 10,
+    correction: bool = True,
 ) -> PValueResult:
     """Compute the Cressie-Read power divergence statistic.
 
@@ -231,6 +232,11 @@ def _power_divergence(
                                          :footcite:`cressieread1984`"
     num_categories_allowed : int
         The maximum number of categories allowed in the input variables.
+    correction : bool, optional
+        If True, *and* the degrees of freedom is 1, apply Yates' correction
+        for continuity.  The effect of the correction is to adjust each
+        observed value by 0.5 towards the corresponding expected value.
+        See `scipy.stats.power_divergence` for more details.
 
     Returns
     -------
@@ -265,7 +271,7 @@ def _power_divergence(
     if Z is None:
         # Compute the contingency table
         observed_xy, _, _ = np.histogram2d(X, Y, bins=(np.unique(X).size, np.unique(Y).size))
-        chi, p_value, dof, expected = stats.chi2_contingency(observed_xy, method=method)
+        chi, p_value, dof, expected = stats.chi2_contingency(observed_xy, correction=correction, lambda_=method)
 
     # Step 2: If there are conditionals variables, iterate over unique states and do
     #         the contingency test.
@@ -310,7 +316,7 @@ def _power_divergence(
                 sub_table_z = (
                     df.groupby(X_columns + Y_columns).size().unstack(Y_columns, fill_value=1e-7)
                 )
-                c, _, d, _ = stats.chi2_contingency(sub_table_z, method=method)
+                c, _, d, _ = stats.chi2_contingency(sub_table_z, correction=correction, lambda_=method)
                 chi += c
                 dof += d
             except ValueError:
