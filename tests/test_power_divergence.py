@@ -36,29 +36,29 @@ def test_chisquare_marginal_independence_adult_dataset():
     Uses the test data from dagitty.
     """
     # Comparision values taken from dagitty (DAGitty)
-    lambda_ = "pearson"
+    method = "pearson"
     X = df_adult["Age"]
     Y = df_adult["Immigrant"]
-    result = power_divergence.ind(X=X, Y=Y, method=lambda_)
+    result = power_divergence.ind(X=X, Y=Y, method=method)
     assert_almost_equal(result.statistic, 57.75, decimal=1)
     assert_almost_equal(np.log(result.pvalue), -25.47, decimal=1)
     assert result.additional_information["dof"] == 4
 
     Y = df_adult["Race"]
-    result = power_divergence.ind(X=X, Y=Y, method=lambda_)
+    result = power_divergence.ind(X=X, Y=Y, method=method)
     assert_almost_equal(result.statistic, 56.25, decimal=1)
     assert_almost_equal(np.log(result.pvalue), -24.75, decimal=1)
     assert result.additional_information["dof"] == 4
 
     Y = df_adult["Sex"]
-    result = power_divergence.ind(X=X, Y=Y, method=lambda_)
+    result = power_divergence.ind(X=X, Y=Y, method=method)
     assert_almost_equal(result.statistic, 289.62, decimal=1)
     assert_almost_equal(np.log(result.pvalue), -139.82, decimal=1)
     assert result.additional_information["dof"] == 4
 
     X = df_adult["Immigrant"]
     Y = df_adult["Sex"]
-    result = power_divergence.ind(X=X, Y=Y, method=lambda_)
+    result = power_divergence.ind(X=X, Y=Y, method=method)
     assert_almost_equal(result.statistic, 0.2724, decimal=1)
     assert_almost_equal(np.log(result.pvalue), -0.50, decimal=1)
     assert result.additional_information["dof"] == 1
@@ -69,18 +69,18 @@ def test_chisquare_conditional_independence_adult_dataset():
 
     Uses the test data from dagitty.
     """
-    lambda_ = "pearson"
+    method = "pearson"
     X = df_adult["Education"]
     Y = df_adult["HoursPerWeek"]
     condition_on = df_adult[["Age", "Immigrant", "Race", "Sex"]]
-    result = power_divergence.condind(X=X, Y=Y, condition_on=condition_on, method=lambda_)
+    result = power_divergence.condind(X=X, Y=Y, condition_on=condition_on, method=method)
     assert_almost_equal(result.statistic, 1460.11, decimal=1)
     assert_almost_equal(result.pvalue, 0, decimal=1)
     assert result.additional_information["dof"] == 316
 
     Y = df_adult["MaritalStatus"]
     condition_on = df_adult[["Age", "Sex"]]
-    result = power_divergence.condind(X=X, Y=Y, condition_on=condition_on, method=lambda_)
+    result = power_divergence.condind(X=X, Y=Y, condition_on=condition_on, method=method)
     assert_almost_equal(result.statistic, 481.96, decimal=1)
     assert_almost_equal(result.pvalue, 0, decimal=1)
     assert result.additional_information["dof"] == 58
@@ -90,7 +90,7 @@ def test_chisquare_conditional_independence_adult_dataset():
     X = df_adult["Income"]
     Y = df_adult["Race"]
     condition_on = df_adult[["Age", "Education", "HoursPerWeek", "MaritalStatus"]]
-    result = power_divergence.condind(X=X, Y=Y, condition_on=condition_on, method=lambda_)
+    result = power_divergence.condind(X=X, Y=Y, condition_on=condition_on, method=method)
 
     assert_almost_equal(result.statistic, 66.39, decimal=1)
     assert_almost_equal(result.pvalue, 0.99, decimal=1)
@@ -99,14 +99,14 @@ def test_chisquare_conditional_independence_adult_dataset():
     X = df_adult["Immigrant"]
     Y = df_adult["Income"]
     condition_on = df_adult[["Age", "Education", "HoursPerWeek", "MaritalStatus"]]
-    result = power_divergence.condind(X=X, Y=Y, condition_on=condition_on, method=lambda_)
+    result = power_divergence.condind(X=X, Y=Y, condition_on=condition_on, method=method)
     assert_almost_equal(result.statistic, 65.59, decimal=1)
     assert_almost_equal(result.pvalue, 0.999, decimal=2)
     assert result.additional_information["dof"] == 131
 
 
 @pytest.mark.parametrize(
-    "lambda_",
+    "method",
     [
         "pearson",  # chi-square
         "log-likelihood",  # G^2
@@ -116,17 +116,17 @@ def test_chisquare_conditional_independence_adult_dataset():
         "cressie-read",  # Cressie-read
     ],
 )
-def test_chisquare_when_dependent_given_different_lambda_on_testdata(lambda_):
+def test_chisquare_when_dependent_given_different_methodon_testdata(method):
     assert (
-        power_divergence.ind(X=df_adult["Age"], Y=df_adult["Immigrant"], method=lambda_).pvalue
+        power_divergence.ind(X=df_adult["Age"], Y=df_adult["Immigrant"], method=method).pvalue
         < 0.05
     )
 
-    assert power_divergence.ind(X=df_adult["Age"], Y=df_adult["Race"], method=lambda_).pvalue < 0.05
+    assert power_divergence.ind(X=df_adult["Age"], Y=df_adult["Race"], method=method).pvalue < 0.05
 
-    assert power_divergence.ind(X=df_adult["Age"], Y=df_adult["Sex"], method=lambda_).pvalue < 0.05
+    assert power_divergence.ind(X=df_adult["Age"], Y=df_adult["Sex"], method=method).pvalue < 0.05
     assert (
-        power_divergence.ind(X=df_adult["Immigrant"], Y=df_adult["Sex"], method=lambda_).pvalue
+        power_divergence.ind(X=df_adult["Immigrant"], Y=df_adult["Sex"], method=method).pvalue
         >= 0.05
     )
 
@@ -135,7 +135,7 @@ def test_chisquare_when_dependent_given_different_lambda_on_testdata(lambda_):
             X=df_adult["Education"],
             Y=df_adult["HoursPerWeek"],
             condition_on=df_adult[["Age", "Immigrant", "Race", "Sex"]],
-            method=lambda_,
+            method=method,
         ).pvalue
         < 0.05
     )
@@ -144,14 +144,14 @@ def test_chisquare_when_dependent_given_different_lambda_on_testdata(lambda_):
             X=df_adult["Education"],
             Y=df_adult["MaritalStatus"],
             condition_on=df_adult[["Age", "Sex"]],
-            method=lambda_,
+            method=method,
         ).pvalue
         < 0.05
     )
 
 
 @pytest.mark.parametrize(
-    "lambda_",
+    "method",
     [
         "pearson",  # chi-square
         "log-likelihood",  # G^2
@@ -161,12 +161,12 @@ def test_chisquare_when_dependent_given_different_lambda_on_testdata(lambda_):
         "cressie-read",  # Cressie-read
     ],
 )
-def test_chisquare_when_exactly_dependent_given_different_lambda_(lambda_):
+def test_chisquare_when_exactly_dependent_given_different_method(method):
     x = np.random.choice([0, 1], size=1000)
     y = x.copy()
     df = pd.DataFrame({"x": x, "y": y})
 
-    result = power_divergence.ind(X=df["x"], Y=df["y"], method=lambda_)
+    result = power_divergence.ind(X=df["x"], Y=df["y"], method=method)
     assert result.additional_information["dof"] == 1
     assert_almost_equal(result.pvalue, 0, decimal=5)
 
