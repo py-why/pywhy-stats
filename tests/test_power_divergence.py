@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 from numpy.testing import assert_almost_equal
 
-from pywhy_stats import categorical
+from pywhy_stats import power_divergence
 
 from .testdata import testdata
 
@@ -39,26 +39,26 @@ def test_chisquare_marginal_independence_adult_dataset():
     lambda_ = "pearson"
     X = df_adult["Age"]
     Y = df_adult["Immigrant"]
-    result = categorical.ind(X=X, Y=Y, lambda_=lambda_)
+    result = power_divergence.ind(X=X, Y=Y, method=lambda_)
     assert_almost_equal(result.statistic, 57.75, decimal=1)
     assert_almost_equal(np.log(result.pvalue), -25.47, decimal=1)
     assert result.additional_information["dof"] == 4
 
     Y = df_adult["Race"]
-    result = categorical.ind(X=X, Y=Y, lambda_=lambda_)
+    result = power_divergence.ind(X=X, Y=Y, method=lambda_)
     assert_almost_equal(result.statistic, 56.25, decimal=1)
     assert_almost_equal(np.log(result.pvalue), -24.75, decimal=1)
     assert result.additional_information["dof"] == 4
 
     Y = df_adult["Sex"]
-    result = categorical.ind(X=X, Y=Y, lambda_=lambda_)
+    result = power_divergence.ind(X=X, Y=Y, method=lambda_)
     assert_almost_equal(result.statistic, 289.62, decimal=1)
     assert_almost_equal(np.log(result.pvalue), -139.82, decimal=1)
     assert result.additional_information["dof"] == 4
 
     X = df_adult["Immigrant"]
     Y = df_adult["Sex"]
-    result = categorical.ind(X=X, Y=Y, lambda_=lambda_)
+    result = power_divergence.ind(X=X, Y=Y, method=lambda_)
     assert_almost_equal(result.statistic, 0.2724, decimal=1)
     assert_almost_equal(np.log(result.pvalue), -0.50, decimal=1)
     assert result.additional_information["dof"] == 1
@@ -73,14 +73,14 @@ def test_chisquare_conditional_independence_adult_dataset():
     X = df_adult["Education"]
     Y = df_adult["HoursPerWeek"]
     condition_on = df_adult[["Age", "Immigrant", "Race", "Sex"]]
-    result = categorical.condind(X=X, Y=Y, condition_on=condition_on, lambda_=lambda_)
+    result = power_divergence.condind(X=X, Y=Y, condition_on=condition_on, method=lambda_)
     assert_almost_equal(result.statistic, 1460.11, decimal=1)
     assert_almost_equal(result.pvalue, 0, decimal=1)
     assert result.additional_information["dof"] == 316
 
     Y = df_adult["MaritalStatus"]
     condition_on = df_adult[["Age", "Sex"]]
-    result = categorical.condind(X=X, Y=Y, condition_on=condition_on, lambda_=lambda_)
+    result = power_divergence.condind(X=X, Y=Y, condition_on=condition_on, method=lambda_)
     assert_almost_equal(result.statistic, 481.96, decimal=1)
     assert_almost_equal(result.pvalue, 0, decimal=1)
     assert result.additional_information["dof"] == 58
@@ -90,7 +90,7 @@ def test_chisquare_conditional_independence_adult_dataset():
     X = df_adult["Income"]
     Y = df_adult["Race"]
     condition_on = df_adult[["Age", "Education", "HoursPerWeek", "MaritalStatus"]]
-    result = categorical.condind(X=X, Y=Y, condition_on=condition_on, lambda_=lambda_)
+    result = power_divergence.condind(X=X, Y=Y, condition_on=condition_on, method=lambda_)
 
     assert_almost_equal(result.statistic, 66.39, decimal=1)
     assert_almost_equal(result.pvalue, 0.99, decimal=1)
@@ -99,7 +99,7 @@ def test_chisquare_conditional_independence_adult_dataset():
     X = df_adult["Immigrant"]
     Y = df_adult["Income"]
     condition_on = df_adult[["Age", "Education", "HoursPerWeek", "MaritalStatus"]]
-    result = categorical.condind(X=X, Y=Y, condition_on=condition_on, lambda_=lambda_)
+    result = power_divergence.condind(X=X, Y=Y, condition_on=condition_on, method=lambda_)
     assert_almost_equal(result.statistic, 65.59, decimal=1)
     assert_almost_equal(result.pvalue, 0.999, decimal=2)
     assert result.additional_information["dof"] == 131
@@ -118,31 +118,33 @@ def test_chisquare_conditional_independence_adult_dataset():
 )
 def test_chisquare_when_dependent_given_different_lambda_on_testdata(lambda_):
     assert (
-        categorical.ind(X=df_adult["Age"], Y=df_adult["Immigrant"], lambda_=lambda_).pvalue < 0.05
+        power_divergence.ind(X=df_adult["Age"], Y=df_adult["Immigrant"], method=lambda_).pvalue
+        < 0.05
     )
 
-    assert categorical.ind(X=df_adult["Age"], Y=df_adult["Race"], lambda_=lambda_).pvalue < 0.05
+    assert power_divergence.ind(X=df_adult["Age"], Y=df_adult["Race"], method=lambda_).pvalue < 0.05
 
-    assert categorical.ind(X=df_adult["Age"], Y=df_adult["Sex"], lambda_=lambda_).pvalue < 0.05
+    assert power_divergence.ind(X=df_adult["Age"], Y=df_adult["Sex"], method=lambda_).pvalue < 0.05
     assert (
-        categorical.ind(X=df_adult["Immigrant"], Y=df_adult["Sex"], lambda_=lambda_).pvalue >= 0.05
+        power_divergence.ind(X=df_adult["Immigrant"], Y=df_adult["Sex"], method=lambda_).pvalue
+        >= 0.05
     )
 
     assert (
-        categorical.condind(
+        power_divergence.condind(
             X=df_adult["Education"],
             Y=df_adult["HoursPerWeek"],
             condition_on=df_adult[["Age", "Immigrant", "Race", "Sex"]],
-            lambda_=lambda_,
+            method=lambda_,
         ).pvalue
         < 0.05
     )
     assert (
-        categorical.condind(
+        power_divergence.condind(
             X=df_adult["Education"],
             Y=df_adult["MaritalStatus"],
             condition_on=df_adult[["Age", "Sex"]],
-            lambda_=lambda_,
+            method=lambda_,
         ).pvalue
         < 0.05
     )
@@ -164,7 +166,7 @@ def test_chisquare_when_exactly_dependent_given_different_lambda_(lambda_):
     y = x.copy()
     df = pd.DataFrame({"x": x, "y": y})
 
-    result = categorical.ind(X=df["x"], Y=df["y"], lambda_=lambda_)
+    result = power_divergence.ind(X=df["x"], Y=df["y"], method=lambda_)
     assert result.additional_information["dof"] == 1
     assert_almost_equal(result.pvalue, 0, decimal=5)
 
@@ -179,10 +181,10 @@ def test_g_discrete():
     sets = [[], [2], [2, 3], [3, 4], [2, 3, 4]]
     for idx in range(len(sets)):
         if idx == 0:
-            result = categorical.ind(X=df[x], Y=df[y], lambda_="log-likelihood")
+            result = power_divergence.ind(X=df[x], Y=df[y], method="log-likelihood")
         else:
-            result = categorical.condind(
-                X=df[x], Y=df[y], condition_on=df[sets[idx]], lambda_="log-likelihood"
+            result = power_divergence.condind(
+                X=df[x], Y=df[y], condition_on=df[sets[idx]], method="log-likelihood"
             )
         p = result.pvalue
         fr_p = frexp(p)
@@ -199,7 +201,9 @@ def test_g_discrete():
     df = pd.DataFrame.from_records(dm)
     sets = [[2, 3, 4, 5, 6, 7]]
     with pytest.raises(RuntimeError, match="Not enough samples"):
-        categorical.condind(X=df[x], Y=df[y], condition_on=df[sets[0]], lambda_="log-likelihood")
+        power_divergence.condind(
+            X=df[x], Y=df[y], condition_on=df[sets[0]], method="log-likelihood"
+        )
 
 
 def test_g_binary():
@@ -213,10 +217,10 @@ def test_g_binary():
     for idx in range(len(sets)):
         if idx == 0:
             # for set == []
-            result = categorical.ind(X=df[x], Y=df[y], lambda_="log-likelihood")
+            result = power_divergence.ind(X=df[x], Y=df[y], method="log-likelihood")
         else:
-            result = categorical.condind(
-                X=df[x], Y=df[y], condition_on=df[sets[idx]], lambda_="log-likelihood"
+            result = power_divergence.condind(
+                X=df[x], Y=df[y], condition_on=df[sets[idx]], method="log-likelihood"
             )
         p = result.pvalue
         fr_p = frexp(p)
@@ -231,7 +235,9 @@ def test_g_binary():
     df = pd.DataFrame.from_records(dm)
     sets = [[2, 3, 4, 5, 6, 7, 8]]
     with pytest.raises(RuntimeError, match="Not enough samples"):
-        categorical.condind(X=df[x], Y=df[y], condition_on=df[sets[0]], lambda_="log-likelihood")
+        power_divergence.condind(
+            X=df[x], Y=df[y], condition_on=df[sets[0]], method="log-likelihood"
+        )
 
 
 def test_g_binary_simulation():
@@ -242,17 +248,17 @@ def test_g_binary_simulation():
     for i in range(10):
         df[i] = rng.binomial(1, p=0.5, size=n_samples)
 
-    result = categorical.ind(X=df["x"], Y=df["y"], lambda_="log-likelihood")
+    result = power_divergence.ind(X=df["x"], Y=df["y"], method="log-likelihood")
     assert result.pvalue < 0.05
-    result = categorical.ind(X=df["x1"], Y=df["y"], lambda_="log-likelihood")
+    result = power_divergence.ind(X=df["x1"], Y=df["y"], method="log-likelihood")
     assert result.pvalue < 0.05
-    result = categorical.ind(X=df["x"], Y=df["x1"], lambda_="log-likelihood")
+    result = power_divergence.ind(X=df["x"], Y=df["x1"], method="log-likelihood")
     assert result.pvalue > 0.05
-    result = categorical.ind(X=df["x1"], Y=df[0], lambda_="log-likelihood")
+    result = power_divergence.ind(X=df["x1"], Y=df[0], method="log-likelihood")
     assert result.pvalue > 0.05
 
-    result = categorical.condind(
-        X=df["x"], Y=df["x1"], condition_on=df["y"], lambda_="log-likelihood"
+    result = power_divergence.condind(
+        X=df["x"], Y=df["x1"], condition_on=df["y"], method="log-likelihood"
     )
     assert result.pvalue < 0.05
 
@@ -265,11 +271,11 @@ def test_g_binary_highdim():
     for i in range(10):
         df[i] = rng.binomial(1, p=0.8, size=n_samples)
 
-    result = categorical.condind(
-        X=df["x"], Y=df["x1"], condition_on=df[list(range(6))], lambda_="log-likelihood"
+    result = power_divergence.condind(
+        X=df["x"], Y=df["x1"], condition_on=df[list(range(6))], method="log-likelihood"
     )
     assert result.pvalue > 0.05
-    result = categorical.condind(
-        X=df["x"], Y=df["y"], condition_on=df[list(range(5)) + ["x1"]], lambda_="log-likelihood"
+    result = power_divergence.condind(
+        X=df["x"], Y=df["y"], condition_on=df[list(range(5)) + ["x1"]], method="log-likelihood"
     )
     assert result.pvalue < 0.05

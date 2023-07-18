@@ -22,8 +22,14 @@ from sklearn.preprocessing import LabelEncoder
 from .pvalue_result import PValueResult
 
 
-def ind(X: ArrayLike, Y: ArrayLike, lambda_: str = "cressie-read") -> PValueResult:
+def ind(
+    X: ArrayLike, Y: ArrayLike, method: str = "cressie-read", num_categories_allowed: int = 10
+) -> PValueResult:
     """Perform an independence test using power divergence test.
+
+    The null hypothesis for the test is X is independent of Y. A lot of the
+    frequency comparison based statistics (eg. chi-square, G-test etc) belong to
+    power divergence family, and are special cases of this test.
 
     Parameters
     ----------
@@ -31,7 +37,7 @@ def ind(X: ArrayLike, Y: ArrayLike, lambda_: str = "cressie-read") -> PValueResu
         The first node variable.
     Y : ArrayLike of shape (n_samples,)
         The second node variable.
-    lambda_ : float or string
+    method : float or string
         The lambda parameter for the power_divergence statistic. Some values of
         ``lambda_`` results in other well known tests:
             "pearson"             1          "Chi-squared test"
@@ -41,6 +47,9 @@ def ind(X: ArrayLike, Y: ArrayLike, lambda_: str = "cressie-read") -> PValueResu
             "neyman"              -2         "Neyman's statistic"
             "cressie-read"        2/3        "The value recommended in the paper
                                              :footcite:`cressieread1984`"
+    num_categories_allowed : int
+        The maximum number of categories allowed in the input variables. Default
+        of 10 is chosen to error out on large number of categories.
 
     Returns
     -------
@@ -53,13 +62,24 @@ def ind(X: ArrayLike, Y: ArrayLike, lambda_: str = "cressie-read") -> PValueResu
     ----------
     .. footbibliography::
     """
-    return _power_divergence(X=X, Y=Y, Z=None, lambda_=lambda_)
+    X, Y, _ = _preprocess_inputs(X=X, Y=Y, Z=None)
+    return _power_divergence(
+        X=X, Y=Y, Z=None, lambda_=method, num_categories_allowed=num_categories_allowed
+    )
 
 
 def condind(
-    X: ArrayLike, Y: ArrayLike, condition_on: ArrayLike, lambda_: str = "cressie-read"
+    X: ArrayLike,
+    Y: ArrayLike,
+    condition_on: ArrayLike,
+    method: str = "cressie-read",
+    num_categories_allowed: int = 10,
 ) -> PValueResult:
     """Perform an independence test using power divergence test.
+
+    The null hypothesis for the test is X is independent of Y given condition_on.
+    A lot of the frequency comparison based statistics (eg. chi-square, G-test etc)
+    belong to power divergence family, and are special cases of this test.
 
     Parameters
     ----------
@@ -69,7 +89,7 @@ def condind(
         The second node variable.
     condition_on : ArrayLike of shape (n_samples, n_variables)
         The conditioning set.
-    lambda_: float or string
+    method : float or string
         The lambda parameter for the power_divergence statistic. Some values of
         lambda_ results in other well known tests:
             "pearson"             1          "Chi-squared test"
@@ -79,6 +99,9 @@ def condind(
             "neyman"              -2         "Neyman's statistic"
             "cressie-read"        2/3        "The value recommended in the paper
                                              :footcite:`cressieread1984`"
+    num_categories_allowed : int
+        The maximum number of categories allowed in the input variables. Default
+        of 10 is chosen to error out on large number of categories.
 
     Returns
     -------
@@ -87,57 +110,45 @@ def condind(
     pvalue : float
         The p-value of the test.
     """
-    return _power_divergence(X=X, Y=Y, Z=condition_on, lambda_=lambda_)
+    X, Y, condition_on = _preprocess_inputs(X=X, Y=Y, Z=condition_on)
+    return _power_divergence(
+        X=X, Y=Y, Z=condition_on, lambda_=method, num_categories_allowed=num_categories_allowed
+    )
 
 
-def _compute_conditional_contingency_table(X, Y, Z):
-    unique_Z_vals = np.unique(Z)
+def _preprocess_inputs(X: ArrayLike, Y: ArrayLike, Z: Optional[ArrayLike]) -> ArrayLike:
+    """Preprocess inputs for categorical independence tests."""
+    if X.ndim != 1:
+        if X.shape[1] == 1:
+            X = X.reshape(-1)
+        else:
+            raise ValueError("X should be 1-D arrays.")
+    if Y.ndim != 1:
+        if Y.shape[1] == 1:
+            Y = Y.reshape(-1)
+        else:
+            raise ValueError("Y should be 1-D arrays.")
 
-    chi = 0
-    dof = 0
+    # ensure we use numpy arrays
+    X = np.asarray(X)
+    Y = np.asarray(Y)
 
-    for z_state in unique_Z_vals:
-        pass
-
-
-def _compute_conditional_contingency_table(df, X, Y, Z, lambda_=None):
-    X = np.array(X)
-    Y = np.array(Y)
-    Z = np.array(Z)
-
-    unique_Z_vals = np.unique(Z)
-
-    chi = 0
-    dof = 0
-
-    for z_state in unique_Z_vals:
-        z_indices = np.where(Z == z_state)[0]
-        sub_df = df[z_indices]
-
-        x_values = np.unique(sub_df[X])
-        y_values = np.unique(sub_df[Y])
-
-        counts, _, _ = np.histogram2d(sub_df[X], sub_df[Y], bins=(x_values, y_values))
-
-        if lambda_ is not None:
-            counts = lambda_(counts)
-
-        c, _ = stats.chisquare(counts)
-        chi += c
-        dof += (counts.shape[0] - 1) * (counts.shape[1] - 1)
-
-    return chi, dof
+    if Z is not None:
+        Z = np.asarray(Z)
+        if Z.ndim == 1:
+            Z = Z.reshape(-1, 1)
+    return X, Y, Z
 
 
 # This is a modified function taken from pgmpy: License MIT
 def _power_divergence(
-    X: ArrayLike, Y: ArrayLike, Z: Optional[ArrayLike], lambda_: str = "cressie-read"
+    X: ArrayLike,
+    Y: ArrayLike,
+    Z: Optional[ArrayLike],
+    lambda_: str = "cressie-read",
+    num_categories_allowed: int = 10,
 ) -> PValueResult:
     """Compute the Cressie-Read power divergence statistic.
-
-    The null hypothesis for the test is X is independent of Y given Z. A lot of the
-    frequency comparison based statistics (eg. chi-square, G-test etc) belong to
-    power divergence family, and are special cases of this test.
 
     Parameters
     ----------
@@ -157,6 +168,8 @@ def _power_divergence(
             "neyman"              -2         "Neyman's statistic"
             "cressie-read"        2/3        "The value recommended in the paper
                                              :footcite:`cressieread1984`"
+    num_categories_allowed : int
+        The maximum number of categories allowed in the input variables.
 
     Returns
     -------
@@ -176,32 +189,34 @@ def _power_divergence(
     ----------
     .. footbibliography::
     """
-    if X.ndim != 1 or Y.ndim != 1:
-        raise ValueError("X and Y should be 1-D arrays.")
-
-    # ensure we use numpy arrays
-    X = np.asarray(X)
-    Y = np.asarray(Y)
-
     # Check if all elements are integers
-    if not np.issubdtype(X.dtype, np.integer):
+    if np.issubdtype(X.dtype, np.str_):
         le = LabelEncoder()
         X = le.fit_transform(X)
         # warn("Converting X array to categorical array using scikit-learn's LabelEncoder.")
+    elif not np.issubdtype(X.dtype, np.integer):
+        raise TypeError(
+            f"X should be an array of integers (np.integer), or strings (np.str_), not {X.dtype}."
+        )
 
-    # Check if all elements are integers
-    if not np.issubdtype(Y.dtype, np.integer):
+    # Ensure all elements are integers
+    if np.issubdtype(Y.dtype, np.str_):
         le = LabelEncoder()
         Y = le.fit_transform(Y)
         # warn("Converting Y array to categorical array using scikit-learn's LabelEncoder.")
+    elif not np.issubdtype(Y.dtype, np.integer):
+        raise TypeError(
+            f"Y should be an array of integers (np.integer), or strings (np.str_), not {Y.dtype}."
+        )
 
     for name, arr in zip(["X", "Y"], [X, Y]):
         # Check if the number of unique values is reasonably small
         unique_values = np.unique(arr)
         num_unique_values = len(unique_values)
-        if num_unique_values > 64:  # Adjust the threshold as needed
+        # XXX: We chose some arbitrary value here. Adjust the threshold as needed based on user feedback.
+        if num_unique_values > num_categories_allowed:
             raise RuntimeError(
-                f"There are {num_unique_values} unique categories for {name}. "
+                f"There are {num_unique_values} > {num_categories_allowed} unique categories for {name}. "
                 f"This is likely an error."
             )
 
@@ -219,23 +234,24 @@ def _power_divergence(
         chi = 0
         dof = 0
 
-        Z = np.asarray(Z)
-        if Z.ndim == 1:
-            Z = Z.reshape(-1, 1)
-
         # XXX: needed when converting to only numpy API
         # Check if all elements are integers
-        if not np.issubdtype(Z.dtype, np.integer):
+        if np.issubdtype(Z.dtype, np.str_):
             le = LabelEncoder()
             for idx in range(Z.shape[1]):
                 Z[:, idx] = le.fit_transform(Z[:, idx])
             # warn("Converting Z array to categorical array using scikit-learn's LabelEncoder.")
+        elif not np.issubdtype(Z.dtype, np.integer):
+            raise TypeError(
+                f"Z should be an array of integers (np.integer), or strings (np.str_), not {Z.dtype}."
+            )
 
         # check number of samples relative to degrees of freedom
         # assuming no zeros
         s_size = Z.shape[1]
         n_samples = Z.shape[0]
 
+        # Rule of thumb: need at least 10 samples per degree of freedom (dof)
         levels_x = len(np.unique(X))
         levels_y = len(np.unique(Y))
         dof_check = (
