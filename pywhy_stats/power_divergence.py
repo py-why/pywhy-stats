@@ -1,6 +1,6 @@
 """Independence test among categorical variables using power-divergence tests.
 
-Works on categorical random variables. Based on the ``lambda_`` parameter, one
+Works on categorical random variables. Based on the ``method`` parameter, one
 can compute a wide variety of different categorical hypothesis tests.
 
 Categorical data is a type of data that can be divided into discrete groups.
@@ -54,14 +54,14 @@ def ind(
         The second node variable.
     method : float or string
         The lambda parameter for the power_divergence statistic. Some values of
-        ``lambda_`` results in other well known tests:
+        ``method`` results in other well known tests:
+
             "pearson"             1          "Chi-squared test"
             "log-likelihood"      0          "G-test or log-likelihood"
-            "freeman-tukey"     -1/2        "freeman-tukey Statistic"
+            "freeman-tukey"     -1/2         "freeman-tukey Statistic"
             "mod-log-likelihood"  -1         "Modified Log-likelihood"
             "neyman"              -2         "Neyman's statistic"
-            "cressie-read"        2/3        "The value recommended in the paper
-                                             :footcite:`cressieread1984`"
+            "cressie-read"        2/3        "The value recommended in the paper :footcite:`cressieread1984`"
     num_categories_allowed : int
         The maximum number of categories allowed in the input variables. Default
         of 10 is chosen to error out on large number of categories.
@@ -79,7 +79,7 @@ def ind(
     """
     X, Y, _ = _preprocess_inputs(X=X, Y=Y, Z=None)
     return _power_divergence(
-        X=X, Y=Y, Z=None, lambda_=method, num_categories_allowed=num_categories_allowed
+        X=X, Y=Y, Z=None, method=method, num_categories_allowed=num_categories_allowed
     )
 
 
@@ -106,14 +106,14 @@ def condind(
         The conditioning set.
     method : float or string
         The lambda parameter for the power_divergence statistic. Some values of
-        lambda_ results in other well known tests:
+        method results in other well known tests:
+
             "pearson"             1          "Chi-squared test"
             "log-likelihood"      0          "G-test or log-likelihood"
-            "freeman-tukey"     -1/2        "freeman-tukey Statistic"
+            "freeman-tukey"     -1/2         "freeman-tukey Statistic"
             "mod-log-likelihood"  -1         "Modified Log-likelihood"
             "neyman"              -2         "Neyman's statistic"
-            "cressie-read"        2/3        "The value recommended in the paper
-                                             :footcite:`cressieread1984`"
+            "cressie-read"        2/3        "The value recommended in the paper :footcite:`cressieread1984`"
     num_categories_allowed : int
         The maximum number of categories allowed in the input variables. Default
         of 10 is chosen to error out on large number of categories.
@@ -127,7 +127,7 @@ def condind(
     """
     X, Y, condition_on = _preprocess_inputs(X=X, Y=Y, Z=condition_on)
     return _power_divergence(
-        X=X, Y=Y, Z=condition_on, lambda_=method, num_categories_allowed=num_categories_allowed
+        X=X, Y=Y, Z=condition_on, method=method, num_categories_allowed=num_categories_allowed
     )
 
 
@@ -205,7 +205,7 @@ def _power_divergence(
     X: ArrayLike,
     Y: ArrayLike,
     Z: Optional[ArrayLike],
-    lambda_: str = "cressie-read",
+    method: str = "cressie-read",
     num_categories_allowed: int = 10,
 ) -> PValueResult:
     """Compute the Cressie-Read power divergence statistic.
@@ -218,16 +218,17 @@ def _power_divergence(
         The second node variable.
     Z : optional, ArrayLike of shape (n_samples, n_variables) of type np.int
         The conditioning set. If not defined, is `None`.
-    lambda_: float or string
+    method : float or string
         The lambda parameter for the power_divergence statistic. Some values of
-        lambda_ results in other well known tests:
-            "pearson"             1          "Chi-squared test"
-            "log-likelihood"      0          "G-test or log-likelihood"
-            "freeman-tukey"     -1/2        "freeman-tukey Statistic"
-            "mod-log-likelihood"  -1         "Modified Log-likelihood"
-            "neyman"              -2         "Neyman's statistic"
-            "cressie-read"        2/3        "The value recommended in the paper
-                                             :footcite:`cressieread1984`"
+        method results in other well known tests:
+
+        "pearson"             1          "Chi-squared test"
+        "log-likelihood"      0          "G-test or log-likelihood"
+        "freeman-tukey"     -1/2         "freeman-tukey Statistic"
+        "mod-log-likelihood"  -1         "Modified Log-likelihood"
+        "neyman"              -2         "Neyman's statistic"
+        "cressie-read"        2/3        "The value recommended in the paper
+                                         :footcite:`cressieread1984`"
     num_categories_allowed : int
         The maximum number of categories allowed in the input variables.
 
@@ -264,7 +265,7 @@ def _power_divergence(
     if Z is None:
         # Compute the contingency table
         observed_xy, _, _ = np.histogram2d(X, Y, bins=(np.unique(X).size, np.unique(Y).size))
-        chi, p_value, dof, expected = stats.chi2_contingency(observed_xy, lambda_=lambda_)
+        chi, p_value, dof, expected = stats.chi2_contingency(observed_xy, method=method)
 
     # Step 2: If there are conditionals variables, iterate over unique states and do
     #         the contingency test.
@@ -309,7 +310,7 @@ def _power_divergence(
                 sub_table_z = (
                     df.groupby(X_columns + Y_columns).size().unstack(Y_columns, fill_value=1e-7)
                 )
-                c, _, d, _ = stats.chi2_contingency(sub_table_z, lambda_=lambda_)
+                c, _, d, _ = stats.chi2_contingency(sub_table_z, method=method)
                 chi += c
                 dof += d
             except ValueError:

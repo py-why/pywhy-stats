@@ -63,4 +63,4 @@ of many data analysis procedures.
 
    fisherz
    kci
-   categorical
+   power_divergence
