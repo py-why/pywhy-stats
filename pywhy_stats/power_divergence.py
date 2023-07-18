@@ -3,6 +3,21 @@
 Works on categorical random variables. Based on the ``lambda_`` parameter, one
 can compute a wide variety of different categorical hypothesis tests.
 
+Categorical data is a type of data that can be divided into discrete groups.
+Compared to continuous data, there is no agreed upon way to represent
+categorical data numerically. For example, we can represent the color of an
+object as "red", "blue", "green" etc. but we can also represent it as 1, 2, 3,
+which maps to those colors, or even [1.2, 2.2, 3.2] which maps to those colors.
+
+If `str` type data is passed in, then it is converted to `int` type using
+`sklearn.preprocessing.LabelEncoder`. All columns of data passed in must be of
+the same type, otherwise it is impossible to infer what you want to do.
+
+Encoding categorical data numerically is a common practice in machine learning
+and statistics. There are many strategies, and we do not implement
+most of them. For categorical encoding strategies, see
+https://github.com/scikit-learn-contrib/category_encoders.
+
 Examples
 --------
 >>> import pywhy_stats as ps
@@ -117,7 +132,13 @@ def condind(
 
 
 def _preprocess_inputs(X: ArrayLike, Y: ArrayLike, Z: Optional[ArrayLike]) -> ArrayLike:
-    """Preprocess inputs for categorical independence tests."""
+    """Preprocess inputs for categorical independence tests.
+
+    Returns
+    -------
+    X, Y, Z : ArrayLike of shape (n_samples, [n_conditions]) of type np.int
+        The preprocessed inputs.
+    """
     if X.ndim != 1:
         if X.shape[1] == 1:
             X = X.reshape(-1)
@@ -133,10 +154,49 @@ def _preprocess_inputs(X: ArrayLike, Y: ArrayLike, Z: Optional[ArrayLike]) -> Ar
     X = np.asarray(X)
     Y = np.asarray(Y)
 
+    if not all(isinstance(type(xi), type(X[0])) for xi in X):
+        raise ValueError("All elements of X must be of the same type.")
+    if not all(isinstance(type(yi), type(Y[0])) for yi in Y):
+        raise ValueError("All elements of Y must be of the same type.")
+
+    # Check if all elements are integers
+    if np.issubdtype(type(X[0]), np.str_):
+        le = LabelEncoder()
+        X = le.fit_transform(X)
+        # warn("Converting X array to categorical array using scikit-learn's LabelEncoder.")
+    elif not np.issubdtype(type(X[0]), np.integer):
+        raise TypeError(
+            f"X should be an array of integers (np.integer), or strings (np.str_), not {type(X[0])}."
+        )
+
+    # Ensure now all elements are integers
+    if np.issubdtype(type(Y[0]), np.str_):
+        le = LabelEncoder()
+        Y = le.fit_transform(Y)
+        # warn("Converting Y array to categorical array using scikit-learn's LabelEncoder.")
+    elif not np.issubdtype(type(Y[0]), np.integer):
+        raise TypeError(
+            f"Y should be an array of integers (np.integer), or strings (np.str_), not {type(Y[0])}."
+        )
+
     if Z is not None:
         Z = np.asarray(Z)
         if Z.ndim == 1:
             Z = Z.reshape(-1, 1)
+        for icol in range(Z.shape[1]):
+            if not all(isinstance(type(zi), type(Z[0, icol])) for zi in Z[:, icol]):
+                raise ValueError(f"All elements of Z in column {icol} must be of the same type.")
+
+            # XXX: needed when converting to only numpy API
+            # Check if all elements are integers
+            if np.issubdtype(type(Z[0, icol]), np.str_):
+                le = LabelEncoder()
+                Z[:, icol] = le.fit_transform(Z[:, icol])
+                # warn("Converting Z array to categorical array using scikit-learn's LabelEncoder.")
+            elif not np.issubdtype(type(Z[0, icol]), np.integer):
+                raise TypeError(
+                    f"Z should be an array of integers (np.integer), or strings (np.str_), not {type(Z[0, icol])}."
+                )
     return X, Y, Z
 
 
@@ -152,12 +212,12 @@ def _power_divergence(
 
     Parameters
     ----------
-    X: ArrayLike of shape (n_samples,)
+    X: ArrayLike of shape (n_samples,) of type np.int
         The first node variable.
-    Y : ArrayLike of shape (n_samples,)
+    Y : ArrayLike of shape (n_samples,) of type np.int
         The second node variable.
-    Z : ArrayLike of shape (n_samples, n_variables)
-        The conditioning set.
+    Z : optional, ArrayLike of shape (n_samples, n_variables) of type np.int
+        The conditioning set. If not defined, is `None`.
     lambda_: float or string
         The lambda parameter for the power_divergence statistic. Some values of
         lambda_ results in other well known tests:
@@ -189,26 +249,6 @@ def _power_divergence(
     ----------
     .. footbibliography::
     """
-    # Check if all elements are integers
-    if np.issubdtype(X.dtype, np.str_):
-        le = LabelEncoder()
-        X = le.fit_transform(X)
-        # warn("Converting X array to categorical array using scikit-learn's LabelEncoder.")
-    elif not np.issubdtype(X.dtype, np.integer):
-        raise TypeError(
-            f"X should be an array of integers (np.integer), or strings (np.str_), not {X.dtype}."
-        )
-
-    # Ensure all elements are integers
-    if np.issubdtype(Y.dtype, np.str_):
-        le = LabelEncoder()
-        Y = le.fit_transform(Y)
-        # warn("Converting Y array to categorical array using scikit-learn's LabelEncoder.")
-    elif not np.issubdtype(Y.dtype, np.integer):
-        raise TypeError(
-            f"Y should be an array of integers (np.integer), or strings (np.str_), not {Y.dtype}."
-        )
-
     for name, arr in zip(["X", "Y"], [X, Y]):
         # Check if the number of unique values is reasonably small
         unique_values = np.unique(arr)
@@ -233,18 +273,6 @@ def _power_divergence(
 
         chi = 0
         dof = 0
-
-        # XXX: needed when converting to only numpy API
-        # Check if all elements are integers
-        if np.issubdtype(Z.dtype, np.str_):
-            le = LabelEncoder()
-            for idx in range(Z.shape[1]):
-                Z[:, idx] = le.fit_transform(Z[:, idx])
-            # warn("Converting Z array to categorical array using scikit-learn's LabelEncoder.")
-        elif not np.issubdtype(Z.dtype, np.integer):
-            raise TypeError(
-                f"Z should be an array of integers (np.integer), or strings (np.str_), not {Z.dtype}."
-            )
 
         # check number of samples relative to degrees of freedom
         # assuming no zeros

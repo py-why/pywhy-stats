@@ -171,6 +171,19 @@ def test_chisquare_when_exactly_dependent_given_different_lambda_(lambda_):
     assert_almost_equal(result.pvalue, 0, decimal=5)
 
 
+@pytest.mark.parametrize(
+    "dtype", [np.int32, np.int64, np.str_, np.uint, np.uint16, np.uint32, np.uintp]
+)
+def test_input_dtypes_gets_properly_computed(dtype):
+    x = np.random.choice([0, 1], size=1000).astype(dtype)
+    y = x.copy()
+    df = pd.DataFrame({"x": x, "y": y})
+
+    result = power_divergence.ind(X=df["x"], Y=df["y"])
+    assert result.additional_information["dof"] == 1
+    assert_almost_equal(result.pvalue, 0, decimal=5)
+
+
 def test_g_discrete():
     """Test G^2 test for discrete data."""
     dm = np.array([testdata.dis_data]).reshape((10000, 5))
