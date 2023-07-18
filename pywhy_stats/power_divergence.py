@@ -154,9 +154,9 @@ def _preprocess_inputs(X: ArrayLike, Y: ArrayLike, Z: Optional[ArrayLike]) -> Ar
     X = np.asarray(X)
     Y = np.asarray(Y)
 
-    if not all(isinstance(type(xi), type(X[0])) for xi in X):
+    if not all(type(xi) == type(X[0]) for xi in X):  # noqa
         raise ValueError("All elements of X must be of the same type.")
-    if not all(isinstance(type(yi), type(Y[0])) for yi in Y):
+    if not all(type(yi) == type(Y[0]) for yi in Y):  # noqa
         raise ValueError("All elements of Y must be of the same type.")
 
     # Check if all elements are integers
@@ -184,7 +184,7 @@ def _preprocess_inputs(X: ArrayLike, Y: ArrayLike, Z: Optional[ArrayLike]) -> Ar
         if Z.ndim == 1:
             Z = Z.reshape(-1, 1)
         for icol in range(Z.shape[1]):
-            if not all(isinstance(type(zi), type(Z[0, icol])) for zi in Z[:, icol]):
+            if not all(type(zi) == type(Z[0, icol]) for zi in Z[:, icol]):  # noqa
                 raise ValueError(f"All elements of Z in column {icol} must be of the same type.")
 
             # XXX: needed when converting to only numpy API
