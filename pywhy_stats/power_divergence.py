@@ -155,9 +155,9 @@ def _preprocess_inputs(X: ArrayLike, Y: ArrayLike, Z: Optional[ArrayLike]) -> Ar
     Y = np.asarray(Y)
 
     if not all(type(xi) == type(X[0]) for xi in X):  # noqa
-        raise ValueError("All elements of X must be of the same type.")
+        raise TypeError("All elements of X must be of the same type.")
     if not all(type(yi) == type(Y[0]) for yi in Y):  # noqa
-        raise ValueError("All elements of Y must be of the same type.")
+        raise TypeError("All elements of Y must be of the same type.")
 
     # Check if all elements are integers
     if np.issubdtype(type(X[0]), np.str_):
@@ -185,7 +185,7 @@ def _preprocess_inputs(X: ArrayLike, Y: ArrayLike, Z: Optional[ArrayLike]) -> Ar
             Z = Z.reshape(-1, 1)
         for icol in range(Z.shape[1]):
             if not all(type(zi) == type(Z[0, icol]) for zi in Z[:, icol]):  # noqa
-                raise ValueError(f"All elements of Z in column {icol} must be of the same type.")
+                raise TypeError(f"All elements of Z in column {icol} must be of the same type.")
 
             # XXX: needed when converting to only numpy API
             # Check if all elements are integers
@@ -271,7 +271,9 @@ def _power_divergence(
     if Z is None:
         # Compute the contingency table
         observed_xy, _, _ = np.histogram2d(X, Y, bins=(np.unique(X).size, np.unique(Y).size))
-        chi, p_value, dof, expected = stats.chi2_contingency(observed_xy, correction=correction, lambda_=method)
+        chi, p_value, dof, expected = stats.chi2_contingency(
+            observed_xy, correction=correction, lambda_=method
+        )
 
     # Step 2: If there are conditionals variables, iterate over unique states and do
     #         the contingency test.
@@ -316,7 +318,9 @@ def _power_divergence(
                 sub_table_z = (
                     df.groupby(X_columns + Y_columns).size().unstack(Y_columns, fill_value=1e-7)
                 )
-                c, _, d, _ = stats.chi2_contingency(sub_table_z, correction=correction, lambda_=method)
+                c, _, d, _ = stats.chi2_contingency(
+                    sub_table_z, correction=correction, lambda_=method
+                )
                 chi += c
                 dof += d
             except ValueError:

@@ -292,3 +292,36 @@ def test_g_binary_highdim():
         X=df["x"], Y=df["y"], condition_on=df[list(range(5)) + ["x1"]], method="log-likelihood"
     )
     assert result.pvalue < 0.05
+
+
+class TestPreprocessInputs:
+    """Test error cases in preprocessing categorical data input."""
+
+    # Test for a valid case with mixed integer and string input arrays
+    def test_preprocess_inputs_mixed(self):
+        X = np.array([1, "red", 3, "green"], dtype="object")
+        Y = np.array(["blue", 5, "yellow", 7], dtype="object")
+        with pytest.raises(TypeError):
+            power_divergence.ind(X, Y)
+
+    # Test for invalid case with 2D array as input
+    def test_preprocess_inputs_2d(self):
+        X = np.array([[1, 2], [3, 4]])
+        Y = np.array([[5, 6], [7, 8]])
+        Z = None
+        with pytest.raises(ValueError):
+            power_divergence.condind(X, Y, Z)
+
+    # Test for invalid case with unsupported data type in X array
+    def test_preprocess_inputs_invalid_X_dtype(self):
+        X = np.array([1, "red", 3, 4.5], dtype="object")
+        Y = np.array(["blue", "green", "yellow", "orange"])
+        with pytest.raises(TypeError):
+            power_divergence.ind(X, Y)
+
+    # Test for invalid case with unsupported data type in Y array
+    def test_preprocess_inputs_invalid_Y_dtype(self):
+        X = np.array([1, 2, 3, 4])
+        Y = np.array(["blue", 5, "yellow", 7.5], dtype="object")
+        with pytest.raises(TypeError):
+            power_divergence.ind(X, Y)
