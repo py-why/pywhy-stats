@@ -59,14 +59,12 @@ def estimate_squared_sigma_rbf(
         The estimated sigma**2 in K(x, x') = exp(-||x - x'|| / (2 * sigma**2)).
     """
     if method == "silverman":
-        if X.ndim > 1:
-            if X.shape[1] > 1:
-                raise ValueError(
-                    "The Silverman method to estimate the kernel bandwidth is currently only "
-                    "supported for one dimensional data!"
-                )
-            else:
-                X = X.reshape(-1)
+        if X.ndim > 1 and X.shape[1] > 1:
+            raise ValueError(
+                "The Silverman method to estimate the kernel bandwidth is currently only "
+                "supported for one dimensional data!"
+            )
+        X = X.reshape(-1)
 
         # https://en.wikipedia.org/wiki/Kernel_density_estimation#A_rule-of-thumb_bandwidth_estimator
         return 1 / (0.9 * np.min([np.std(X), iqr(X) / 1.34]) * (X.shape[0] ** (-1 / 5))) ** 2
