@@ -203,6 +203,11 @@
      1.2.1. pywhy_stats.fisherz
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="generated/pywhy_stats.power_divergence.html">
+     1.3.1. pywhy_stats.power_divergence
+    </a>
+   </li>
   </ul>
  </li>
 </ul>
@@ -251,8 +256,14 @@
     </a>
    </li>
    <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#discrete-categorical-and-binary-data">
-     1.3. Discrete, Categorical and Binary Data
+    <a class="reference internal nav-link" href="#pywhy-stats-power-divergence-discrete-categorical-and-binary-data">
+     1.3.
+     <code class="xref py py-mod docutils literal notranslate">
+      <span class="pre">
+       pywhy_stats.power_divergence
+      </span>
+     </code>
+     Discrete, Categorical and Binary Data
     </a>
    </li>
    <li class="toc-h2 nav-item toc-entry">
@@ -273,12 +284,12 @@
   </a>
   <ul class="visible nav section-nav flex-column">
    <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#id6">
+    <a class="reference internal nav-link" href="#discrete-categorical-and-binary-data">
      2.1. Discrete, Categorical and Binary Data
     </a>
    </li>
    <li class="toc-h2 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#id7">
+    <a class="reference internal nav-link" href="#id6">
      2.2. Kernel-Approaches
     </a>
    </li>
@@ -395,12 +406,19 @@ which may be unrealistic in certain datasets.</p>
 </tbody>
 </table>
 </section>
-<section id="discrete-categorical-and-binary-data">
-<h2><span class="section-number">1.3. </span>Discrete, Categorical and Binary Data<a class="headerlink" href="#discrete-categorical-and-binary-data" title="Permalink to this heading">#</a></h2>
+<section id="pywhy-stats-power-divergence-discrete-categorical-and-binary-data">
+<h2><span class="section-number">1.3. </span><a class="reference internal" href="generated/pywhy_stats.power_divergence.html#module-pywhy_stats.power_divergence" title="pywhy_stats.power_divergence"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pywhy_stats.power_divergence</span></code></a> Discrete, Categorical and Binary Data<a class="headerlink" href="#pywhy-stats-power-divergence-discrete-categorical-and-binary-data" title="Permalink to this heading">#</a></h2>
 <p>If one has discrete data, then the test to use is based on Chi-square tests. The <span class="math notranslate nohighlight">\(G^2\)</span>
 class of tests will construct a contingency table based on the number of levels across
 each discrete variable. An exponential amount of data is needed for increasing levels
 for a discrete variable.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pywhy_stats.power_divergence.html#module-pywhy_stats.power_divergence" title="pywhy_stats.power_divergence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power_divergence</span></code></a></p></td>
+<td><p>Independence test among categorical variables using power-divergence tests.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="kernel-approaches">
 <h2><span class="section-number">1.4. </span>Kernel-Approaches<a class="headerlink" href="#kernel-approaches" title="Permalink to this heading">#</a></h2>
@@ -447,33 +465,33 @@ a different group, or environment, denoted by the discrete indices <span class="
 known in some cases as conditional k-sample testing, if there are a finite k number of groups
 for <span class="math notranslate nohighlight">\(P_i\)</span>. CD testing is important because it detects other kinds of invariances besides
 CI.</p>
-<section id="id6">
-<h2><span class="section-number">2.1. </span>Discrete, Categorical and Binary Data<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
+<section id="discrete-categorical-and-binary-data">
+<h2><span class="section-number">2.1. </span>Discrete, Categorical and Binary Data<a class="headerlink" href="#discrete-categorical-and-binary-data" title="Permalink to this heading">#</a></h2>
 <p>If one has entirely discrete data, then the problem of CD can be converted into a CI test that
 leverages the Chi-square class of tests. Since <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">x</span></code> are discrete and so are the
 indices of the distribution, one can convert the CD test:</p>
 <p><span class="math notranslate nohighlight">\(P_{i=j}(y|x) =? P_{i=k}(y|x)\)</span> into the CI test <span class="math notranslate nohighlight">\(P(y|x,i) = P(y|x)\)</span>, which can
 be tested with the Chi-square CI tests.</p>
 </section>
-<section id="id7">
-<h2><span class="section-number">2.2. </span>Kernel-Approaches<a class="headerlink" href="#id7" title="Permalink to this heading">#</a></h2>
+<section id="id6">
+<h2><span class="section-number">2.2. </span>Kernel-Approaches<a class="headerlink" href="#id6" title="Permalink to this heading">#</a></h2>
 <p>Kernel-based tests are attractive since they are semi-parametric and use kernel-based ideas
 that have been shown to be robust in the machine-learning field. The Kernel CD test is a test
 that computes a test statistic from kernels of the data and uses a weighted permutation testing
 based on the estimated propensity scores to generate samples from the null distribution
-<a class="footnote-reference brackets" href="#footcite-park2021conditional" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>, which are then used to estimate a pvalue.</p>
+<a class="footnote-reference brackets" href="#footcite-park2021conditional" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>, which are then used to estimate a pvalue.</p>
 </section>
 <section id="bregman-divergences">
 <h2><span class="section-number">2.3. </span>Bregman-Divergences<a class="headerlink" href="#bregman-divergences" title="Permalink to this heading">#</a></h2>
 <p>The Bregman CD test is a divergence-based test
 that computes a test statistic from estimated Von-Neumann divergences of the data and uses a
 weighted permutation testing based on the estimated propensity scores to generate samples from the null distribution
-<a class="footnote-reference brackets" href="#footcite-yu2020bregman" id="id9" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a>, which are then used to estimate a pvalue.</p>
+<a class="footnote-reference brackets" href="#footcite-yu2020bregman" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a>, which are then used to estimate a pvalue.</p>
 </section>
 </section>
 <section id="references">
 <h1><span class="section-number">3. </span>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h1>
-<div class="docutils container" id="id10">
+<div class="docutils container" id="id9">
 <aside class="footnote brackets" id="footcite-kraskov-estimating-2004" role="note">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
 <p>Alexander Kraskov, Harald Stögbauer, and Peter Grassberger. Estimating mutual information. <em>Physical Review E</em>, 69(6):066138, June 2004. Publisher: American Physical Society. URL: <a class="reference external" href="https://link.aps.org/doi/10.1103/PhysRevE.69.066138">https://link.aps.org/doi/10.1103/PhysRevE.69.066138</a> (visited on 2023-01-27), <a class="reference external" href="https://doi.org/10.1103/PhysRevE.69.066138">doi:10.1103/PhysRevE.69.066138</a>.</p>
@@ -495,11 +513,11 @@ weighted permutation testing based on the estimated propensity scores to generat
 <p>Rajat Sen, Ananda Theertha Suresh, Karthikeyan Shanmugam, Alexandros G Dimakis, and Sanjay Shakkottai. Model-powered conditional independence test. <em>Advances in neural information processing systems</em>, 2017.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-park2021conditional" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">6</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">6</a><span class="fn-bracket">]</span></span>
 <p>Junhyung Park, Uri Shalit, Bernhard Schölkopf, and Krikamol Muandet. Conditional distributional treatment effect with kernel conditional mean embeddings and u-statistic regression. In <em>International Conference on Machine Learning</em>, 8401–8412. PMLR, 2021.</p>
 </aside>
 <aside class="footnote brackets" id="footcite-yu2020bregman" role="note">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">7</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">7</a><span class="fn-bracket">]</span></span>
 <p>Shujian Yu, Ammar Shaker, Francesco Alesiani, and Jose Principe. Measuring the discrepancy between conditional distributions: methods, properties and applications. In Christian Bessiere, editor, <em>Proceedings of the Twenty-Ninth International Joint Conference on Artificial Intelligence, IJCAI-20</em>, 2777–2784. International Joint Conferences on Artificial Intelligence Organization, 7 2020. Main track. URL: <a class="reference external" href="https://doi.org/10.24963/ijcai.2020/385">https://doi.org/10.24963/ijcai.2020/385</a>, <a class="reference external" href="https://doi.org/10.24963/ijcai.2020/385">doi:10.24963/ijcai.2020/385</a>.</p>
 </aside>
 </aside>
