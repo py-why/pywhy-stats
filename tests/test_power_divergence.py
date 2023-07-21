@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 from numpy.testing import assert_almost_equal
 
-from pywhy_stats import power_divergence
+from pywhy_stats.independence import power_divergence
 
 from .testdata import testdata
 

@@ -19,10 +19,10 @@ class Methods(Enum):
     """Choose an automatic method based on the data."""
 
     FISHERZ = fisherz
-    """:py:mod:`~pywhy_stats.fisherz`: Fisher's Z test for independence"""
+    """:py:mod:`pywhy_stats.independence.fisherz`: Fisher's Z test for independence"""
 
     KCI = kci
-    """:py:mod:`~pywhy_stats.kci`: Conditional kernel independence test"""
+    """:py:mod:`pywhy_stats.independence.kci`: Conditional kernel independence test"""
 
 
 def independence_test(
@@ -60,8 +60,8 @@ def independence_test(
 
     See Also
     --------
-    fisherz : Fisher's Z test for independence
-    kci : Kernel Conditional Independence test
+    pywhy_stats.independence.fisherz : Fisher's Z test for independence
+    pywhy_stats.independence.kci : Kernel Conditional Independence test
     """
     method_module: ModuleType
     if method == Methods.AUTO:
@@ -72,7 +72,7 @@ def independence_test(
             f"but got {method}."
         )
     else:
-        method_module = method
+        method_module = method  # type: ignore
 
     if method_module == Methods.FISHERZ:
         if condition_on is None:

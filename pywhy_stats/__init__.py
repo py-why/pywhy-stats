@@ -1,4 +1,4 @@
 from ._version import __version__  # noqa: F401
 from .api import Methods, independence_test
-from .independence import fisherz, kci
+from .independence import fisherz, kci, power_divergence
 from .pvalue_result import PValueResult
