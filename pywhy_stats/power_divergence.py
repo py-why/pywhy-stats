@@ -28,6 +28,7 @@ Examples
 
 import logging
 from typing import Optional
+from warnings import warn
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -38,7 +39,11 @@ from .pvalue_result import PValueResult
 
 
 def ind(
-    X: ArrayLike, Y: ArrayLike, method: str = "cressie-read", num_categories_allowed: int = 10
+    X: ArrayLike,
+    Y: ArrayLike,
+    method: str = "cressie-read",
+    num_categories_allowed: int = 10,
+    on_error: str = "raise",
 ) -> PValueResult:
     """Perform an independence test using power divergence test.
 
@@ -65,6 +70,11 @@ def ind(
     num_categories_allowed : int
         The maximum number of categories allowed in the input variables. Default
         of 10 is chosen to error out on large number of categories.
+    on_error : str
+        What to do when there are not enough samples in the data, where there are 0 samples
+        in a cell of the contingency table. If 'raise', then
+        raise an error. If 'warn', then log a warning and skip the test.
+        If 'ignore', then ignore the warning and skip the test.
 
     Returns
     -------
@@ -79,7 +89,12 @@ def ind(
     """
     X, Y, _ = _preprocess_inputs(X=X, Y=Y, Z=None)
     return _power_divergence(
-        X=X, Y=Y, Z=None, method=method, num_categories_allowed=num_categories_allowed
+        X=X,
+        Y=Y,
+        Z=None,
+        method=method,
+        num_categories_allowed=num_categories_allowed,
+        on_error=on_error,
     )
 
 
@@ -89,6 +104,7 @@ def condind(
     condition_on: ArrayLike,
     method: str = "cressie-read",
     num_categories_allowed: int = 10,
+    on_error: str = "raise",
 ) -> PValueResult:
     """Perform an independence test using power divergence test.
 
@@ -117,6 +133,11 @@ def condind(
     num_categories_allowed : int
         The maximum number of categories allowed in the input variables. Default
         of 10 is chosen to error out on large number of categories.
+    on_error : str
+        What to do when there are not enough samples in the data, where there are 0 samples
+        in a cell of the contingency table. If 'raise', then
+        raise an error. If 'warn', then log a warning and skip the test.
+        If 'ignore', then ignore the warning and skip the test.
 
     Returns
     -------
@@ -127,7 +148,12 @@ def condind(
     """
     X, Y, condition_on = _preprocess_inputs(X=X, Y=Y, Z=condition_on)
     return _power_divergence(
-        X=X, Y=Y, Z=condition_on, method=method, num_categories_allowed=num_categories_allowed
+        X=X,
+        Y=Y,
+        Z=condition_on,
+        method=method,
+        num_categories_allowed=num_categories_allowed,
+        on_error=on_error,
     )
 
 
@@ -208,6 +234,7 @@ def _power_divergence(
     method: str = "cressie-read",
     num_categories_allowed: int = 10,
     correction: bool = True,
+    on_error: str = "raise",
 ) -> PValueResult:
     """Compute the Cressie-Read power divergence statistic.
 
@@ -298,8 +325,8 @@ def _power_divergence(
         )
         n_samples_req = 10 * dof_check
         if n_samples < n_samples_req:
-            raise RuntimeError(
-                f"Not enough samples. {n_samples} is too small. Need {n_samples_req}."
+            warn(
+                f"Not enough samples. {n_samples} is probably too small. Should have {n_samples_req}."
             )
 
         # XXX: currently we just leverage pandas to do the grouping. This is not
@@ -324,12 +351,25 @@ def _power_divergence(
                 chi += c
                 dof += d
             except ValueError:
-                # If one of the values is 0 in the 2x2 table.
-                if isinstance(z_state, str):
-                    logging.info(f"Skipping the test X \u27C2 Y | Z={z_state}. Not enough samples")
-                else:
-                    z_str = ", ".join([f"{var}={state}" for var, state in zip(Z_columns, z_state)])
-                    logging.info(f"Skipping the test X \u27C2 Y | {z_str}. Not enough samples")
+                if on_error == "raise":
+                    raise RuntimeError(
+                        "Not enough samples in the data, such that there is a 0 sample contingency table"
+                    )
+                elif on_error == "warn":
+                    warn(
+                        "Not enough samples in the data, such that there is a 0 sample contingency table"
+                    )
+                elif on_error == "ignore":
+                    # If one of the values is 0 in the 2x2 table.
+                    if isinstance(z_state, str):
+                        logging.info(
+                            f"Skipping the test X \u27C2 Y | Z={z_state}. Not enough samples"
+                        )
+                    else:
+                        z_str = ", ".join(
+                            [f"{var}={state}" for var, state in zip(Z_columns, z_state)]
+                        )
+                        logging.info(f"Skipping the test X \u27C2 Y | {z_str}. Not enough samples")
 
             if np.isnan(c):
                 raise RuntimeError(
