@@ -213,7 +213,7 @@ def test_g_discrete():
     dm = np.array([testdata.dis_data]).reshape((2000, 25))
     df = pd.DataFrame.from_records(dm)
     sets = [[2, 3, 4, 5, 6, 7]]
-    with pytest.raises(RuntimeError, match="Not enough samples"):
+    with pytest.warns(UserWarning, match="Not enough samples"):
         power_divergence.condind(
             X=df[x], Y=df[y], condition_on=df[sets[0]], method="log-likelihood"
         )
@@ -247,7 +247,7 @@ def test_g_binary():
     dm = np.array([testdata.bin_data]).reshape((500, 50))
     df = pd.DataFrame.from_records(dm)
     sets = [[2, 3, 4, 5, 6, 7, 8]]
-    with pytest.raises(RuntimeError, match="Not enough samples"):
+    with pytest.warns(UserWarning, match="Not enough samples"):
         power_divergence.condind(
             X=df[x], Y=df[y], condition_on=df[sets[0]], method="log-likelihood"
         )
