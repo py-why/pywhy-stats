@@ -141,6 +141,11 @@ When you're ready to contribute code to address an open issue, please follow the
 
     </details>
 
+5. Adding your name to the CITATION.cff file
+
+    We are a community-driven open-source project and want to make sure all contributors are acknowledged. If you are a new contributor, add your name
+    to the ``CITATION.cff`` file and relevant metadata.
+
 ### Writing docstrings
 
 We use [Sphinx](https://www.sphinx-doc.org/en/master/index.html) to build our API docs, which automatically parses all docstrings
