@@ -48,9 +48,17 @@ def ind(
     kernel_X : Callable[[ArrayLike], ArrayLike]
         The kernel function for X. By default, the RBF kernel is used for numeric and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.
+        If the kernel is a callable, it will have the following input signature:
+        ``(X, Y=None)``. If Y is passed in, then the kernel computes a pairwise kernels
+        between the two arrays. For more information, see the documentation for
+        :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
     kernel_Y : Callable[[ArrayLike], ArrayLike]
         The kernel function for Y. By default, the RBF kernel is used for continuous and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.
+        If the kernel is a callable, it will have the following input signature:
+        ``(X, Y=None)``. If Y is passed in, then the kernel computes a pairwise kernels
+        between the two arrays. For more information, see the documentation for
+        :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
     approx : bool
         Whether to use the Gamma distribution approximation for the pvalue, by default True.
     null_sample_size : int
@@ -135,16 +143,28 @@ def condind(
         kernel for categorical data. Note that we currently only consider string values as categorical data.
         Kernels can be specified in the same way as for :func:`~sklearn.metrics.pairwise.pairwise_kernels`
         with the addition that 'delta' kernel is supported for categorical data.
+        If the kernel is a callable, it will have the following input signature:
+        ``(X, Y=None)``. If Y is passed in, then the kernel computes a pairwise kernels
+        between the two arrays. For more information, see the documentation for
+        :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
     kernel_Y : Callable[[ArrayLike], ArrayLike]
         The kernel function for Y. By default, the RBF kernel is used for continuous and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.
         Kernels can be specified in the same way as for :func:`~sklearn.metrics.pairwise.pairwise_kernels`
         with the addition that 'delta' kernel is supported for categorical data.
+        If the kernel is a callable, it will have the following input signature:
+        ``(X, Y=None)``. If Y is passed in, then the kernel computes a pairwise kernels
+        between the two arrays. For more information, see the documentation for
+        :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
     kernel_Z : Callable[[ArrayLike], ArrayLike]
         The kernel function for Z. By default, the RBF kernel is used for continuous and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.
         Kernels can be specified in the same way as for :func:`~sklearn.metrics.pairwise.pairwise_kernels`
         with the addition that 'delta' kernel is supported for categorical data.
+        If the kernel is a callable, it will have the following input signature:
+        ``(X, Y=None)``. If Y is passed in, then the kernel computes a pairwise kernels
+        between the two arrays. For more information, see the documentation for
+        :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
     approx : bool
         Whether to use the Gamma distribution approximation for the pvalue, by default True.
     null_sample_size : int

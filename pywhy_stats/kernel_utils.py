@@ -1,4 +1,3 @@
-import inspect
 from typing import Callable, Dict, Optional, Tuple, Union
 
 import numpy as np
@@ -132,10 +131,13 @@ def compute_kernel(
         kernel_params = dict()
 
     # compute the potentially pairwise kernel matrix
-    # If the number of arguments is just one, then we bypass the pairwise kernel
-    # optimized computation via sklearn and opt to use the metric function directly
-    if callable(metric) and len(inspect.getfullargspec(metric).args) == 1:
-        kernel = metric(X)
+    if callable(metric):
+        # If the number of arguments is just one, then we bypass the pairwise kernel
+        # optimized computation via sklearn and opt to use the metric function directly
+        input_args = [X]
+        if Y is not None:
+            input_args.append(Y)
+        kernel = metric(*input_args)
     else:
         kernel = pairwise_kernels(
             X, Y=Y, metric=metric, n_jobs=n_jobs, filter_params=False, **kernel_params
