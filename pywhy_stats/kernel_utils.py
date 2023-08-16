@@ -1,3 +1,4 @@
+import inspect
 from typing import Callable, Dict, Optional, Tuple, Union
 
 import numpy as np
@@ -130,14 +131,17 @@ def compute_kernel(
     else:
         kernel_params = dict()
 
-    # compute the potentially pairwise kernel matrix
-    if callable(metric):
+    # if the metric is a callable, then we need to check the number of arguments
+    # it takes. If it takes just one argument, then we bypass the pairwise kernel
+    # and call the kernel function directly on the entire input array. See kci.py Notes
+    # for more information.
+    if callable(metric) and len(inspect.getfullargspec(metric).args) == 1:
+        if Y is not None:
+            raise RuntimeError("Y is not allowed when metric is a callable with one argument.")
+
         # If the number of arguments is just one, then we bypass the pairwise kernel
         # optimized computation via sklearn and opt to use the metric function directly
-        input_args = [X]
-        if Y is not None:
-            input_args.append(Y)
-        kernel = metric(*input_args)
+        kernel = metric(X)
     else:
         kernel = pairwise_kernels(
             X, Y=Y, metric=metric, n_jobs=n_jobs, filter_params=False, **kernel_params

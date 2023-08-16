@@ -45,20 +45,14 @@ def ind(
         Data for variable X, which can be multidimensional.
     Y : ArrayLike of shape (n_samples, n_features_y)
         Data for variable Y, which can be multidimensional.
-    kernel_X : Callable[[ArrayLike], ArrayLike]
+    kernel_X : Callable[[ArrayLike], ArrayLike], str
         The kernel function for X. By default, the RBF kernel is used for numeric and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.
-        If the kernel is a callable, it will have the following input signature:
-        ``(X, Y=None)``. If Y is passed in, then the kernel computes a pairwise kernels
-        between the two arrays. For more information, see the documentation for
-        :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
-    kernel_Y : Callable[[ArrayLike], ArrayLike]
+        For more information on how to set the kernel, see the Notes.
+    kernel_Y : Callable[[ArrayLike], ArrayLike], str
         The kernel function for Y. By default, the RBF kernel is used for continuous and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.
-        If the kernel is a callable, it will have the following input signature:
-        ``(X, Y=None)``. If Y is passed in, then the kernel computes a pairwise kernels
-        between the two arrays. For more information, see the documentation for
-        :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
+        For more information on how to set the kernel, see the Notes.
     approx : bool
         Whether to use the Gamma distribution approximation for the pvalue, by default True.
     null_sample_size : int
@@ -82,6 +76,16 @@ def ind(
     from sklearn::
 
         kernel_X = func:`sklearn.metrics.pairwise.pairwise_kernels.polynomial`
+
+    If the kernel is a callable, it will have either one input for ``X``, or two inputs for ``X`` and
+    ``Y``. If one input is passed in, it is assumed that the kernel operates on the entire array to compute
+    the kernel array. If two inputs are passed in, then it is assumed that the kernel operates on
+    pairwise row vectors from each input array. This callable is parallelized across rows of the input
+    using :func:`~sklearn.metrics.pairwise.pairwise_kernels`. Note that ``(X, Y=None)`` is a valid input
+    signature for the kernel function and would then get passed to the pairwise kernel function. If
+    a callable is passed in, it is generally faster and more efficient if one can define a vectorized
+    operation that operates on the whole array at once. Otherwise, the pairwise kernel function will
+    call the function for each combination of rows in the input arrays.
 
     References
     ----------
@@ -141,30 +145,15 @@ def condind(
     kernel_X : Callable[[ArrayLike], ArrayLike]
         The kernel function for X. By default, the RBF kernel is used for continuous and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.
-        Kernels can be specified in the same way as for :func:`~sklearn.metrics.pairwise.pairwise_kernels`
-        with the addition that 'delta' kernel is supported for categorical data.
-        If the kernel is a callable, it will have the following input signature:
-        ``(X, Y=None)``. If Y is passed in, then the kernel computes a pairwise kernels
-        between the two arrays. For more information, see the documentation for
-        :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
+        For more information on how to set the kernel, see the Notes.
     kernel_Y : Callable[[ArrayLike], ArrayLike]
         The kernel function for Y. By default, the RBF kernel is used for continuous and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.
-        Kernels can be specified in the same way as for :func:`~sklearn.metrics.pairwise.pairwise_kernels`
-        with the addition that 'delta' kernel is supported for categorical data.
-        If the kernel is a callable, it will have the following input signature:
-        ``(X, Y=None)``. If Y is passed in, then the kernel computes a pairwise kernels
-        between the two arrays. For more information, see the documentation for
-        :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
+        For more information on how to set the kernel, see the Notes.
     kernel_Z : Callable[[ArrayLike], ArrayLike]
         The kernel function for Z. By default, the RBF kernel is used for continuous and the delta
         kernel for categorical data. Note that we currently only consider string values as categorical data.
-        Kernels can be specified in the same way as for :func:`~sklearn.metrics.pairwise.pairwise_kernels`
-        with the addition that 'delta' kernel is supported for categorical data.
-        If the kernel is a callable, it will have the following input signature:
-        ``(X, Y=None)``. If Y is passed in, then the kernel computes a pairwise kernels
-        between the two arrays. For more information, see the documentation for
-        :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
+        For more information on how to set the kernel, see the Notes.
     approx : bool
         Whether to use the Gamma distribution approximation for the pvalue, by default True.
     null_sample_size : int
@@ -191,6 +180,16 @@ def condind(
 
     In addition, we implement an efficient delta kernel. The delta kernel can be specified using the
     'kernel' string argument.
+
+    If the kernel is a callable, it will have either one input for ``X``, or two inputs for ``X`` and
+    ``Y``. If one input is passed in, it is assumed that the kernel operates on the entire array to compute
+    the kernel array. If two inputs are passed in, then it is assumed that the kernel operates on
+    pairwise row vectors from each input array. This callable is parallelized across rows of the input
+    using :func:`~sklearn.metrics.pairwise.pairwise_kernels`. Note that ``(X, Y=None)`` is a valid input
+    signature for the kernel function and would then get passed to the pairwise kernel function. If
+    a callable is passed in, it is generally faster and more efficient if one can define a vectorized
+    operation that operates on the whole array at once. Otherwise, the pairwise kernel function will
+    call the function for each combination of rows in the input arrays.
 
     References
     ----------
