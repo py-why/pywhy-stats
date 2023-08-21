@@ -13,7 +13,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 from scipy import stats
 
-from pywhy_stats.kernel_utils import _preprocess_kernel_data, compute_kernel
+from pywhy_stats.kernel_utils import _fast_centering, _preprocess_kernel_data, compute_kernel
 from pywhy_stats.utils import preserve_random_state
 
 from ..pvalue_result import PValueResult
@@ -221,27 +221,39 @@ def _kernel_test(
     normalize_data: bool,
     centered: bool,
     n_jobs: Optional[int],
+    concatenate_x_z: bool = False,
 ) -> Tuple[float, float]:
     X, Y, Z = _preprocess_kernel_data(X, Y, Z, normalize_data)
 
-    # if Z is not None:
-    # concatenate the (X, Z) data to compute the K_xz kernel
-    # X = np.concatenate((X, Z), axis=1)
-
-    Kx = compute_kernel(X, kernel=kernel_X, centered=centered, n_jobs=n_jobs)
     Ky = compute_kernel(Y, kernel=kernel_Y, centered=centered, n_jobs=n_jobs)
 
     # compute kernels in each data space
     if Z is not None:
+        Kz = compute_kernel(
+            Z, kernel=kernel_Z, centered=centered and concatenate_x_z, n_jobs=n_jobs
+        )
 
-        Kz = compute_kernel(Z, kernel=kernel_Z, centered=centered, n_jobs=n_jobs)
-        
-        # Equivalent to concatenating and then estimating the kernel matrix
-        Kx *= Kz  # type: ignore
+        if concatenate_x_z:
+            Kx = compute_kernel(
+                np.concatenate((X, Z), axis=1), kernel=kernel_X, centered=centered, n_jobs=n_jobs
+            )
+        else:
+            Kx = compute_kernel(X, kernel=kernel_X, centered=False, n_jobs=n_jobs)
+            Kx *= Kz  # type: ignore
+
+            if centered:
+                Kx = _fast_centering(Kx)
+                Kz = _fast_centering(Kz)
 
         return _cond(Kx, Ky, Kz, approx, null_sample_size, threshold)
     else:
-        return _ind(Kx, Ky, approx, null_sample_size, threshold)
+        return _ind(
+            compute_kernel(X, kernel=kernel_X, centered=False, n_jobs=n_jobs),
+            Ky,
+            approx,
+            null_sample_size,
+            threshold,
+        )
 
 
 def _ind(Kx, Ky, approx, null_sample_size, threshold):

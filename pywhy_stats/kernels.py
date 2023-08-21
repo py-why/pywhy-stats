@@ -24,7 +24,7 @@ def delta_kernel(X: ArrayLike, Y=None) -> ArrayLike:
     """
     X, Y = check_pairwise_arrays(X, Y, dtype=str)
 
-    return np.equal(X[:, np.newaxis], Y).all(axis=-1).astype(int)
+    return np.char.equal(X[:, np.newaxis], Y).all(axis=-1).astype(int)
 
 
 def estimate_squared_sigma_rbf(
