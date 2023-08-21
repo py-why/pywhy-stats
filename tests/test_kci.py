@@ -1,6 +1,8 @@
+from functools import partial
+
 import numpy as np
 from flaky import flaky
-from sklearn.metrics.pairwise import rbf_kernel
+from sklearn.metrics.pairwise import pairwise_kernels, rbf_kernel
 
 from pywhy_stats import kci
 from pywhy_stats.kernels import delta_kernel
@@ -167,6 +169,11 @@ def test_given_categorical_conditionally_dependent_data_when_perform_kernel_base
     assert kci.condind(x, z, y, approx=False).pvalue < 0.05
 
 
+####################################################
+# Conditional independence tests - Mixed Data Types
+####################################################
+
+
 @flaky(max_runs=3)
 def test_given_conditionally_dependent_mixed_data_types_with_custom_kernel_when_perform_kernel_based_test_then_reject():
     n_samples = 750
@@ -232,4 +239,11 @@ def test_given_gaussian_data_and_polynomial_kernel_when_perform_kernel_based_tes
             kernel_Z="polynomial",
         ).pvalue
         > 0.05
+    )
+
+    assert (
+        kci.ind(
+            X, Z, kernel_X=partial(pairwise_kernels, metric="polynomial"), kernel_Y="polynomial"
+        ).pvalue
+        < 0.05
     )

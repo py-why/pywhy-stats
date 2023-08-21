@@ -1,5 +1,4 @@
-import inspect
-from typing import Callable, Dict, Optional, Tuple, Union
+from typing import Callable, Optional, Tuple, Union
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -8,7 +7,6 @@ from scipy.linalg import logm
 from scipy.optimize import minimize_scalar
 from sklearn.metrics import pairwise_kernels
 from sklearn.metrics.pairwise import PAIRWISE_KERNEL_FUNCTIONS
-from sklearn.preprocessing import LabelEncoder
 
 from pywhy_stats.kernels import delta_kernel, estimate_squared_sigma_rbf
 
@@ -87,13 +85,13 @@ def _normalize_data(X: ArrayLike) -> ArrayLike:
 def compute_kernel(
     X: ArrayLike,
     Y: Optional[ArrayLike] = None,
-    metric: Optional[Union[Callable, str]] = None,
+    kernel: Optional[Union[Callable, str]] = None,
     centered: bool = True,
     n_jobs: Optional[int] = None,
 ) -> Tuple[ArrayLike, float]:
-    """Compute a kernel matrix and corresponding width.
+    """Compute a kernel matrix.
 
-    Also optionally estimates the kernel width parameter.
+    If no kernel is specified, chooses a data appropriate kernel and estimates the kernel width parameter.
 
     Parameters
     ----------
@@ -101,18 +99,18 @@ def compute_kernel(
         The X array.
     Y : ArrayLike of shape (n_samples_Y, n_features_Y), optional
         The Y array, by default None.
-    metric : str, optional
-        The metric to compute the kernel function, by default 'rbf'.
-        Can be any string as defined in
+    kernel : str, optional
+        Either a callable that computes a kernel matrix or a metric string as defined in
         :func:`sklearn.metrics.pairwise.pairwise_kernels`. Note 'rbf'
-        and 'gaussian' are the same metric.
+        and 'gaussian' are the same metric. If None is given, the kernel is inferred based on the data type, which is
+        currently either the rbf kernel for continous data or the delta kernel for categorical (string) data.
     centered : bool, optional
         Whether to center the kernel matrix or not, by default True.
         When centered, the kernel matrix induces a zero mean. The main purpose of
         centering is to remove the bias or mean shift from the data represented
         by the kernel matrix.
     n_jobs : int, optional
-        The number of jobs to run computations in parallel, by default None.
+        The number of jobs to run computations in parallel, by default None. This only works for string kernel inputs.
 
     Returns
     -------
@@ -121,15 +119,12 @@ def compute_kernel(
 
     Notes
     -----
-    If the metric is a callable, it will have either one input for ``X``, or two inputs for ``X`` and
+    If the kernel is a callable, it will have either one input for ``X``, or two inputs for ``X`` and
     ``Y``. If one input is passed in, it is assumed that the kernel operates on the entire array to compute
     the kernel array. If two inputs are passed in, then it is assumed that the kernel operates on
-    pairwise row vectors from each input array. This callable is parallelized across rows of the input
-    using :func:`~sklearn.metrics.pairwise.pairwise_kernels`. Note that ``(X, Y=None)`` is a valid input
-    signature for the kernel function and would then get passed to the pairwise kernel function. If
-    a callable is passed in, it is generally faster and more efficient if one can define a vectorized
-    operation that operates on the whole array at once. Otherwise, the pairwise kernel function will
-    call the function for each combination of rows in the input arrays.
+    pairwise row vectors from each input array. If a callable is passed in, it is generally faster and more efficient if
+    one can define a vectorized operation that operates on the whole array at once. Otherwise, consider creating a
+    callable that is parallelized using a custom metric with :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
     """
     # Note that this is added to the list of possible kernels for :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
     # because it is more efficient to compute the kernel over the entire matrices at once
@@ -138,35 +133,26 @@ def compute_kernel(
 
     # if the width of the kernel is not set, then use the median trick to set the
     # kernel width based on the data X
-    if metric is None:
+    if kernel is None:
         metric, kernel_params = _get_default_kernel(X)
-    else:
-        kernel_params = dict()
-
-    # if the metric is a callable, then we need to check the number of arguments
-    # it takes. If it takes just one argument, then we bypass the pairwise kernel
-    # and call the kernel function directly on the entire input array. See kci.py Notes
-    # for more information.
-    if callable(metric) and len(inspect.getfullargspec(metric).args) == 1:
-        if Y is not None:
-            raise RuntimeError("Y is not allowed when metric is a callable with one argument.")
-
-        # If the number of arguments is just one, then we bypass the pairwise kernel
-        # optimized computation via sklearn and opt to use the metric function directly
-        kernel = metric(X)
-    else:
-        kernel = pairwise_kernels(
+        kernel_matrix = pairwise_kernels(
             X, Y=Y, metric=metric, n_jobs=n_jobs, filter_params=False, **kernel_params
         )
+    else:
+        if Y is None:
+            kernel_matrix = kernel(X)
+        else:
+            kernel_matrix = kernel(X, Y)
 
     if centered:
-        kernel = _fast_centering(kernel)
-    return kernel
+        kernel_matrix = _fast_centering(kernel_matrix)
+
+    return kernel_matrix
 
 
-def corrent_matrix(
+def correntropy_matrix(
     data: ArrayLike,
-    metric: Optional[Union[str, Callable[[ArrayLike], ArrayLike]]] = None,
+    kernel: Optional[Union[str, Callable[[ArrayLike], ArrayLike]]] = None,
     centered: bool = True,
     n_jobs: Optional[int] = None,
 ) -> ArrayLike:
@@ -176,8 +162,8 @@ def corrent_matrix(
     ----------
     data : ArrayLike of shape (n_samples, n_features)
         The data.
-    metric : str
-        The kernel metric.
+    kernel : str, Callable, optional
+        The kernel.
     centered : bool, optional
         Whether to center the kernel matrix or not, by default True.
     n_jobs : int, optional
@@ -204,7 +190,7 @@ def corrent_matrix(
             K = compute_kernel(
                 X=data[:, [idx]],
                 Y=data[:, [jdx]],
-                metric=metric,
+                kernel=kernel,
                 centered=centered,
                 n_jobs=n_jobs,
             )
@@ -274,20 +260,6 @@ def _preprocess_kernel_data(
         Y = Y.reshape(-1, 1)
     if Z is not None and Z.ndim == 1:
         Z = Z.reshape(-1, 1)
-
-    # handle strings as categorical data automatically
-    if X.dtype.type in (np.str_, np.object_, np.unicode_):
-        enc = LabelEncoder()
-        for idx in range(X.shape[1]):
-            X[:, idx] = enc.fit_transform(X[:, idx])
-    if Y.dtype.type in (np.str_, np.object_, np.unicode_):
-        enc = LabelEncoder()
-        for idx in range(Y.shape[1]):
-            Y[:, idx] = enc.fit_transform(Y[:, idx])
-    if Z is not None and Z.dtype.type in (np.str_, np.object_, np.unicode_):
-        enc = LabelEncoder()
-        for idx in range(Z.shape[1]):
-            Z[:, idx] = enc.fit_transform(Z[:, idx])
 
     if normalize_data:
         # first normalize the data to have zero mean and unit variance
