@@ -24,13 +24,6 @@ def delta_kernel(X: ArrayLike, Y=None) -> ArrayLike:
     """
     X, Y = check_pairwise_arrays(X, Y, dtype=str)
 
-    if Y is None:
-        return _delta_kernel(X, X)
-    else:
-        return _delta_kernel(X, Y)
-
-
-def _delta_kernel(X, Y):
     return np.equal(X[:, np.newaxis], Y).all(axis=-1).astype(int)
 
 

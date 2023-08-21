@@ -78,14 +78,12 @@ def ind(
         kernel_X = func:`sklearn.metrics.pairwise.pairwise_kernels.polynomial`
 
     If the kernel is a callable, it will have either one input for ``X``, or two inputs for ``X`` and
-    ``Y``. If one input is passed in, it is assumed that the kernel operates on the entire array to compute
-    the kernel array. If two inputs are passed in, then it is assumed that the kernel operates on
-    pairwise row vectors from each input array. This callable is parallelized across rows of the input
-    using :func:`~sklearn.metrics.pairwise.pairwise_kernels`. Note that ``(X, Y=None)`` is a valid input
-    signature for the kernel function and would then get passed to the pairwise kernel function. If
-    a callable is passed in, it is generally faster and more efficient if one can define a vectorized
-    operation that operates on the whole array at once. Otherwise, the pairwise kernel function will
-    call the function for each combination of rows in the input arrays.
+    ``Y``. It is assumed that the kernel operates on the entire array to compute
+    the kernel array, that is, the callable performs a vectorized operation to compute the entire kernel matrix.
+
+    If one has an unvectorizable kernel function, then it is advised to use the callable with the
+    :func:`~sklearn.metrics.pairwise.pairwise_kernels` function, which will parallelize the kernel computation
+    across each row of the data.
 
     References
     ----------
@@ -182,14 +180,12 @@ def condind(
     'kernel' string argument.
 
     If the kernel is a callable, it will have either one input for ``X``, or two inputs for ``X`` and
-    ``Y``. If one input is passed in, it is assumed that the kernel operates on the entire array to compute
-    the kernel array. If two inputs are passed in, then it is assumed that the kernel operates on
-    pairwise row vectors from each input array. This callable is parallelized across rows of the input
-    using :func:`~sklearn.metrics.pairwise.pairwise_kernels`. Note that ``(X, Y=None)`` is a valid input
-    signature for the kernel function and would then get passed to the pairwise kernel function. If
-    a callable is passed in, it is generally faster and more efficient if one can define a vectorized
-    operation that operates on the whole array at once. Otherwise, the pairwise kernel function will
-    call the function for each combination of rows in the input arrays.
+    ``Y``. It is assumed that the kernel operates on the entire array to compute
+    the kernel array, that is, the callable performs a vectorized operation to compute the entire kernel matrix.
+
+    If one has an unvectorizable kernel function, then it is advised to use the callable with the
+    :func:`~sklearn.metrics.pairwise.pairwise_kernels` function, which will parallelize the kernel computation
+    across each row of the data.
 
     References
     ----------
