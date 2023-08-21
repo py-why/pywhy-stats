@@ -12,11 +12,6 @@ from sklearn.preprocessing import LabelEncoder
 
 from pywhy_stats.kernels import delta_kernel, estimate_squared_sigma_rbf
 
-# Note that this is added to the list of possible kernels for :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
-# because it is more efficient to compute the kernel over the entire matrices at once
-# since numpy has vectorized operations.
-PAIRWISE_KERNEL_FUNCTIONS["delta"] = delta_kernel
-
 
 def _default_regularization(K: ArrayLike) -> float:
     """Compute a default regularization for Kernel Logistic Regression.
@@ -136,6 +131,11 @@ def compute_kernel(
     operation that operates on the whole array at once. Otherwise, the pairwise kernel function will
     call the function for each combination of rows in the input arrays.
     """
+    # Note that this is added to the list of possible kernels for :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
+    # because it is more efficient to compute the kernel over the entire matrices at once
+    # since numpy has vectorized operations.
+    PAIRWISE_KERNEL_FUNCTIONS["delta"] = delta_kernel
+
     # if the width of the kernel is not set, then use the median trick to set the
     # kernel width based on the data X
     if metric is None:

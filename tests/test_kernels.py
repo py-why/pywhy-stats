@@ -18,7 +18,7 @@ def test_given_simple_data_when_estimate_squared_sigma_rbf_then_returns_correct_
     assert estimate_squared_sigma_rbf(X, method="median") == pytest.approx(0.1111111111111111)
 
 
-def test_delta_kernel_works_with_sklearn():
+def test_delta_kernel_notworks_with_sklearn():
     X = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     Y = np.array([[1, 2, 3], [7, 8, 9]])
 
@@ -28,8 +28,9 @@ def test_delta_kernel_works_with_sklearn():
     X = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     Y = np.array([[1, 2, 3], [7, 8, 9]])
 
-    kernel = pairwise_kernels(X, Y, metric="delta")
-    assert_array_equal(kernel, np.array([[1, 0], [0, 0], [0, 1]]))
+    with pytest.raises(ValueError, match="Unknown kernel"):
+        kernel = pairwise_kernels(X, Y, metric="delta")
+        # assert_array_equal(kernel, np.array([[1, 0], [0, 0], [0, 1]]))
 
 
 def test_error_with_kernel():
