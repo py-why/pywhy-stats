@@ -22,7 +22,7 @@ def delta_kernel(X: ArrayLike, Y=None) -> ArrayLike:
     result : ArrayLike of shape (n_samples, n_samples)
         The resulting kernel matrix after applying the delta kernel.
     """
-    X, Y = check_pairwise_arrays(X, Y)
+    X, Y = check_pairwise_arrays(X, Y, dtype=str)
 
     if Y is None:
         return _delta_kernel(X, X)

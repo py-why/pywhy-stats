@@ -65,8 +65,8 @@ def test_given_continuous_conditionally_dependent_data_when_perform_kernel_based
     x = np.exp(z + rng.uniform(size=(n_samples, 1)))
     y = np.exp(z + rng.uniform(size=(n_samples, 1)))
 
-    assert kci.condind(x, y, w, approx=True).pvalue < 0.05
     assert kci.condind(x, y, w, approx=False).pvalue < 0.05
+    assert kci.condind(x, y, w, approx=True).pvalue < 0.05
 
 
 ####################################################
@@ -133,7 +133,7 @@ def test_given_dependent_mixed_data_types_when_perform_kernel_based_test_then_re
 
 @flaky(max_runs=3)
 def test_given_categorical_conditionally_independent_data_when_perform_kernel_based_test_then_not_reject():
-    n_samples = 200
+    n_samples = 300
     x = rng.normal(0, 1, n_samples)
     z = []
     for v in x:

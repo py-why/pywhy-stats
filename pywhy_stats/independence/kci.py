@@ -228,15 +228,20 @@ def _kernel_test(
 ) -> Tuple[float, float]:
     X, Y, Z = _preprocess_kernel_data(X, Y, Z, normalize_data)
 
+    # if Z is not None:
+    # concatenate the (X, Z) data to compute the K_xz kernel
+    # X = np.concatenate((X, Z), axis=1)
+
     Kx = compute_kernel(X, kernel=kernel_X, centered=centered, n_jobs=n_jobs)
     Ky = compute_kernel(Y, kernel=kernel_Y, centered=centered, n_jobs=n_jobs)
 
     # compute kernels in each data space
     if Z is not None:
-        Kz = compute_kernel(Z, kernel=kernel_Z, centered=centered, n_jobs=n_jobs)
 
+        Kz = compute_kernel(Z, kernel=kernel_Z, centered=centered, n_jobs=n_jobs)
+        
         # Equivalent to concatenating and then estimating the kernel matrix
-        Kx *= Kz
+        Kx *= Kz  # type: ignore
 
         return _cond(Kx, Ky, Kz, approx, null_sample_size, threshold)
     else:

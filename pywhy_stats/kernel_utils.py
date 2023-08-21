@@ -1,4 +1,4 @@
-from typing import Callable, Optional, Tuple, Union, Dict
+from typing import Callable, Dict, Optional, Tuple, Union
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -103,7 +103,7 @@ def compute_kernel(
         Either a callable that computes a kernel matrix or a metric string as defined in
         :func:`sklearn.metrics.pairwise.pairwise_kernels`. Note 'rbf'
         and 'gaussian' are the same metric. If None is given, the kernel is inferred based on the data type, which is
-        currently either the rbf kernel for continous data or the delta kernel for categorical (string) data.
+        currently either the rbf kernel for continuous data or the delta kernel for categorical (string) data.
     centered : bool, optional
         Whether to center the kernel matrix or not, by default True.
         When centered, the kernel matrix induces a zero mean. The main purpose of
@@ -120,11 +120,12 @@ def compute_kernel(
     Notes
     -----
     If the kernel is a callable, it will have either one input for ``X``, or two inputs for ``X`` and
-    ``Y``. If one input is passed in, it is assumed that the kernel operates on the entire array to compute
-    the kernel array. If two inputs are passed in, then it is assumed that the kernel operates on
-    pairwise row vectors from each input array. If a callable is passed in, it is generally faster and more efficient if
-    one can define a vectorized operation that operates on the whole array at once. Otherwise, consider creating a
-    callable that is parallelized using a custom metric with :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
+    ``Y``. It is assumed that the kernel operates on the entire array to compute
+    the kernel array, that is, the callable performs a vectorized operation to compute the entire kernel matrix.
+
+    If one has an unvectorizable kernel function, then it is advised to use the callable with the
+    :func:`~sklearn.metrics.pairwise.pairwise_kernels` function, which will parallelize the kernel computation
+    across each row of the data.
     """
     # Note that this is added to the list of possible kernels for :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
     # because it is more efficient to compute the kernel over the entire matrices at once
@@ -138,7 +139,10 @@ def compute_kernel(
         kernel_matrix = pairwise_kernels(
             X, Y=Y, metric=metric, n_jobs=n_jobs, filter_params=False, **kernel_params
         )
+    elif isinstance(kernel, str):
+        kernel_matrix = pairwise_kernels(X, Y=Y, metric=kernel, n_jobs=n_jobs, filter_params=False)
     else:
+        # kernel is a callable
         if Y is None:
             kernel_matrix = kernel(X)
         else:
