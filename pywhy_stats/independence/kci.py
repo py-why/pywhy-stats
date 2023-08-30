@@ -221,7 +221,6 @@ def _kernel_test(
     normalize_data: bool,
     centered: bool,
     n_jobs: Optional[int],
-    concatenate_x_z: bool = False,
 ) -> Tuple[float, float]:
     X, Y, Z = _preprocess_kernel_data(X, Y, Z, normalize_data)
 
@@ -229,26 +228,21 @@ def _kernel_test(
 
     # compute kernels in each data space
     if Z is not None:
-        Kz = compute_kernel(
-            Z, kernel=kernel_Z, centered=centered and concatenate_x_z, n_jobs=n_jobs
-        )
+        Kz = compute_kernel(Z, kernel=kernel_Z, centered=False, n_jobs=n_jobs)
 
-        if concatenate_x_z:
-            Kx = compute_kernel(
-                np.concatenate((X, Z), axis=1), kernel=kernel_X, centered=centered, n_jobs=n_jobs
-            )
-        else:
-            Kx = compute_kernel(X, kernel=kernel_X, centered=False, n_jobs=n_jobs)
-            Kx *= Kz  # type: ignore
+        Kx = compute_kernel(X, kernel=kernel_X, centered=False, n_jobs=n_jobs)
+        Kx *= Kz  # type: ignore
 
-            if centered:
-                Kx = _fast_centering(Kx)
-                Kz = _fast_centering(Kz)
+        if centered:
+            Kx = _fast_centering(Kx)
+            Kz = _fast_centering(Kz)
 
         return _cond(Kx, Ky, Kz, approx, null_sample_size, threshold)
     else:
+        Kx = compute_kernel(X, kernel=kernel_X, centered=centered, n_jobs=n_jobs)
+
         return _ind(
-            compute_kernel(X, kernel=kernel_X, centered=False, n_jobs=n_jobs),
+            Kx,
             Ky,
             approx,
             null_sample_size,
