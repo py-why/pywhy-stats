@@ -9,6 +9,7 @@ from sklearn.metrics import pairwise_kernels
 from sklearn.metrics.pairwise import PAIRWISE_KERNEL_FUNCTIONS
 
 from pywhy_stats.kernels import delta_kernel, estimate_squared_sigma_rbf
+from pywhy_stats.utils import TemporarilySetKey
 
 
 def _default_regularization(K: ArrayLike) -> float:
@@ -130,26 +131,30 @@ def compute_kernel(
     # Note that this is added to the list of possible kernels for :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
     # because it is more efficient to compute the kernel over the entire matrices at once
     # since numpy has vectorized operations.
-    PAIRWISE_KERNEL_FUNCTIONS["delta"] = delta_kernel
+    # with temporarily_restrict_key("delta", PAIRWISE_KERNEL_FUNCTIONS):
+    with TemporarilySetKey(PAIRWISE_KERNEL_FUNCTIONS, "delta", delta_kernel):
+        PAIRWISE_KERNEL_FUNCTIONS["delta"] = delta_kernel
 
-    # if the width of the kernel is not set, then use the median trick to set the
-    # kernel width based on the data X
-    if kernel is None:
-        metric, kernel_params = _get_default_kernel(X)
-        kernel_matrix = pairwise_kernels(
-            X, Y=Y, metric=metric, n_jobs=n_jobs, filter_params=False, **kernel_params
-        )
-    elif isinstance(kernel, str):
-        kernel_matrix = pairwise_kernels(X, Y=Y, metric=kernel, n_jobs=n_jobs, filter_params=False)
-    else:
-        # kernel is a callable
-        if Y is None:
-            kernel_matrix = kernel(X)
+        # if the width of the kernel is not set, then use the median trick to set the
+        # kernel width based on the data X
+        if kernel is None:
+            metric, kernel_params = _get_default_kernel(X)
+            kernel_matrix = pairwise_kernels(
+                X, Y=Y, metric=metric, n_jobs=n_jobs, filter_params=False, **kernel_params
+            )
+        elif isinstance(kernel, str):
+            kernel_matrix = pairwise_kernels(
+                X, Y=Y, metric=kernel, n_jobs=n_jobs, filter_params=False
+            )
         else:
-            kernel_matrix = kernel(X, Y)
+            # kernel is a callable
+            if Y is None:
+                kernel_matrix = kernel(X)
+            else:
+                kernel_matrix = kernel(X, Y)
 
-    if centered:
-        kernel_matrix = _fast_centering(kernel_matrix)
+        if centered:
+            kernel_matrix = _fast_centering(kernel_matrix)
 
     return kernel_matrix
 

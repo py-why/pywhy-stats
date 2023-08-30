@@ -176,7 +176,7 @@ def test_given_categorical_conditionally_dependent_data_when_perform_kernel_base
 
 @flaky(max_runs=3)
 def test_given_conditionally_dependent_mixed_data_types_with_custom_kernel_when_perform_kernel_based_test_then_reject():
-    n_samples = 750
+    n_samples = 200
     x = rng.normal(0, 1, n_samples)
     z = []
     for v in x:

@@ -3,6 +3,7 @@ import pytest
 from numpy.testing import assert_array_equal
 from sklearn.metrics.pairwise import pairwise_kernels
 
+from pywhy_stats.kernel_utils import compute_kernel
 from pywhy_stats.kernels import delta_kernel, estimate_squared_sigma_rbf
 
 
@@ -19,13 +20,13 @@ def test_given_simple_data_when_estimate_squared_sigma_rbf_then_returns_correct_
 
 def test_delta_kernel_notworks_with_sklearn():
     X = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-    Y = np.array([[1, 2, 3], [7, 8, 9]])
+    Y = np.array([[1, 2, 3], [7, 8, 9], [10, 11, 12]])
 
     kernel = delta_kernel(X, Y)
-    assert_array_equal(kernel, np.array([[1, 0], [0, 0], [0, 1]]))
+    assert_array_equal(kernel, np.array([[1, 0, 0], [0, 0, 0], [0, 1, 0]]))
 
-    X = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-    Y = np.array([[1, 2, 3], [7, 8, 9]])
+    # this should work
+    kernel = compute_kernel(X, Y, kernel="delta")
 
     with pytest.raises(ValueError, match="Unknown kernel"):
         kernel = pairwise_kernels(X, Y, metric="delta")

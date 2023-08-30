@@ -12,9 +12,9 @@ def delta_kernel(X: ArrayLike, Y=None) -> ArrayLike:
 
     Parameters
     ----------
-    X : ArrayLike of shape (n_samples, n_dimensions_x)
+    X : ArrayLike of shape (n_samples_x, n_dimensions)
         Input data.
-    Y : ArrayLike of shape (n_samples, n_dimensions_y), optional
+    Y : ArrayLike of shape (n_samples_y, n_dimensions), optional
        By default None.
 
     Returns
