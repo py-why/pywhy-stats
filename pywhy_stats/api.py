@@ -3,10 +3,11 @@ from types import ModuleType
 from typing import Optional
 from warnings import warn
 
+import numpy as np
 import scipy.stats
 from numpy.typing import ArrayLike
 
-from pywhy_stats import fisherz, kci
+from pywhy_stats.independence import fisherz, kci
 
 from .pvalue_result import PValueResult
 
@@ -18,10 +19,10 @@ class Methods(Enum):
     """Choose an automatic method based on the data."""
 
     FISHERZ = fisherz
-    """:py:mod:`~pywhy_stats.fisherz`: Fisher's Z test for independence"""
+    """:py:mod:`pywhy_stats.independence.fisherz`: Fisher's Z test for independence"""
 
     KCI = kci
-    """:py:mod:`~pywhy_stats.kci`: Conditional kernel independence test"""
+    """:py:mod:`pywhy_stats.independence.kci`: Conditional kernel independence test"""
 
 
 def independence_test(
@@ -59,14 +60,19 @@ def independence_test(
 
     See Also
     --------
-    fisherz : Fisher's Z test for independence
-    kci : Kernel Conditional Independence test
+    pywhy_stats.independence.fisherz : Fisher's Z test for independence
+    pywhy_stats.independence.kci : Kernel Conditional Independence test
     """
     method_module: ModuleType
     if method == Methods.AUTO:
         method_module = Methods.KCI
+    elif not isinstance(method, Methods):
+        raise ValueError(
+            f"Invalid method type. Expected one of {Methods.__members__.keys()}, "
+            f"but got {method}."
+        )
     else:
-        method_module = method
+        method_module = method  # type: ignore
 
     if method_module == Methods.FISHERZ:
         if condition_on is None:
@@ -74,10 +80,10 @@ def independence_test(
         else:
             data = [X, Y, condition_on]
         for _data in data:
-            _, pval = scipy.stats.normaltest(_data)
+            res = scipy.stats.normaltest(_data, axis=0)
 
             # XXX: we should add pinguoin as an optional dependency for doing multi-comp stuff
-            if pval < 0.05:
+            if np.atleast_1d(res.pvalue).any() < 0.05:
                 warn(
                     "The provided data does not seem to be Gaussian, but the Fisher-Z test "
                     "assumes that the data follows a Gaussian distribution. The result should "
@@ -85,6 +91,6 @@ def independence_test(
                 )
 
     if condition_on is None:
-        return method_module.ind(X, Y, method, **kwargs)
+        return method_module.value.ind(X, Y, **kwargs)
     else:
-        return method_module.condind(X, Y, condition_on, method, **kwargs)
+        return method_module.value.condind(X, Y, condition_on, **kwargs)

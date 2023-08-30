@@ -57,7 +57,7 @@ contains the p-value and the test statistic and optionally additional informatio
 Testing for conditional independence among variables is a core part
 of many data analysis procedures.
 
-.. currentmodule:: pywhy_stats
+.. currentmodule:: pywhy_stats.independence
 .. autosummary::
    :toctree: generated/
 

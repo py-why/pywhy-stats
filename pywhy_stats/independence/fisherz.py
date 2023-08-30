@@ -4,7 +4,7 @@ This test is also known as the partial correlation independence test.
 It works on Gaussian random variables.
 
 When the data is not Gaussian, this test is not valid. In this case, we recommend
-using the Kernel independence test at <insert link>.
+using the Kernel independence test at `pywhy_stats.kci`.
 
 Examples
 --------
@@ -21,7 +21,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 from scipy.stats import norm
 
-from .pvalue_result import PValueResult
+from pywhy_stats.pvalue_result import PValueResult
 
 
 def ind(X: ArrayLike, Y: ArrayLike, correlation_matrix: Optional[ArrayLike] = None) -> PValueResult:

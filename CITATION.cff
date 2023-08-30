@@ -1,0 +1,24 @@
+# YAML 1.2
+---
+# Metadata for citation of this software according to the CFF format (https://citation-file-format.github.io/)
+cff-version: 1.2.0
+title: 'Pywhy-Stats: Statistical inference in Python.'
+abstract: 'Pywhy-Stats is a Python library that leverages a simple API for performing independence and conditional independence testing.'
+authors:
+    - given-names: Adam
+      family-names: Li
+      affiliation: 'Department of Computer Science, Columbia University, New York, NY, USA'
+      orcid: 'https://orcid.org/0000-0001-8421-365X'
+    - given-names: Patrick
+      family-names: Blöbaum
+      affiliation: 'Amazon'
+      email: 'bloebp@amazon.com'
+type: software
+repository-code: 'https://github.com/py-why/pywhy-stats'
+license: MIT
+keywords:
+  - causality
+  - pywhy
+  - statistics
+  - independece testing
+...

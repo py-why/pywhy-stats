@@ -2,31 +2,29 @@ import numpy as np
 from numpy._typing import ArrayLike
 from scipy.stats import iqr
 from sklearn.metrics import pairwise_distances
+from sklearn.metrics.pairwise import check_pairwise_arrays
 
 
-def delta_kernel(X: np.ndarray) -> np.ndarray:
+def delta_kernel(X: ArrayLike, Y=None) -> ArrayLike:
     """Delta kernel for categorical values.
 
     This is, the similarity is 1 if the values are equal and 0 otherwise.
 
     Parameters
     ----------
-    X : ArrayLike of shape (n_samples, n_columns)
+    X : ArrayLike of shape (n_samples_x, n_dimensions)
         Input data.
+    Y : ArrayLike of shape (n_samples_y, n_dimensions), optional
+       By default None.
 
     Returns
     -------
     result : ArrayLike of shape (n_samples, n_samples)
         The resulting kernel matrix after applying the delta kernel.
     """
-    if X.ndim == 1:
-        X = X.reshape(-1, 1)
+    X, Y = check_pairwise_arrays(X, Y, dtype=str)
 
-    return (
-        np.array(list(map(lambda value: value == X, X)))
-        .reshape(X.shape[0], X.shape[0])
-        .astype(np.float32)
-    )
+    return np.char.equal(X[:, np.newaxis], Y).all(axis=-1).astype(int)
 
 
 def estimate_squared_sigma_rbf(
@@ -54,14 +52,12 @@ def estimate_squared_sigma_rbf(
         The estimated sigma**2 in K(x, x') = exp(-||x - x'|| / (2 * sigma**2)).
     """
     if method == "silverman":
-        if X.ndim > 1:
-            if X.shape[1] > 1:
-                raise ValueError(
-                    "The Silverman method to estimate the kernel bandwidth is currently only "
-                    "supported for one dimensional data!"
-                )
-            else:
-                X = X.reshape(-1)
+        if X.ndim > 1 and X.shape[1] > 1:
+            raise ValueError(
+                "The Silverman method to estimate the kernel bandwidth is currently only "
+                "supported for one dimensional data!"
+            )
+        X = X.reshape(-1)
 
         # https://en.wikipedia.org/wiki/Kernel_density_estimation#A_rule-of-thumb_bandwidth_estimator
         return 1 / (0.9 * np.min([np.std(X), iqr(X) / 1.34]) * (X.shape[0] ** (-1 / 5))) ** 2

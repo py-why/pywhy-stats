@@ -1,6 +1,8 @@
+from functools import partial
+
 import numpy as np
 from flaky import flaky
-from sklearn.metrics.pairwise import linear_kernel, polynomial_kernel, rbf_kernel
+from sklearn.metrics.pairwise import pairwise_kernels, rbf_kernel
 
 from pywhy_stats import kci
 from pywhy_stats.kernels import delta_kernel
@@ -8,12 +10,15 @@ from pywhy_stats.kernels import delta_kernel
 ####################################################
 # Unconditional independence tests - Continuous
 ####################################################
+seed = 12345
+rng = np.random.default_rng(seed)
 
 
 @flaky(max_runs=3)
 def test_given_continuous_independent_data_when_perform_kernel_based_test_then_not_reject():
-    x = np.random.randn(1000, 1)
-    y = np.exp(np.random.rand(1000, 1))
+    n_samples = 300
+    x = rng.standard_normal((n_samples, 1))
+    y = np.exp(rng.uniform(size=(n_samples, 1)))
 
     assert kci.ind(x, y, approx=True).pvalue > 0.05
     assert kci.ind(x, y, approx=False).pvalue > 0.05
@@ -27,9 +32,10 @@ def test_given_continuous_dependent_data_when_perform_kernel_based_test_then_rej
 
          X <- Z -> Y
     """
-    z = np.random.randn(1000, 1)
-    x = np.exp(z + np.random.rand(1000, 1))
-    y = np.exp(z + np.random.rand(1000, 1))
+    n_samples = 200
+    z = rng.standard_normal((n_samples, 1))
+    x = np.exp(z + rng.uniform(size=(n_samples, 1)))
+    y = np.exp(z + rng.uniform(size=(n_samples, 1)))
 
     assert kci.ind(x, y, approx=True).pvalue < 0.05
     assert kci.ind(x, y, approx=False).pvalue < 0.05
@@ -42,9 +48,10 @@ def test_given_continuous_dependent_data_when_perform_kernel_based_test_then_rej
 
 @flaky(max_runs=3)
 def test_given_continuous_conditionally_independent_data_when_perform_kernel_based_test_then_not_reject():
-    z = np.random.randn(1000, 1)
-    x = np.exp(z + np.random.rand(1000, 1))
-    y = np.exp(z + np.random.rand(1000, 1))
+    n_samples = 200
+    z = rng.standard_normal((n_samples, 1))
+    x = np.exp(z + rng.uniform(size=(n_samples, 1)))
+    y = np.exp(z + rng.uniform(size=(n_samples, 1)))
 
     assert kci.condind(x, y, z, approx=True).pvalue > 0.05
     assert kci.condind(x, y, z, approx=False).pvalue > 0.05
@@ -52,13 +59,14 @@ def test_given_continuous_conditionally_independent_data_when_perform_kernel_bas
 
 @flaky(max_runs=3)
 def test_given_continuous_conditionally_dependent_data_when_perform_kernel_based_test_then_reject():
-    z = np.random.randn(1000, 1)
-    w = np.random.randn(1000, 1)
-    x = np.exp(z + np.random.rand(1000, 1))
-    y = np.exp(z + np.random.rand(1000, 1))
+    n_samples = 200
+    z = rng.standard_normal((n_samples, 1))
+    w = rng.standard_normal((n_samples, 1))
+    x = np.exp(z + rng.uniform(size=(n_samples, 1)))
+    y = np.exp(z + rng.uniform(size=(n_samples, 1)))
 
-    assert kci.condind(x, y, w, approx=True).pvalue < 0.05
     assert kci.condind(x, y, w, approx=False).pvalue < 0.05
+    assert kci.condind(x, y, w, approx=True).pvalue < 0.05
 
 
 ####################################################
@@ -68,8 +76,9 @@ def test_given_continuous_conditionally_dependent_data_when_perform_kernel_based
 
 @flaky(max_runs=3)
 def test_given_categorical_independent_data_when_perform_kernel_based_test_then_not_reject():
-    x = np.random.normal(0, 1, 1000)
-    y = (np.random.choice(2, 1000) == 1).astype(str)
+    n_samples = 200
+    x = rng.normal(0, 1, n_samples)
+    y = (rng.choice(2, n_samples) == 1).astype(str)
 
     assert kci.ind(x, y, approx=True).pvalue > 0.05
     assert kci.ind(x, y, approx=False).pvalue > 0.05
@@ -77,7 +86,8 @@ def test_given_categorical_independent_data_when_perform_kernel_based_test_then_
 
 @flaky(max_runs=3)
 def test_given_categorical_dependent_data_when_perform_kernel_based_test_then_reject():
-    x = np.random.normal(0, 1, 1000)
+    n_samples = 200
+    x = rng.normal(0, 1, n_samples)
     y = []
 
     for v in x:
@@ -93,7 +103,8 @@ def test_given_categorical_dependent_data_when_perform_kernel_based_test_then_re
 
 @flaky(max_runs=3)
 def test_given_dependent_mixed_data_types_when_perform_kernel_based_test_then_reject():
-    x = np.random.normal(0, 1, 1000)
+    n_samples = 200
+    x = rng.normal(0, 1, n_samples)
     y = []
 
     for v in x:
@@ -103,7 +114,7 @@ def test_given_dependent_mixed_data_types_when_perform_kernel_based_test_then_re
             y.append(1)
     y = np.array(y).astype(str)
 
-    w = np.random.normal(0, 1, 1000)
+    w = rng.normal(0, 1, n_samples)
     y = np.vstack([y, w]).T
 
     def my_custom_kernel(X):
@@ -122,14 +133,15 @@ def test_given_dependent_mixed_data_types_when_perform_kernel_based_test_then_re
 
 @flaky(max_runs=3)
 def test_given_categorical_conditionally_independent_data_when_perform_kernel_based_test_then_not_reject():
-    x = np.random.normal(0, 1, 1000)
+    n_samples = 300
+    x = rng.normal(0, 1, n_samples)
     z = []
     for v in x:
         if v > 0:
             z.append(0)
         else:
             z.append(1)
-    y = z + np.random.randn(len(z))
+    y = z + rng.standard_normal(len(z))
     z = np.array(z).astype(str)
     z[z == "0"] = "Class 1"
     z[z == "1"] = "Class 2"
@@ -140,14 +152,15 @@ def test_given_categorical_conditionally_independent_data_when_perform_kernel_ba
 
 @flaky(max_runs=3)
 def test_given_categorical_conditionally_dependent_data_when_perform_kernel_based_test_then_reject():
-    x = np.random.normal(0, 1, 1000)
+    n_samples = 200
+    x = rng.normal(0, 1, n_samples)
     z = []
     for v in x:
         if v > 0:
             z.append(0)
         else:
             z.append(1)
-    y = z + np.random.randn(len(z))
+    y = z + rng.standard_normal(len(z))
     z = np.array(z).astype(str)
     z[z == "0"] = "Class 1"
     z[z == "1"] = "Class 2"
@@ -156,20 +169,26 @@ def test_given_categorical_conditionally_dependent_data_when_perform_kernel_base
     assert kci.condind(x, z, y, approx=False).pvalue < 0.05
 
 
+####################################################
+# Conditional independence tests - Mixed Data Types
+####################################################
+
+
 @flaky(max_runs=3)
 def test_given_conditionally_dependent_mixed_data_types_with_custom_kernel_when_perform_kernel_based_test_then_reject():
-    x = np.random.normal(0, 1, 1000)
+    n_samples = 200
+    x = rng.normal(0, 1, n_samples)
     z = []
     for v in x:
         if v > 0:
             z.append(0)
         else:
             z.append(1)
-    y = z + np.random.randn(len(z))
+    y = z + rng.standard_normal(len(z))
     z = np.array(z).astype(str)
     z[z == "0"] = "Class 1"
     z[z == "1"] = "Class 2"
-    w = np.random.normal(0, 1, 1000)
+    w = rng.normal(0, 1, n_samples)
     z = np.vstack([z, w]).T
 
     def my_custom_kernel(X):
@@ -188,38 +207,43 @@ def test_given_conditionally_dependent_mixed_data_types_with_custom_kernel_when_
 
 @flaky(max_runs=3)
 def test_given_gaussian_data_and_linear_kernel_when_perform_kernel_based_test_then_returns_expected_result():
-    X = np.random.randn(300, 1)
-    X1 = np.random.randn(300, 1)
-    Y = X + X1 + 0.5 * np.random.randn(300, 1)
-    Z = Y + 0.5 * np.random.randn(300, 1)
+    n_samples = 300
+    X = rng.standard_normal((n_samples, 1))
+    X1 = rng.standard_normal((n_samples, 1))
+    Y = X + X1 + 0.5 * rng.standard_normal((n_samples, 1))
+    Z = Y + 0.5 * rng.standard_normal((n_samples, 1))
 
-    assert kci.ind(X, X1, kernel_X=linear_kernel, kernel_Y=linear_kernel).pvalue > 0.05
-    assert kci.ind(X, Z, kernel_X=linear_kernel, kernel_Y=linear_kernel).pvalue < 0.05
+    assert kci.ind(X, X1, kernel_X="linear", kernel_Y="linear").pvalue > 0.05
+    assert kci.ind(X, Z, kernel_X="linear", kernel_Y="linear").pvalue < 0.05
     assert (
-        kci.condind(
-            X, Z, Y, kernel_X=linear_kernel, kernel_Y=linear_kernel, kernel_Z=linear_kernel
-        ).pvalue
-        > 0.05
+        kci.condind(X, Z, Y, kernel_X="linear", kernel_Y="linear", kernel_Z="linear").pvalue > 0.05
     )
 
 
 @flaky(max_runs=3)
 def test_given_gaussian_data_and_polynomial_kernel_when_perform_kernel_based_test_then_returns_expected_result():
-    X = np.random.randn(300, 1)
-    X1 = np.random.randn(300, 1)
-    Y = X + X1 + 0.5 * np.random.randn(300, 1)
-    Z = Y + 0.5 * np.random.randn(300, 1)
+    X = rng.standard_normal((300, 1))
+    X1 = rng.standard_normal((300, 1))
+    Y = X + X1 + 0.5 * rng.standard_normal((300, 1))
+    Z = Y + 0.5 * rng.standard_normal((300, 1))
 
-    assert kci.ind(X, X1, kernel_X=polynomial_kernel, kernel_Y=polynomial_kernel).pvalue > 0.05
-    assert kci.ind(X, Z, kernel_X=polynomial_kernel, kernel_Y=polynomial_kernel).pvalue < 0.05
+    assert kci.ind(X, X1, kernel_X="polynomial", kernel_Y="polynomial").pvalue > 0.05
+    assert kci.ind(X, Z, kernel_X="polynomial", kernel_Y="polynomial").pvalue < 0.05
     assert (
         kci.condind(
             X,
             Z,
             Y,
-            kernel_X=polynomial_kernel,
-            kernel_Y=polynomial_kernel,
-            kernel_Z=polynomial_kernel,
+            kernel_X="polynomial",
+            kernel_Y="polynomial",
+            kernel_Z="polynomial",
         ).pvalue
         > 0.05
+    )
+
+    assert (
+        kci.ind(
+            X, Z, kernel_X=partial(pairwise_kernels, metric="polynomial"), kernel_Y="polynomial"
+        ).pvalue
+        < 0.05
     )

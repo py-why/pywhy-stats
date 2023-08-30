@@ -5,6 +5,30 @@ from typing import Callable
 import numpy as np
 
 
+class TemporarilySetKey:
+    """A utility class for temporarily setting a key in a dictionary to a value.
+
+    Used for context managers.
+    """
+
+    def __init__(self, dictionary, key, value):
+        self.dictionary = dictionary
+        self.key = key
+        self.value = value
+        self.was_set = False
+
+    def __enter__(self):
+        if self.key in self.dictionary:
+            self.was_set = True
+        self.dictionary[self.key] = self.value
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if not self.was_set:
+            del self.dictionary[self.key]
+        else:
+            self.dictionary[self.key] = self.value
+
+
 def preserve_random_state(func: Callable) -> Callable:
     """
     Decorate function for setting and preserving the state of random generators before and after calling it.

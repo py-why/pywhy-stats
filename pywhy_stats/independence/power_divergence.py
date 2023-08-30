@@ -35,7 +35,7 @@ from numpy.typing import ArrayLike
 from scipy import stats
 from sklearn.preprocessing import LabelEncoder
 
-from .pvalue_result import PValueResult
+from ..pvalue_result import PValueResult
 
 
 def ind(
