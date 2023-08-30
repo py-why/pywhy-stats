@@ -131,7 +131,6 @@ def compute_kernel(
     # Note that this is added to the list of possible kernels for :func:`~sklearn.metrics.pairwise.pairwise_kernels`.
     # because it is more efficient to compute the kernel over the entire matrices at once
     # since numpy has vectorized operations.
-    # with temporarily_restrict_key("delta", PAIRWISE_KERNEL_FUNCTIONS):
     with TemporarilySetKey(PAIRWISE_KERNEL_FUNCTIONS, "delta", delta_kernel):
         PAIRWISE_KERNEL_FUNCTIONS["delta"] = delta_kernel
 
