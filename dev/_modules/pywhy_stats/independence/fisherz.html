@@ -5,51 +5,51 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pywhy_stats.fisherz &#8212; pywhy-stats v0.0.0</title>
+    <title>pywhy_stats.independence.fisherz &#8212; pywhy-stats v0.0.0</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
 </script>
 
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+  <link href="../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
 
 
   <link rel="stylesheet"
-    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
   <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script src="../../_static/clipboard.min.js"></script>
-    <script src="../../_static/copybutton.js"></script>
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
     <link rel="canonical" href="https://www.pywhy.org/pywhy-stats/stable/index.html" />
-    <script type="text/javascript" src="../../_static/copybutton.js"></script>
-    <script type="text/javascript" src="../../_static/scrollfix.js"></script>
+    <script type="text/javascript" src="../../../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../../../_static/scrollfix.js"></script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="docsearch:language" content="en">
@@ -72,7 +72,7 @@
   
 
 
-<a class="navbar-brand logo" href="../../index.html">
+<a class="navbar-brand logo" href="../../../index.html">
   
   
   
@@ -95,31 +95,31 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../installation.html">
+ <a class="reference internal nav-link" href="../../../installation.html">
   Installation
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../api.html">
+ <a class="reference internal nav-link" href="../../../api.html">
   Reference API
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../use.html">
+ <a class="reference internal nav-link" href="../../../use.html">
   Simple Examples
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../user_guide.html">
+ <a class="reference internal nav-link" href="../../../user_guide.html">
   User Guide
  </a>
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../whats_new.html">
+ <a class="reference internal nav-link" href="../../../whats_new.html">
   Release History
  </a>
 </li>
@@ -177,7 +177,7 @@
 
 <!-- Only show if we have sidebars configured, else just a small margin  -->
 <div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
-  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -205,14 +205,14 @@
               
               <article class="bd-article" role="main">
                 
-  <h1>Source code for pywhy_stats.fisherz</h1><div class="highlight"><pre>
+  <h1>Source code for pywhy_stats.independence.fisherz</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Independence test using Fisher-Z&#39;s test.</span>
 
 <span class="sd">This test is also known as the partial correlation independence test.</span>
 <span class="sd">It works on Gaussian random variables.</span>
 
 <span class="sd">When the data is not Gaussian, this test is not valid. In this case, we recommend</span>
-<span class="sd">using the Kernel independence test at &lt;insert link&gt;.</span>
+<span class="sd">using the Kernel independence test at `pywhy_stats.kci`.</span>
 
 <span class="sd">Examples</span>
 <span class="sd">--------</span>
@@ -229,10 +229,10 @@
 <span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">ArrayLike</span>
 <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">norm</span>
 
-<span class="kn">from</span> <span class="nn">.pvalue_result</span> <span class="kn">import</span> <span class="n">PValueResult</span>
+<span class="kn">from</span> <span class="nn">pywhy_stats.pvalue_result</span> <span class="kn">import</span> <span class="n">PValueResult</span>
 
 
-<div class="viewcode-block" id="ind"><a class="viewcode-back" href="../../generated/pywhy_stats.fisherz.html#pywhy_stats.fisherz.ind">[docs]</a><span class="k">def</span> <span class="nf">ind</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">Y</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">correlation_matrix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PValueResult</span><span class="p">:</span>
+<div class="viewcode-block" id="ind"><a class="viewcode-back" href="../../../generated/pywhy_stats.independence.fisherz.html#pywhy_stats.independence.fisherz.ind">[docs]</a><span class="k">def</span> <span class="nf">ind</span><span class="p">(</span><span class="n">X</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">Y</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="n">correlation_matrix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PValueResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Perform an independence test using Fisher-Z&#39;s test.</span>
 
 <span class="sd">    Works on Gaussian random variables. This test is also known as the</span>
@@ -257,7 +257,7 @@
     <span class="k">return</span> <span class="n">_fisherz</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">condition_on</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">correlation_matrix</span><span class="o">=</span><span class="n">correlation_matrix</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="condind"><a class="viewcode-back" href="../../generated/pywhy_stats.fisherz.html#pywhy_stats.fisherz.condind">[docs]</a><span class="k">def</span> <span class="nf">condind</span><span class="p">(</span>
+<div class="viewcode-block" id="condind"><a class="viewcode-back" href="../../../generated/pywhy_stats.independence.fisherz.html#pywhy_stats.independence.fisherz.condind">[docs]</a><span class="k">def</span> <span class="nf">condind</span><span class="p">(</span>
     <span class="n">X</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
     <span class="n">Y</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
     <span class="n">condition_on</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
@@ -352,7 +352,7 @@
   
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
 
 <footer class="bd-footer"><div class="bd-footer__inner container">
   

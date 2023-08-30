@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>1.3.1. pywhy_stats.power_divergence &#8212; pywhy-stats v0.0.0</title>
+    <title>1.2.1. pywhy_stats.independence.fisherz &#8212; pywhy-stats v0.0.0</title>
 <script>
   document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
@@ -48,8 +48,8 @@
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Examples and Tutorials using pywhy-stats" href="../use.html" />
-    <link rel="prev" title="pywhy_stats.kci" href="pywhy_stats.kci.html" />
+    <link rel="next" title="1.4.1. pywhy_stats.independence.kci" href="pywhy_stats.independence.kci.html" />
+    <link rel="prev" title="pywhy_stats.pvalue_result.PValueResult" href="pywhy_stats.pvalue_result.PValueResult.html" />
     <link rel="canonical" href="https://www.pywhy.org/pywhy-stats/stable/index.html" />
     <script type="text/javascript" src="../_static/copybutton.js"></script>
     <script type="text/javascript" src="../_static/scrollfix.js"></script>
@@ -196,14 +196,19 @@
    </i>
   </label>
   <ul class="current">
-   <li class="toctree-l2">
-    <a class="reference internal" href="pywhy_stats.fisherz.html">
-     1.2.1. pywhy_stats.fisherz
-    </a>
-   </li>
    <li class="toctree-l2 current active">
     <a class="current reference internal" href="#">
-     1.3.1. pywhy_stats.power_divergence
+     1.2.1. pywhy_stats.independence.fisherz
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pywhy_stats.independence.power_divergence.html">
+     1.3.1. pywhy_stats.independence.power_divergence
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pywhy_stats.independence.kci.html">
+     1.4.1. pywhy_stats.independence.kci
     </a>
    </li>
   </ul>
@@ -234,11 +239,11 @@
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#examples">
-   1.3.1.1. Examples
+   1.2.1.1. Examples
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#pywhy_stats.power_divergence.condind">
+  <a class="reference internal nav-link" href="#pywhy_stats.independence.fisherz.condind">
    <code class="docutils literal notranslate">
     <span class="pre">
      condind()
@@ -247,7 +252,7 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#pywhy_stats.power_divergence.ind">
+  <a class="reference internal nav-link" href="#pywhy_stats.independence.fisherz.ind">
    <code class="docutils literal notranslate">
     <span class="pre">
      ind()
@@ -274,27 +279,17 @@
               
               <article class="bd-article" role="main">
                 
-  <section id="module-pywhy_stats.power_divergence">
-<span id="pywhy-stats-power-divergence"></span><h1><span class="section-number">1.3.1. </span>pywhy_stats.power_divergence<a class="headerlink" href="#module-pywhy_stats.power_divergence" title="Permalink to this heading">#</a></h1>
-<p>Independence test among categorical variables using power-divergence tests.</p>
-<p>Works on categorical random variables. Based on the <code class="docutils literal notranslate"><span class="pre">method</span></code> parameter, one
-can compute a wide variety of different categorical hypothesis tests.</p>
-<p>Categorical data is a type of data that can be divided into discrete groups.
-Compared to continuous data, there is no agreed upon way to represent
-categorical data numerically. For example, we can represent the color of an
-object as “red”, “blue”, “green” etc. but we can also represent it as 1, 2, 3,
-which maps to those colors, or even [1.2, 2.2, 3.2] which maps to those colors.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">str</span></code> type data is passed in, then it is converted to <code class="docutils literal notranslate"><span class="pre">int</span></code> type using
-<code class="docutils literal notranslate"><span class="pre">sklearn.preprocessing.LabelEncoder</span></code>. All columns of data passed in must be of
-the same type, otherwise it is impossible to infer what you want to do.</p>
-<p>Encoding categorical data numerically is a common practice in machine learning
-and statistics. There are many strategies, and we do not implement
-most of them. For categorical encoding strategies, see
-<a class="reference external" href="https://github.com/scikit-learn-contrib/category_encoders">https://github.com/scikit-learn-contrib/category_encoders</a>.</p>
+  <section id="module-pywhy_stats.independence.fisherz">
+<span id="pywhy-stats-independence-fisherz"></span><h1><span class="section-number">1.2.1. </span>pywhy_stats.independence.fisherz<a class="headerlink" href="#module-pywhy_stats.independence.fisherz" title="Permalink to this heading">#</a></h1>
+<p>Independence test using Fisher-Z’s test.</p>
+<p>This test is also known as the partial correlation independence test.
+It works on Gaussian random variables.</p>
+<p>When the data is not Gaussian, this test is not valid. In this case, we recommend
+using the Kernel independence test at <code class="docutils literal notranslate"><span class="pre">pywhy_stats.kci</span></code>.</p>
 <section id="examples">
-<h2><span class="section-number">1.3.1.1. </span>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h2>
+<h2><span class="section-number">1.2.1.1. </span>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">#</a></h2>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pywhy_stats</span> <span class="k">as</span> <span class="nn">ps</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">categorical</span><span class="o">.</span><span class="n">ind</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">fisherz</span><span class="o">.</span><span class="n">ind</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">pvalue</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="mf">1.0</span>
 </pre></div>
@@ -303,21 +298,18 @@ most of them. For categorical encoding strategies, see
 <p class="rubric">Functions</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pywhy_stats.power_divergence.condind" title="pywhy_stats.power_divergence.condind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">condind</span></code></a>(X, Y, condition_on[, method, ...])</p></td>
-<td><p>Perform an independence test using power divergence test.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pywhy_stats.independence.fisherz.condind" title="pywhy_stats.independence.fisherz.condind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">condind</span></code></a>(X, Y, condition_on[, correlation_matrix])</p></td>
+<td><p>Perform a conditional independence test using Fisher-Z's test.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pywhy_stats.power_divergence.ind" title="pywhy_stats.power_divergence.ind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ind</span></code></a>(X, Y[, method, num_categories_allowed, ...])</p></td>
-<td><p>Perform an independence test using power divergence test.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pywhy_stats.independence.fisherz.ind" title="pywhy_stats.independence.fisherz.ind"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ind</span></code></a>(X, Y[, correlation_matrix])</p></td>
+<td><p>Perform an independence test using Fisher-Z's test.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py function">
-<dt class="sig sig-object py" id="pywhy_stats.power_divergence.condind">
-<span class="sig-name descname"><span class="pre">condind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cressie-read'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_categories_allowed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pywhy_stats/power_divergence.html#condind"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pywhy_stats.power_divergence.condind" title="Permalink to this definition">#</a></dt>
-<dd><p>Perform an independence test using power divergence test.</p>
-<p>The null hypothesis for the test is X is independent of Y given condition_on.
-A lot of the frequency comparison based statistics (eg. chi-square, G-test etc)
-belong to power divergence family, and are special cases of this test.</p>
+<dt class="sig sig-object py" id="pywhy_stats.independence.fisherz.condind">
+<span class="sig-name descname"><span class="pre">condind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition_on</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pywhy_stats/independence/fisherz.html#condind"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pywhy_stats.independence.fisherz.condind" title="Permalink to this definition">#</a></dt>
+<dd><p>Perform a conditional independence test using Fisher-Z’s test.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
@@ -327,24 +319,7 @@ belong to power divergence family, and are special cases of this test.</p>
 </dd>
 <dt><strong>condition_on</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v1.25)"><span class="xref std std-term">array_like</span></a> of shape (n_samples, n_variables)</span></dt><dd><p>The conditioning set.</p>
 </dd>
-<dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The lambda parameter for the power_divergence statistic. Some values of
-method results in other well known tests:</p>
-<blockquote>
-<div><p>“pearson”             1          “Chi-squared test”
-“log-likelihood”      0          “G-test or log-likelihood”
-“freeman-tukey”     -1/2         “freeman-tukey Statistic”
-“mod-log-likelihood”  -1         “Modified Log-likelihood”
-“neyman”              -2         “Neyman’s statistic”
-“cressie-read”        2/3        “The value recommended in the paper <a class="footnote-reference brackets" href="#footcite-cressieread1984" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>”</p>
-</div></blockquote>
-</dd>
-<dt><strong>num_categories_allowed</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>The maximum number of categories allowed in the input variables. Default
-of 10 is chosen to error out on large number of categories.</p>
-</dd>
-<dt><strong>on_error</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>What to do when there are not enough samples in the data, where there are 0 samples
-in a cell of the contingency table. If ‘raise’, then
-raise an error. If ‘warn’, then log a warning and skip the test.
-If ‘ignore’, then ignore the warning and skip the test.</p>
+<dt><strong>correlation_matrix</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v1.25)"><span class="xref std std-term">array_like</span></a> of shape (2 + n_variables, 2 + n_variables), optional</span></dt><dd><p>The precomputed correlation matrix between X, Y and <code class="docutils literal notranslate"><span class="pre">condition_on</span></code>, by default None.</p>
 </dd>
 </dl>
 </dd>
@@ -360,12 +335,11 @@ If ‘ignore’, then ignore the warning and skip the test.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="pywhy_stats.power_divergence.ind">
-<span class="sig-name descname"><span class="pre">ind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cressie-read'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_categories_allowed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'raise'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pywhy_stats/power_divergence.html#ind"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pywhy_stats.power_divergence.ind" title="Permalink to this definition">#</a></dt>
-<dd><p>Perform an independence test using power divergence test.</p>
-<p>The null hypothesis for the test is X is independent of Y. A lot of the
-frequency comparison based statistics (eg. chi-square, G-test etc) belong to
-power divergence family, and are special cases of this test.</p>
+<dt class="sig sig-object py" id="pywhy_stats.independence.fisherz.ind">
+<span class="sig-name descname"><span class="pre">ind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">correlation_matrix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pywhy_stats/independence/fisherz.html#ind"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pywhy_stats.independence.fisherz.ind" title="Permalink to this definition">#</a></dt>
+<dd><p>Perform an independence test using Fisher-Z’s test.</p>
+<p>Works on Gaussian random variables. This test is also known as the
+correlation test.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
@@ -373,24 +347,7 @@ power divergence family, and are special cases of this test.</p>
 </dd>
 <dt><strong>Y</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v1.25)"><span class="xref std std-term">array_like</span></a> of shape (n_samples,)</span></dt><dd><p>The second node variable.</p>
 </dd>
-<dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The lambda parameter for the power_divergence statistic. Some values of
-<code class="docutils literal notranslate"><span class="pre">method</span></code> results in other well known tests:</p>
-<blockquote>
-<div><p>“pearson”             1          “Chi-squared test”
-“log-likelihood”      0          “G-test or log-likelihood”
-“freeman-tukey”     -1/2         “freeman-tukey Statistic”
-“mod-log-likelihood”  -1         “Modified Log-likelihood”
-“neyman”              -2         “Neyman’s statistic”
-“cressie-read”        2/3        “The value recommended in the paper <a class="footnote-reference brackets" href="#footcite-cressieread1984" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>”</p>
-</div></blockquote>
-</dd>
-<dt><strong>num_categories_allowed</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>The maximum number of categories allowed in the input variables. Default
-of 10 is chosen to error out on large number of categories.</p>
-</dd>
-<dt><strong>on_error</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>What to do when there are not enough samples in the data, where there are 0 samples
-in a cell of the contingency table. If ‘raise’, then
-raise an error. If ‘warn’, then log a warning and skip the test.
-If ‘ignore’, then ignore the warning and skip the test.</p>
+<dt><strong>correlation_matrix</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v1.25)"><span class="xref std std-term">array_like</span></a> of shape (2, 2), optional</span></dt><dd><p>The precomputed correlation matrix between X and Y., by default None.</p>
 </dd>
 </dl>
 </dd>
@@ -403,15 +360,6 @@ If ‘ignore’, then ignore the warning and skip the test.</p>
 </dl>
 </dd>
 </dl>
-<p class="rubric">References</p>
-<div class="docutils container" id="id3">
-<aside class="footnote brackets" id="footcite-cressieread1984" role="note">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
-<p>Noel Cressie and Timothy R. C. Read. Multinomial goodness-of-fit tests. <em>Journal of the Royal Statistical Society. Series B (Methodological)</em>, 46(3):440–464, 1984. URL: <a class="reference external" href="http://www.jstor.org/stable/2345686">http://www.jstor.org/stable/2345686</a> (visited on 2023-03-16).</p>
-</aside>
-</aside>
-</div>
 </dd></dl>
 
 </section>
@@ -424,17 +372,17 @@ If ‘ignore’, then ignore the warning and skip the test.</p>
               <footer class="bd-footer-article">
                   <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="pywhy_stats.kci.html" title="previous page">
+  <a class='left-prev' id="prev-link" href="pywhy_stats.pvalue_result.PValueResult.html" title="previous page">
       <i class="fas fa-angle-left"></i>
       <div class="prev-next-info">
           <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">pywhy_stats.kci</p>
+          <p class="prev-next-title">pywhy_stats.pvalue_result.PValueResult</p>
       </div>
   </a>
-  <a class='right-next' id="next-link" href="../use.html" title="next page">
+  <a class='right-next' id="next-link" href="pywhy_stats.independence.kci.html" title="next page">
   <div class="prev-next-info">
       <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">Examples and Tutorials using pywhy-stats</p>
+      <p class="prev-next-title"><span class="section-number">1.4.1. </span>pywhy_stats.independence.kci</p>
   </div>
   <i class="fas fa-angle-right"></i>
   </a>

@@ -206,18 +206,18 @@
 </ul>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1">
-  <a class="reference internal" href="pywhy_stats.fisherz.html">
-   1.2.1. pywhy_stats.fisherz
+  <a class="reference internal" href="pywhy_stats.independence.fisherz.html">
+   1.2.1. pywhy_stats.independence.fisherz
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="pywhy_stats.kci.html">
-   pywhy_stats.kci
+  <a class="reference internal" href="pywhy_stats.independence.kci.html">
+   1.4.1. pywhy_stats.independence.kci
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="pywhy_stats.power_divergence.html">
-   1.3.1. pywhy_stats.power_divergence
+  <a class="reference internal" href="pywhy_stats.independence.power_divergence.html">
+   1.3.1. pywhy_stats.independence.power_divergence
   </a>
  </li>
 </ul>
@@ -276,7 +276,7 @@
 <h1>pywhy_stats.independence_test<a class="headerlink" href="#pywhy-stats-independence-test" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="pywhy_stats.independence_test">
-<span class="sig-name descname"><span class="pre">independence_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Methods.AUTO</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pywhy_stats/independence.html#independence_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pywhy_stats.independence_test" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">independence_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition_on</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">Methods.AUTO</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pywhy_stats/api.html#independence_test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pywhy_stats.independence_test" title="Permalink to this definition">#</a></dt>
 <dd><p>Perform a (conditional) independence test to determine whether X and Y are independent.</p>
 <p>The test may be conditioned on an optional set of variables. This is, test whether <code class="docutils literal notranslate"><span class="pre">X</span> <span class="pre">_||_</span> <span class="pre">Y</span> <span class="pre">|</span>
 <span class="pre">condition_on</span></code>, where the null hypothesis is that X and Y are independent.</p>
@@ -308,9 +308,9 @@ and any additional information related to the independence test.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="pywhy_stats.fisherz.html#module-pywhy_stats.fisherz" title="pywhy_stats.fisherz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fisherz</span></code></a></dt><dd><p>Fisher’s Z test for independence</p>
+<dt><a class="reference internal" href="pywhy_stats.independence.fisherz.html#module-pywhy_stats.independence.fisherz" title="pywhy_stats.independence.fisherz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pywhy_stats.independence.fisherz</span></code></a></dt><dd><p>Fisher’s Z test for independence</p>
 </dd>
-<dt><a class="reference internal" href="pywhy_stats.kci.html#module-pywhy_stats.kci" title="pywhy_stats.kci"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kci</span></code></a></dt><dd><p>Kernel Conditional Independence test</p>
+<dt><a class="reference internal" href="pywhy_stats.independence.kci.html#module-pywhy_stats.independence.kci" title="pywhy_stats.independence.kci"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pywhy_stats.independence.kci</span></code></a></dt><dd><p>Kernel Conditional Independence test</p>
 </dd>
 </dl>
 </div>

@@ -1,7 +1,7 @@
-﻿pywhy\_stats.power\_divergence
-==============================
+﻿pywhy\_stats.independence.fisherz
+=================================
 
-.. automodule:: pywhy_stats.power_divergence
+.. automodule:: pywhy_stats.independence.fisherz
 
    
    
