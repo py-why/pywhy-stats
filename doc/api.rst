@@ -64,3 +64,17 @@ of many data analysis procedures.
    fisherz
    kci
    power_divergence
+
+(Conditional) K-Sample Testing
+==============================
+
+Testing for invariances among conditional distributions is a core part
+of many data analysis procedures. Currently, we only support conditional
+2-sample testing among two distributions.
+
+.. currentmodule:: pywhy_stats.conditional_ksample
+.. autosummary::
+   :toctree: generated/
+
+   bregman
+   kcd
