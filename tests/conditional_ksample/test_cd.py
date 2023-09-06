@@ -192,7 +192,7 @@ def test_cd_simulation_multi_environment(cd_func, cd_kwargs):
 
     res = cd_func.condind(
         X=df[["x"]],
-        Y=df[["z"]].copy(),
+        Y=df[["z"]],
         group_ind=df[group_col],
         null_sample_size=null_sample_size,
         n_jobs=-1,
@@ -223,7 +223,7 @@ def test_cd_simulation_multi_environment(cd_func, cd_kwargs):
 
     res = cd_func.condind(
         X=df[["x", "x1"]],
-        Y=df[["z"]].copy(),
+        Y=df[["z"]],
         group_ind=df[group_col],
         null_sample_size=null_sample_size,
         n_jobs=-1,

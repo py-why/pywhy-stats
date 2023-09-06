@@ -24,7 +24,7 @@ from pywhy_stats.kernel_utils import (
 )
 
 from ..pvalue_result import PValueResult
-from .base import _compute_propensity_scores, _preprocess_propensity_data, compute_null
+from .base_propensity import _compute_propensity_scores, _preprocess_propensity_data, compute_null
 
 
 def condind(

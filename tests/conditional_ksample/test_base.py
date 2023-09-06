@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_array_almost_equal
 
-from pywhy_stats.conditional_ksample.base import compute_null
+from pywhy_stats.conditional_ksample.base_propensity import compute_null
 
 
 # Define a dummy test statistic function for testing
