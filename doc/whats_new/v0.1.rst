@@ -20,7 +20,15 @@ Here we list a changelog of pywhy-stats.
 Version 0.1
 ===========
 
-**In Development**
+Here's the revised version:
+
+The first release of pywhy-stats! This version offers several implementations for both conditional and unconditional
+independence testing using various methods, including kernel independence tests, Bregman discrepancy tests and
+Fisher Z tests.
+Additionally, it introduces two methods for conditional two-sample testing using kernels and mutual information.
+The conditional two-sample focuses on the conditional distributions, in contrast to the traditional unconditional
+two-sample testing methods.
+
 
 
 Changelog
