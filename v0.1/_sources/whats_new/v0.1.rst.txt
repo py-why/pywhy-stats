@@ -1,0 +1,47 @@
+:orphan:
+
+.. include:: _contributors.rst
+
+.. _changes_0_1:
+
+What's new?
+===========
+
+Here we list a changelog of pywhy-stats.
+
+.. contents:: Contents
+   :local:
+   :depth: 3
+
+.. currentmodule:: pywhy_stats
+
+.. _current:
+
+Version 0.1
+===========
+
+The first release of pywhy-stats! This version offers several implementations for both conditional and unconditional
+independence testing using various methods, including kernel independence tests, Bregman discrepancy tests and
+Fisher Z tests.
+Additionally, it introduces two methods for conditional two-sample testing using kernels and mutual information.
+The conditional two-sample focuses on the conditional distributions, in contrast to the traditional unconditional
+two-sample testing methods.
+
+
+
+Changelog
+---------
+
+- |Feature| Implement partial correlation test :func:`pywhy_stats.independence.fisherz`, by `Adam Li`_ (:pr:`7`)
+- |Feature| Add (un)conditional kernel independence test by `Patrick Blöbaum`_, co-authored by `Adam Li`_ (:pr:`14`)
+- |Feature| Add categorical independence tests by `Adam Li`_, (:pr:`18`)
+- |Feature| Add conditional kernel and Bregman discrepancy tests, `pywhy_stats.kcd` and `pywhy_stats.bregman` by `Adam Li`_ (:pr:`21`)
+
+Code and Documentation Contributors
+-----------------------------------
+
+Thanks to everyone who has contributed to the maintenance and improvement of
+the project since version inception, including:
+
+* `Adam Li`_
+* `Patrick Blöbaum`_

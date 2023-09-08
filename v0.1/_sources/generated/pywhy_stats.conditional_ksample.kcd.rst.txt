@@ -1,0 +1,29 @@
+﻿pywhy\_stats.conditional\_ksample.kcd
+=====================================
+
+.. automodule:: pywhy_stats.conditional_ksample.kcd
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      condind
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
