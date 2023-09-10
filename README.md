@@ -3,6 +3,8 @@
 [![unit-tests](https://github.com/py-why/pywhy-stats/actions/workflows/main.yml/badge.svg)](https://github.com/py-why/pywhy-stats/actions/workflows/main.yml)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![codecov](https://codecov.io/gh/py-why/pywhy-stats/branch/main/graph/badge.svg?token=H1reh7Qwf4)](https://codecov.io/gh/py-why/pywhy-stats)
+[![PyPI Download count](https://img.shields.io/pypi/dm/pywhy-stats.svg)](https://pypistats.org/packages/pywhy-stats)
+[![Latest PyPI release](https://img.shields.io/pypi/v/pywhy-stats.svg)](https://pypi.org/project/pywhy-stats/)
 
 # PyWhy-Stats
 
