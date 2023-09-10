@@ -4,19 +4,6 @@
 
 .. _changes_0_1:
 
-What's new?
-===========
-
-Here we list a changelog of pywhy-stats.
-
-.. contents:: Contents
-   :local:
-   :depth: 3
-
-.. currentmodule:: pywhy_stats
-
-.. _current:
-
 Version 0.1
 ===========
 
@@ -26,8 +13,6 @@ Fisher Z tests.
 Additionally, it introduces two methods for conditional two-sample testing using kernels and mutual information.
 The conditional two-sample focuses on the conditional distributions, in contrast to the traditional unconditional
 two-sample testing methods.
-
-
 
 Changelog
 ---------

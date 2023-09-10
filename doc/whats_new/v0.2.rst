@@ -4,19 +4,6 @@
 
 .. _changes_0_2:
 
-What's new?
-===========
-
-Here we list a changelog of pywhy-stats.
-
-.. contents:: Contents
-   :local:
-   :depth: 3
-
-.. currentmodule:: pywhy_stats
-
-.. _current:
-
 Version 0.2
 ===========
 
