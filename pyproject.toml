@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "pywhy-stats"
 
-version = "0.1"
+version = "0.2dev0"
 description = "Statistical methods for Python"
 authors = ["PyWhy Community <adam.li@columbia.edu>, <bloebp@amazon.com>"]
 license = "MIT"
-documentation = "https://py-why.github.io/pywhy-stats"
-repository = "https://github.com/pywhy/pywhy-stats"
+documentation = "https://pywhy.github.io/pywhy-stats"
+repository = "https://github.com/py-why/pywhy-stats"
 readme = "README.md"
 classifiers = [
     'Development Status :: 4 - Beta',

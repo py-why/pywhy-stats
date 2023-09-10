@@ -16,7 +16,7 @@ Or see [stable version documentation](https://py-why.github.io/pywhy-stats/stabl
 
 # Installation
 
-Installation is best done via `pip` or `conda`. For developers, they can also install from source using `pip`. See [installation page](TBD) for full details.
+Installation is best done via `pip` or `conda`. For developers, they can also install from source using `pip`. See [installation page](https://www.pywhy.org/pywhy-stats/dev/installation.html) for full details.
 
 ## Dependencies
 
@@ -31,7 +31,6 @@ Minimally, pywhy-stats requires:
 
 If you already have a working installation of numpy and scipy, the easiest way to install pywhy-stats is using `pip`:
 
-    # doesn't work until we make an official release :p
     pip install -U pywhy-stats
 
 To install the package from github, clone the repository and then `cd` into the directory. You can then use `poetry` to install:
