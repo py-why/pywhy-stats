@@ -3,6 +3,8 @@
 [![unit-tests](https://github.com/py-why/pywhy-stats/actions/workflows/main.yml/badge.svg)](https://github.com/py-why/pywhy-stats/actions/workflows/main.yml)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![codecov](https://codecov.io/gh/py-why/pywhy-stats/branch/main/graph/badge.svg?token=H1reh7Qwf4)](https://codecov.io/gh/py-why/pywhy-stats)
+[![PyPI Download count](https://img.shields.io/pypi/dm/pywhy-stats.svg)](https://pypistats.org/packages/pywhy-stats)
+[![Latest PyPI release](https://img.shields.io/pypi/v/pywhy-stats.svg)](https://pypi.org/project/pywhy-stats/)
 
 # PyWhy-Stats
 
@@ -16,7 +18,7 @@ Or see [stable version documentation](https://py-why.github.io/pywhy-stats/stabl
 
 # Installation
 
-Installation is best done via `pip` or `conda`. For developers, they can also install from source using `pip`. See [installation page](TBD) for full details.
+Installation is best done via `pip` or `conda`. For developers, they can also install from source using `pip`. See [installation page](https://www.pywhy.org/pywhy-stats/dev/installation.html) for full details.
 
 ## Dependencies
 
@@ -31,7 +33,6 @@ Minimally, pywhy-stats requires:
 
 If you already have a working installation of numpy and scipy, the easiest way to install pywhy-stats is using `pip`:
 
-    # doesn't work until we make an official release :p
     pip install -U pywhy-stats
 
 To install the package from github, clone the repository and then `cd` into the directory. You can then use `poetry` to install:

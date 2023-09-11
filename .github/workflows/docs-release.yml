@@ -1,0 +1,48 @@
+name: Build & Deploy Docs (For Release)
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag'
+        required: true
+        type: string
+
+env:
+  # Pull the tag either from the release event if this workflow was triggered by a release
+  # or from the input if this workflow was triggered manually
+  release_tag: ${{ github.event_name == 'release' && github.event.release.tag_name || inputs.release_tag }}
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Install Poetry
+        uses: abatilo/actions-poetry@v2.3.0
+        with:
+          poetry-version: 1.6.1
+
+      - name: Install Poetry Dynamic Versioning Plugin
+        run: pip install poetry-dynamic-versioning
+
+      - name: Install Python Dependencies  
+        run: poetry install --with docs
+
+      # - run: git config --global --add safe.directory /__w/dowhy/dowhy
+
+      - name: Build
+        run: poetry run poe build_docs
+        env:
+          DOCS_VERSION: ${{ env.release_tag }}
+          
+      - name: Commit and push to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ${{ github.event.release.tag_name }}
