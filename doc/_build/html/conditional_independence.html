@@ -1,0 +1,766 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>1. Independence &#8212; pywhy-stats v0.0.0</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'conditional_independence';</script>
+    <link rel="icon" href="_static/favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Release History" href="whats_new.html" />
+    <link rel="prev" title="User Guide" href="user_guide.html" />
+    <link rel="canonical" href="https://www.pywhy.org/pywhy-stats/stable/index.html" />
+    <script type="text/javascript" src="_static/copybutton.js"></script>
+    <script type="text/javascript" src="_static/scrollfix.js"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">pywhy-stats v0.0.0</p>
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="installation.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="api.html">
+                        Reference API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="use.html">
+                        Simple Examples
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="whats_new.html">
+                        Release History
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://raw.githubusercontent.com/py-why/pywhy-stats/main/LICENSE">
+                        License
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://github.com/py-why/pywhy-stats/blob/main/CONTRIBUTING.md">
+                        Contributing
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item"><div class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        v
+        <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
+        <a class="list-group-item list-group-item-action py-1" href="https://www.pywhy.org/pywhy-stats/dev/index.html">v0.1 (devel)</a>
+    </div>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pywhy/pywhy-stats" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="installation.html">
+                        Installation
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="api.html">
+                        Reference API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="use.html">
+                        Simple Examples
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="user_guide.html">
+                        User Guide
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="whats_new.html">
+                        Release History
+                      </a>
+                    </li>
+                
+            <div class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    More
+                </button>
+                <div class="dropdown-menu">
+                    
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://raw.githubusercontent.com/py-why/pywhy-stats/main/LICENSE">
+                        License
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-external" href="https://github.com/py-why/pywhy-stats/blob/main/CONTRIBUTING.md">
+                        Contributing
+                      </a>
+                    </li>
+                
+                </div>
+            </div>
+            
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><div class="dropdown">
+    <button type="button" class="btn btn-primary btn-sm navbar-btn dropdown-toggle" id="dLabelMore" data-toggle="dropdown">
+        v
+        <span class="caret"></span>
+    </button>
+    <div class="dropdown-menu list-group-flush py-0" aria-labelledby="dLabelMore">
+        <a class="list-group-item list-group-item-action py-1" href="https://www.pywhy.org/pywhy-stats/dev/index.html">v0.1 (devel)</a>
+    </div>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/pywhy/pywhy-stats" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fab fa-github-square"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">1. Independence</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/pywhy_stats.independence.fisherz.html">1.2.1. pywhy_stats.independence.fisherz</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pywhy_stats.independence.power_divergence.html">1.3.1. pywhy_stats.independence.power_divergence</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pywhy_stats.independence.kci.html">1.4.1. pywhy_stats.independence.kci</a></li>
+</ul>
+</li>
+
+
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="user_guide.html" class="nav-link">User Guide</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="section-number">1. </span>Independence</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="independence">
+<span id="conditional-independence"></span><h1><span class="section-number">1. </span>Independence<a class="headerlink" href="#independence" title="Permalink to this heading">#</a></h1>
+<p>Probabilistic independence among two random variables is when the realization of one
+variable does not affect the distribution of the other variable. It is a fundamental notion
+in probability and statistics that is used to determine if information about some variables
+can be gleaned from observations of other variables. Independence can be tested statistically
+in the form of unconditional (or marginal) independence, or conditional independence (CI).
+In the following, we present a brief overview of the various approaches to CI testing, where
+the marginal case is a special case when the conditioning set is empty.</p>
+<p>Conditional independence (CI) tests are framed as a statistical hypothesis test, with the following null hypothesis for a given
+pair of variables <code class="docutils literal notranslate"><span class="pre">(X,</span> <span class="pre">Y)</span></code> and a conditioning set <code class="docutils literal notranslate"><span class="pre">Z</span></code> (which may be empty). The null hypothesis is that X and Y are statistically
+independent given a conditioning set Z, i.e.,</p>
+<p><span class="math notranslate nohighlight">\(H_0: X \perp Y | Z\)</span>, or written in terms of their distribution <span class="math notranslate nohighlight">\(H_0: P(Y | X, Z) = P(Y | Z)\)</span></p>
+<p>Similarly, the alternative hypothesis is written as:</p>
+<p><span class="math notranslate nohighlight">\(H_A: X \not\perp Y | Z\)</span>, or written in terms of their distribution <span class="math notranslate nohighlight">\(H_A: P(Y | X, Z) \neq P(Y | Z)\)</span></p>
+<p>Then typically, one posits an acceptable upper bound on the Type I error rate (false positive), typically <span class="math notranslate nohighlight">\(\alpha = 0.05\)</span>
+and then either attempts to sample from the null distribution, or characterizes the asymptotic distribution
+of the test statistic. In both approaches a pvalue is computed, which is compared to <span class="math notranslate nohighlight">\(\alpha\)</span>. The pvalue
+states the “probability of observing a test-statistic at least as extreme as our observed test-statistic in null distribution”. By rejecting
+the null hypothesis, one claims that <span class="math notranslate nohighlight">\(X \not\perp Y | Z\)</span>, so that X and Y are in fact (conditionally)
+dependent given Z.</p>
+<p>Note that if one fails to reject the null hypothesis, we cannot accept the alternative hypothesis of
+independence strictly speaking. However, in practice in many settings, such as in causal discovery,
+we would still conclude that they are independent. It is not necessarily the case though, and
+it is plausible that there is a weak dependency that is unable to be captured by our proposed CI test, and/or data samples.</p>
+<p>It is because of this reason, one would typically like the most powerful test given assumptions about
+the data. With that in mind, there are various approaches to CI testing that are typically more powerful
+with certain assumptions on the underlying data distribution.</p>
+<section id="conditional-mutual-information">
+<h2><span class="section-number">1.1. </span>Conditional Mutual Information<a class="headerlink" href="#conditional-mutual-information" title="Permalink to this heading">#</a></h2>
+<p>Conditional mutual information (CMI) is a general formulation of CI, where CMI is defined as:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[\int log \frac{p(x, y | z)}{p(x | z) p(y | z)}\]</div>
+</div></blockquote>
+<p>As we can see, CMI is equal to 0, if and only if <span class="math notranslate nohighlight">\(p(x, y | z) = p(x | z) p(y | z)\)</span>, which
+is exactly the definition of CI. CMI is completely non-parametric and thus requires no assumptions
+on the underlying distributions. Unfortunately, CMI is notoriously difficult to estimate. There are
+various proposals in the literature for estimating CMI, which we summarize here:</p>
+<ul>
+<li><p>The Kraskov, Stogbauer and Grassberger (KSG) estimate approach estimates mutual information
+via nearest-neighbor statistics <a class="footnote-reference brackets" href="#footcite-kraskov-estimating-2004" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. It computes nearest-neighbors
+using a kNN algorithm. It was generalized to CMI by <a class="footnote-reference brackets" href="#footcite-frenzel-partial-2007" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.
+This class of estimators is asymptotically correct, meaning if we had an infinite amount of data
+we would obtain the true value of the CMI. However, it relies on statistics generated from the k-NN,
+which if we implement the naive approach using a KDTree, then it generally suffers in high-dimensions.
+In our examples, we see it suffer with dimensionality &gt; 4 or 5.</p>
+<p>Estimates of CMI can be converted into a CI hypothesis test by permutation testing <a class="footnote-reference brackets" href="#footcite-runge2018cmi" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.
+One can generate estimated samples from the null distribution by permuting samples in an intelligent manner
+and then the CMI value generated from the actual observed data can be compared to the CMI values computed
+on the permutated datasets to estimate a pvalue.</p>
+<p>It is worth noting that if one has good estimates of nearest-neighbors using for example a model that
+is effective in high-dimensions, then the KSG estimator for CMI may still be effective. For example,
+one can use variants of Random Forests to generate adaptive nearest-neighbor estimates in high-dimensions
+or on manifolds, such that the KSG estimator is still powerful.</p>
+</li>
+</ul>
+<p>&lt;TBD&gt;</p>
+<ul class="simple">
+<li><p>The Classifier Divergence approach estimates CMI using a classification model.</p></li>
+</ul>
+<p>&lt;TBD&gt;</p>
+<ul class="simple">
+<li><p>Direct posterior estimates can be implemented with a classification model by directly
+estimating <span class="math notranslate nohighlight">\(P(y|x)\)</span> and <span class="math notranslate nohighlight">\(P(y|x,z)\)</span>, which can be used as plug-in estimates
+to the equation for CMI.</p></li>
+</ul>
+</section>
+<section id="pywhy-stats-independence-fisherz-partial-pearson-correlation">
+<h2><span class="section-number">1.2. </span><a class="reference internal" href="generated/pywhy_stats.independence.fisherz.html#module-pywhy_stats.independence.fisherz" title="pywhy_stats.independence.fisherz"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pywhy_stats.independence.fisherz</span></code></a> Partial (Pearson) Correlation<a class="headerlink" href="#pywhy-stats-independence-fisherz-partial-pearson-correlation" title="Permalink to this heading">#</a></h2>
+<p>Partial correlation based on the Pearson correlation is equivalent to CMI in the setting
+of normally distributed data. Computing partial correlation is fast and efficient and
+thus attractive to use. However, this <strong>relies on the assumption that the variables are Gaussiany</strong>,
+which may be unrealistic in certain datasets.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pywhy_stats.independence.fisherz.html#module-pywhy_stats.independence.fisherz" title="pywhy_stats.independence.fisherz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fisherz</span></code></a></p></td>
+<td><p>Independence test using Fisher-Z's test.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="pywhy-stats-independence-power-divergence-discrete-categorical-and-binary-data">
+<h2><span class="section-number">1.3. </span><a class="reference internal" href="generated/pywhy_stats.independence.power_divergence.html#module-pywhy_stats.independence.power_divergence" title="pywhy_stats.independence.power_divergence"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pywhy_stats.independence.power_divergence</span></code></a> Discrete, Categorical and Binary Data<a class="headerlink" href="#pywhy-stats-independence-power-divergence-discrete-categorical-and-binary-data" title="Permalink to this heading">#</a></h2>
+<p>If one has discrete data, then the test to use is based on Chi-square tests. The <span class="math notranslate nohighlight">\(G^2\)</span>
+class of tests will construct a contingency table based on the number of levels across
+each discrete variable. An exponential amount of data is needed for increasing levels
+for a discrete variable.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pywhy_stats.independence.power_divergence.html#module-pywhy_stats.independence.power_divergence" title="pywhy_stats.independence.power_divergence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">power_divergence</span></code></a></p></td>
+<td><p>Independence test among categorical variables using power-divergence tests.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="pywhy-stats-independence-kci-kernel-approaches">
+<h2><span class="section-number">1.4. </span><a class="reference internal" href="generated/pywhy_stats.independence.kci.html#module-pywhy_stats.independence.kci" title="pywhy_stats.independence.kci"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pywhy_stats.independence.kci</span></code></a> Kernel-Approaches<a class="headerlink" href="#pywhy-stats-independence-kci-kernel-approaches" title="Permalink to this heading">#</a></h2>
+<p>Kernel independence tests are statistical methods used to determine if two random variables are independent or
+conditionally independent. One such test is the Hilbert-Schmidt Independence Criterion (HSIC), which examines the
+independence between two random variables, X and Y. HSIC employs kernel methods and, more specifically, it computes
+the Hilbert-Schmidt norm of the covariance operator between the Reproducing Kernel Hilbert Space (RKHS) mappings of X
+and Y. While a large Hilbert-Schmidt norm may suggest dependence between X and Y, it’s important to evaluate this value
+in the context of a null distribution, often derived from a permutation test, to make statistically robust conclusions.
+Essentially, HSIC measures how correlated the higher-dimensional representations (in RKHS) of the data are.
+The population HSIC is zero when the variables are independent.</p>
+<p>For conditional independence, where one seeks to test if X and Y are independent given another variable Z, Kernel
+Conditional Independence Tests (KCIT) are used. KCIT extends the concept of HSIC to conditional independence testing by
+computing the dependency between X and Y conditioned on Z, which can involve estimating complex mappings. While there
+exist some approximation techniques, KCIT is generally computationally intensive, especially for high-dimensional data
+or when Z is multivariate.</p>
+<p>Kernel-based tests are attractive for many applications, since they are semi-parametric and use kernel-based ideas
+that have been shown to be robust in the machine-learning field. For more information, see <a class="footnote-reference brackets" href="#footcite-zhang2011" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>.</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pywhy_stats.independence.kci.html#module-pywhy_stats.independence.kci" title="pywhy_stats.independence.kci"><code class="xref py py-obj docutils literal notranslate"><span class="pre">kci</span></code></a></p></td>
+<td><p>Independence test using Kernel test.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classifier-based-approaches">
+<h2><span class="section-number">1.5. </span>Classifier-based Approaches<a class="headerlink" href="#classifier-based-approaches" title="Permalink to this heading">#</a></h2>
+<p>Another suite of approaches that rely on permutation testing is the classifier-based approach.</p>
+<p>By shuffling the data, one can setup a hypothesis test for CI based on the
+predicted probabilities from a classification-model. Intuitively, if the shuffled data is similar
+to the unshuffled data, such that the classification-model achieves non-trivial performance
+(e.g. &gt;50% accuracy on a balanced dataset), then one fails to reject the null hypothesis and would
+state that the original data was in fact CI <a class="footnote-reference brackets" href="#footcite-sen2017model" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>.</p>
+<p>When performing marginal independence testing between two sets of variables, <code class="docutils literal notranslate"><span class="pre">X</span></code> and <code class="docutils literal notranslate"><span class="pre">Y</span></code>,
+it is sufficient to shuffle data by just permuting either <code class="docutils literal notranslate"><span class="pre">X</span></code> rows or <code class="docutils literal notranslate"><span class="pre">Y</span></code> rows uniformly.
+When performing CI testing conditioned on a third set of variables <code class="docutils literal notranslate"><span class="pre">Z</span></code>, one must perform what is known
+as conditional shuffling. One computes the nearest-neighbors in the <code class="docutils literal notranslate"><span class="pre">Z</span></code> subspace and then
+permutes rows based on samples that are close in <code class="docutils literal notranslate"><span class="pre">Z</span></code> subspace, which
+helps maintain dependence between (X, Z) and (Y, Z) (if it exists), but generates a
+conditionally independent dataset.</p>
+</section>
+</section>
+<section id="conditional-distribution-2-sample-testing">
+<h1><span class="section-number">2. </span>Conditional Distribution 2-Sample Testing<a class="headerlink" href="#conditional-distribution-2-sample-testing" title="Permalink to this heading">#</a></h1>
+<p>Conditional discrepancy (CD) is another form of conditional invariances that may be exhibited by data. The
+general question is whether or not the following two distributions are equal:</p>
+<p><span class="math notranslate nohighlight">\(P_{i=j}(y|x) =? P_{i=k}(y|x)\)</span></p>
+<p>where <span class="math notranslate nohighlight">\(P_i(.)\)</span> denote the distribution that explicitly comes from
+a different group, or environment, denoted by the discrete indices <span class="math notranslate nohighlight">\(i\)</span>. This is also
+known in some cases as conditional k-sample testing, if there are a finite k number of groups
+for <span class="math notranslate nohighlight">\(P_i\)</span>. CD testing is important because it detects other kinds of invariances besides
+CI.</p>
+<section id="discrete-categorical-and-binary-data">
+<h2><span class="section-number">2.1. </span>Discrete, Categorical and Binary Data<a class="headerlink" href="#discrete-categorical-and-binary-data" title="Permalink to this heading">#</a></h2>
+<p>If one has entirely discrete data, then the problem of CD can be converted into a CI test that
+leverages the Chi-square class of tests. Since <code class="docutils literal notranslate"><span class="pre">y</span></code> and <code class="docutils literal notranslate"><span class="pre">x</span></code> are discrete and so are the
+indices of the distribution, one can convert the CD test:</p>
+<p><span class="math notranslate nohighlight">\(P_{i=j}(y|x) =? P_{i=k}(y|x)\)</span> into the CI test <span class="math notranslate nohighlight">\(P(y|x,i) = P(y|x)\)</span>, which can
+be tested with the Chi-square CI tests.</p>
+</section>
+</section>
+<section id="references">
+<h1><span class="section-number">3. </span>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h1>
+<div class="docutils container" id="id6">
+<aside class="footnote brackets" id="footcite-kraskov-estimating-2004" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Alexander Kraskov, Harald Stögbauer, and Peter Grassberger. Estimating mutual information. <em>Physical Review E</em>, 69(6):066138, June 2004. Publisher: American Physical Society. URL: <a class="reference external" href="https://link.aps.org/doi/10.1103/PhysRevE.69.066138">https://link.aps.org/doi/10.1103/PhysRevE.69.066138</a> (visited on 2023-01-27), <a class="reference external" href="https://doi.org/10.1103/PhysRevE.69.066138">doi:10.1103/PhysRevE.69.066138</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-frenzel-partial-2007" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Stefan Frenzel and Bernd Pompe. Partial Mutual Information for Coupling Analysis of Multivariate Time Series. <em>Physical review letters</em>, 99:204101, December 2007. <a class="reference external" href="https://doi.org/10.1103/PhysRevLett.99.204101">doi:10.1103/PhysRevLett.99.204101</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-runge2018cmi" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>Jakob Runge. Conditional independence testing based on a nearest-neighbor estimator of conditional mutual information. In Amos Storkey and Fernando Perez-Cruz, editors, <em>Proceedings of the Twenty-First International Conference on Artificial Intelligence and Statistics</em>, volume 84 of Proceedings of Machine Learning Research, 938–947. PMLR, 09–11 Apr 2018. URL: <a class="reference external" href="https://proceedings.mlr.press/v84/runge18a.html">https://proceedings.mlr.press/v84/runge18a.html</a>.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-zhang2011" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<p>Kun Zhang, Jonas Peters, Dominik Janzing, and Bernhard Schölkopf. Kernel-based conditional independence test and application in causal discovery. In <em>Proceedings of the Twenty-Seventh Conference on Uncertainty in Artificial Intelligence</em>, UAI’11, 804–813. Arlington, Virginia, USA, 2011. AUAI Press.</p>
+</aside>
+<aside class="footnote brackets" id="footcite-sen2017model" role="note">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">5</a><span class="fn-bracket">]</span></span>
+<p>Rajat Sen, Ananda Theertha Suresh, Karthikeyan Shanmugam, Alexandros G Dimakis, and Sanjay Shakkottai. Model-powered conditional independence test. <em>Advances in neural information processing systems</em>, 2017.</p>
+</aside>
+</aside>
+</div>
+</section>
+
+
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="user_guide.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">User Guide</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="whats_new.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Release History</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">1. Independence</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conditional-mutual-information">1.1. Conditional Mutual Information</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pywhy-stats-independence-fisherz-partial-pearson-correlation">1.2. <code class="xref py py-mod docutils literal notranslate"><span class="pre">pywhy_stats.independence.fisherz</span></code> Partial (Pearson) Correlation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pywhy-stats-independence-power-divergence-discrete-categorical-and-binary-data">1.3. <code class="xref py py-mod docutils literal notranslate"><span class="pre">pywhy_stats.independence.power_divergence</span></code> Discrete, Categorical and Binary Data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pywhy-stats-independence-kci-kernel-approaches">1.4. <code class="xref py py-mod docutils literal notranslate"><span class="pre">pywhy_stats.independence.kci</span></code> Kernel-Approaches</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classifier-based-approaches">1.5. Classifier-based Approaches</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#conditional-distribution-2-sample-testing">2. Conditional Distribution 2-Sample Testing</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#discrete-categorical-and-binary-data">2.1. Discrete, Categorical and Binary Data</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#references">3. References</a></li>
+</ul>
+
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div class="tocsection sourcelink">
+    <a href="_sources/conditional_independence.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, PyWhy.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.2.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
