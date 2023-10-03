@@ -22,7 +22,7 @@ Note that most methods in PyWhy-Stats support multivariate inputs. For this. sim
 
 Consider the following exemplary data:
 
-```
+```Python
 import numpy as np
   
 rng = np.random.default_rng(0)
@@ -33,7 +33,7 @@ Y = np.exp(X + rng.standard_normal(size=(200, 1)))
 Here, $Y$ depends on $X$ in a non-linear way. We can use the simplified API of PyWhy-Stats to test the null hypothesis 
 that the variables are independent:
 
-```
+```Python
 from pywhy_stats import independence_test
  
 result = independence_test(X, Y)
@@ -52,7 +52,7 @@ evidence of dependence.
 We can also be more specific in the type of independence test we want to use. For instance, to use
 a FisherZ test, we can indicate this by:
 
-```
+```Python
 from pywhy_stats import Methods
 
 result = independence_test(X, Y, method=Methods.FISHERZ)
@@ -61,7 +61,7 @@ print("p-value:", result.pvalue, "Test statistic:", result.statistic)
 
 Or for the kernel based independence test:
 
-```
+```Python
 from pywhy_stats import Methods
 
 result = independence_test(X, Y, method=Methods.KCI)
@@ -87,7 +87,7 @@ Y = np.exp(Z + rng.standard_normal(size=(200, 1)))
 
 Here, $X$ and $Y$ are dependent due to $Z$. Running an unconditional independence test yields:
 
-```
+```Python
 from pywhy_stats import independence_test
  
 result = independence_test(X, Y)
@@ -97,7 +97,7 @@ print("p-value:", result.pvalue, "Test statistic:", result.statistic)
 Again, the p-value is very small, indicating a high likelihood that $X$ and $Y$ are dependent. Now,
 let's condition on $Z$, which should render the variables as independent:
 
-```
+```Python
 result = independence_test(X, Y, condition_on=Z)
 print("p-value:", result.pvalue, "Test statistic:", result.statistic)
 ```
@@ -111,7 +111,7 @@ In certain settings, you may be interested in testing the invariance between k (
 
 First, we can create some simulated data that arise from two distinct distributions. However, the data generating Y is invariant across these two settings once we condition on X.
 
-```
+```Python
 import numpy as np
   
 rng = np.random.default_rng(0)
@@ -128,7 +128,7 @@ Y = np.concatenate((Y1, Y2))
 
 We test the hypothesis that $P^1(Y | X) = P^2(Y | X)$ now with the following code.
 
-```
+```Python
 from pywhy_stats import conditional_ksample
 
 # test that P^1(Y | X) = P^2(Y | X)
