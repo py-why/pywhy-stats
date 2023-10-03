@@ -105,9 +105,37 @@ print("p-value:", result.pvalue, "Test statistic:", result.statistic)
 We observe that the p-value isn't small anymore. Indeed, if the variables were independent, we would expect the p-value 
 to be uniformly distributed on $[0, 1]$.
 
-### Conditional k-sample test
+### (Conditional) k-sample test
 
-...
+In certain settings, you may be interested in testing the invariance between k (conditional) distributions. For example, say you have data collected over the same set of variables (X, Y) from humans ($P^1(X, Y)$) and bonobos ($P^2(X, Y)$). You can determine if the conditional distributions $P^1(Y | X) = P^2(Y | X)$ using conditional two-sample test.
+
+First, we can create some simulated data that arise from two distinct distributions. However, the data generating Y is invariant across these two settings once we condition on X.
+
+```
+import numpy as np
+  
+rng = np.random.default_rng(0)
+X1 = rng.standard_normal((200, 1))
+X2 = rng.uniform(low=0.0, high=1.0, size=(200, 1))
+
+Y1 = np.exp(X1 + rng.standard_normal(size=(200, 1)))
+Y2 = np.exp(X2 + rng.standard_normal(size=(200, 1)))
+
+groups = np.concatenate((np.zeros((200, 1)), np.ones((200, 1))))
+X = np.concatenate((X1, X2))
+Y = np.concatenate((Y1, Y2))
+```
+
+We test the hypothesis that $P^1(Y | X) = P^2(Y | X)$ now with the following code.
+
+```
+from pywhy_stats import conditional_ksample
+
+# test that P^1(Y | X) = P^2(Y | X)
+result = conditional_ksample.kcd.condind(X, Y, groups)
+
+print("p-value:", result.pvalue, "Test statistic:", result.statistic)
+```
 
 # Documentation
 
