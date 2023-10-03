@@ -24,6 +24,28 @@ Or see [stable version documentation](https://py-why.github.io/pywhy-stats/stabl
 
 Installation is best done via `pip` or `conda`. For developers, they can also install from source using `pip`. See [installation page](https://www.pywhy.org/pywhy-stats/dev/installation.html) for full details.
 
+## Dependencies
+
+Minimally, pywhy-stats requires:
+
+    * Python (>=3.8)
+    * numpy
+    * scipy
+    * scikit-learn
+
+## User Installation
+
+If you already have a working installation of numpy and scipy, the easiest way to install pywhy-stats is using `pip`:
+
+    pip install -U pywhy-stats
+
+To install the package from github, clone the repository and then `cd` into the directory. You can then use `poetry` to install:
+
+    poetry install
+
+    # if you would like an editable install of pywhy-stats for dev purposes
+    pip install -e .
+
 # Quick Start
 
 In the following sections, we will use artificial exemplary data to demonstrate the API's functionality. More
@@ -150,28 +172,6 @@ result = conditional_ksample.kcd.condind(X, Y, groups)
 
 print("p-value:", result.pvalue, "Test statistic:", result.statistic)
 ```
-
-## Dependencies
-
-Minimally, pywhy-stats requires:
-
-    * Python (>=3.8)
-    * numpy
-    * scipy
-    * scikit-learn
-
-## User Installation
-
-If you already have a working installation of numpy and scipy, the easiest way to install pywhy-stats is using `pip`:
-
-    pip install -U pywhy-stats
-
-To install the package from github, clone the repository and then `cd` into the directory. You can then use `poetry` to install:
-
-    poetry install
-
-    # if you would like an editable install of pywhy-stats for dev purposes
-    pip install -e .
 
 # Contributing
 
