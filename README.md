@@ -8,11 +8,25 @@
 
 # PyWhy-Stats
 
-Pywhy-stats serves as Python library for implementations of various statistical methods, such as (un)conditional independence tests, which can be utilized in tasks like causal discovery.
+Pywhy-stats serves as Python library for implementations of various statistical methods, such as (un)conditional independence tests, which can be utilized in tasks like causal discovery. In the current version, PyWhy-stats supports:
+- Kernel-based independence and conditional k-sample tests
+- FisherZ-based independence tests
+- Power-divergence independence tests
+- Bregman-divergence conditional k-sample tests
+
+# Documentation
+
+See the [development version documentation](https://py-why.github.io/pywhy-stats/dev/index.html).
+
+Or see [stable version documentation](https://py-why.github.io/pywhy-stats/stable/index.html)
+
+# Installation
+
+Installation is best done via `pip` or `conda`. For developers, they can also install from source using `pip`. See [installation page](https://www.pywhy.org/pywhy-stats/dev/installation.html) for full details.
 
 # Quick Start
 
-In the following sections, we will use artificial exemplary data to demonstrate the API's functionality. More 
+In the following sections, we will use artificial exemplary data to demonstrate the API's functionality. More
 information about the methods and hyperparameters can be found in the [documentation](https://py-why.github.io/pywhy-stats/stable/index.html).
 
 Note that most methods in PyWhy-Stats support multivariate inputs. For this. simply pass in a
@@ -30,7 +44,7 @@ X = rng.standard_normal((200, 1))
 Y = np.exp(X + rng.standard_normal(size=(200, 1)))
 ```
 
-Here, $Y$ depends on $X$ in a non-linear way. We can use the simplified API of PyWhy-Stats to test the null hypothesis 
+Here, $Y$ depends on $X$ in a non-linear way. We can use the simplified API of PyWhy-Stats to test the null hypothesis
 that the variables are independent:
 
 ```Python
@@ -40,13 +54,13 @@ result = independence_test(X, Y)
 print("p-value:", result.pvalue, "Test statistic:", result.statistic)
 ```
 
-The `independence_test` method returns an object containing a p-value, a test statistic, and possibly additional 
-information about the test. By default, this method employs a heuristic to select the most appropriate test for the 
+The `independence_test` method returns an object containing a p-value, a test statistic, and possibly additional
+information about the test. By default, this method employs a heuristic to select the most appropriate test for the
 data. Currently, it defaults to a kernel-based independence test.
 
-As we observed, the p-value is significantly small. Using, for example, a significance level of 0.05, we would reject 
-the null hypothesis of independence and infer that these variables are dependent. However, a p-value exceeding the 
-significance level doesn't conclusively indicate that the variables are independent, it only indicates insufficient 
+As we observed, the p-value is significantly small. Using, for example, a significance level of 0.05, we would reject
+the null hypothesis of independence and infer that these variables are dependent. However, a p-value exceeding the
+significance level doesn't conclusively indicate that the variables are independent, it only indicates insufficient
 evidence of dependence.
 
 We can also be more specific in the type of independence test we want to use. For instance, to use
@@ -73,7 +87,7 @@ For more information about the available methods, hyperparameters and other deta
 
 ### Conditional independence test
 
-Similar to the unconditional independence test, we can use the same API to condition on another variable or set of 
+Similar to the unconditional independence test, we can use the same API to condition on another variable or set of
 variables. First, let's generate a third variable $Z$ to condition on:
 
 ```
@@ -102,7 +116,7 @@ result = independence_test(X, Y, condition_on=Z)
 print("p-value:", result.pvalue, "Test statistic:", result.statistic)
 ```
 
-We observe that the p-value isn't small anymore. Indeed, if the variables were independent, we would expect the p-value 
+We observe that the p-value isn't small anymore. Indeed, if the variables were independent, we would expect the p-value
 to be uniformly distributed on $[0, 1]$.
 
 ### (Conditional) k-sample test
@@ -136,16 +150,6 @@ result = conditional_ksample.kcd.condind(X, Y, groups)
 
 print("p-value:", result.pvalue, "Test statistic:", result.statistic)
 ```
-
-# Documentation
-
-See the [development version documentation](https://py-why.github.io/pywhy-stats/dev/index.html).
-
-Or see [stable version documentation](https://py-why.github.io/pywhy-stats/stable/index.html)
-
-# Installation
-
-Installation is best done via `pip` or `conda`. For developers, they can also install from source using `pip`. See [installation page](https://www.pywhy.org/pywhy-stats/dev/installation.html) for full details.
 
 ## Dependencies
 
