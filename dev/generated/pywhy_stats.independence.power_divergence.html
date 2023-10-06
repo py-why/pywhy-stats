@@ -334,7 +334,7 @@ belong to power divergence family, and are special cases of this test.</p>
 </dd>
 <dt><strong>condition_on</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v1.26)"><span class="xref std std-term">array_like</span></a> of shape (n_samples, n_variables)</span></dt><dd><p>The conditioning set.</p>
 </dd>
-<dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The lambda parameter for the power_divergence statistic. Some values of
+<dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The lambda parameter for the power_divergence statistic. Some values of
 method results in other well known tests:</p>
 <blockquote>
 <div><p>“pearson”             1          “Chi-squared test”
@@ -345,10 +345,10 @@ method results in other well known tests:</p>
 “cressie-read”        2/3        “The value recommended in the paper <a class="footnote-reference brackets" href="#footcite-cressieread1984" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>”</p>
 </div></blockquote>
 </dd>
-<dt><strong>num_categories_allowed</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>The maximum number of categories allowed in the input variables. Default
+<dt><strong>num_categories_allowed</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>The maximum number of categories allowed in the input variables. Default
 of 10 is chosen to error out on large number of categories.</p>
 </dd>
-<dt><strong>on_error</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>What to do when there are not enough samples in the data, where there are 0 samples
+<dt><strong>on_error</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>What to do when there are not enough samples in the data, where there are 0 samples
 in a cell of the contingency table. If ‘raise’, then
 raise an error. If ‘warn’, then log a warning and skip the test.
 If ‘ignore’, then ignore the warning and skip the test.</p>
@@ -357,9 +357,9 @@ If ‘ignore’, then ignore the warning and skip the test.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>statistic</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The test statistic.</p>
+<dt><strong>statistic</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The test statistic.</p>
 </dd>
-<dt><strong>pvalue</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The p-value of the test.</p>
+<dt><strong>pvalue</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The p-value of the test.</p>
 </dd>
 </dl>
 </dd>
@@ -380,7 +380,7 @@ power divergence family, and are special cases of this test.</p>
 </dd>
 <dt><strong>Y</strong><span class="classifier"><a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-array_like" title="(in NumPy v1.26)"><span class="xref std std-term">array_like</span></a> of shape (n_samples,)</span></dt><dd><p>The second node variable.</p>
 </dd>
-<dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The lambda parameter for the power_divergence statistic. Some values of
+<dt><strong>method</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>The lambda parameter for the power_divergence statistic. Some values of
 <code class="docutils literal notranslate"><span class="pre">method</span></code> results in other well known tests:</p>
 <blockquote>
 <div><p>“pearson”             1          “Chi-squared test”
@@ -391,10 +391,10 @@ power divergence family, and are special cases of this test.</p>
 “cressie-read”        2/3        “The value recommended in the paper <a class="footnote-reference brackets" href="#footcite-cressieread1984" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>”</p>
 </div></blockquote>
 </dd>
-<dt><strong>num_categories_allowed</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>The maximum number of categories allowed in the input variables. Default
+<dt><strong>num_categories_allowed</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>The maximum number of categories allowed in the input variables. Default
 of 10 is chosen to error out on large number of categories.</p>
 </dd>
-<dt><strong>on_error</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>What to do when there are not enough samples in the data, where there are 0 samples
+<dt><strong>on_error</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>What to do when there are not enough samples in the data, where there are 0 samples
 in a cell of the contingency table. If ‘raise’, then
 raise an error. If ‘warn’, then log a warning and skip the test.
 If ‘ignore’, then ignore the warning and skip the test.</p>
@@ -403,9 +403,9 @@ If ‘ignore’, then ignore the warning and skip the test.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>statistic</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The test statistic.</p>
+<dt><strong>statistic</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The test statistic.</p>
 </dd>
-<dt><strong>pvalue</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.11)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The p-value of the test.</p>
+<dt><strong>pvalue</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>The p-value of the test.</p>
 </dd>
 </dl>
 </dd>
